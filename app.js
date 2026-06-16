@@ -79,12 +79,12 @@ function ensureSquadAndStats(teamId) {
   // 1. Estatísticas dos últimos 100 jogos
   if (!window.comparacopaData.teamStats[teamId]) {
     const tier = getTeamTier(teamId);
-    let wins = 30, draws = 25, losses = 45, goals = 120, conceded = 160, sheets = 20, form = ["L", "D", "W", "L", "D"];
+    let wins = 30, draws = 25, losses = 45, goals = 120, conceded = 160, sheets = 20, form = ["D", "E", "V", "D", "D"];
     
     if (tier === "A") {
-      wins = 60; draws = 20; losses = 20; goals = 185; conceded = 90; sheets = 42; form = ["W", "W", "D", "W", "D"];
+      wins = 60; draws = 20; losses = 20; goals = 185; conceded = 90; sheets = 42; form = ["V", "V", "E", "V", "E"];
     } else if (tier === "B") {
-      wins = 45; draws = 25; losses = 30; goals = 150; conceded = 125; sheets = 30; form = ["W", "L", "D", "W", "L"];
+      wins = 45; draws = 25; losses = 30; goals = 150; conceded = 125; sheets = 30; form = ["V", "D", "E", "V", "D"];
     }
     
     window.comparacopaData.teamStats[teamId] = {

@@ -118,14 +118,14 @@ window.comparacopaData = {
 
   // Estatísticas de performance dos últimos 100 jogos para G8
   teamStats: {
-    BRA: { wins: 68, draws: 18, losses: 14, goalsScored: 215, goalsConceded: 78, cleanSheets: 48, form: ["W", "W", "D", "W", "W"] },
-    ARG: { wins: 72, draws: 16, losses: 12, goalsScored: 202, goalsConceded: 65, cleanSheets: 55, form: ["W", "W", "W", "L", "W"] },
-    FRA: { wins: 64, draws: 20, losses: 16, goalsScored: 198, goalsConceded: 84, cleanSheets: 42, form: ["W", "D", "W", "W", "D"] },
-    ESP: { wins: 62, draws: 22, losses: 16, goalsScored: 195, goalsConceded: 81, cleanSheets: 45, form: ["W", "W", "D", "W", "W"] },
-    ENG: { wins: 60, draws: 24, losses: 16, goalsScored: 190, goalsConceded: 79, cleanSheets: 46, form: ["D", "W", "W", "D", "W"] },
-    GER: { wins: 54, draws: 26, losses: 20, goalsScored: 188, goalsConceded: 98, cleanSheets: 35, form: ["W", "D", "W", "L", "W"] },
-    POR: { wins: 61, draws: 19, losses: 20, goalsScored: 204, goalsConceded: 86, cleanSheets: 41, form: ["W", "W", "L", "W", "W"] },
-    URU: { wins: 52, draws: 24, losses: 24, goalsScored: 154, goalsConceded: 95, cleanSheets: 38, form: ["W", "D", "W", "W", "L"] }
+    BRA: { wins: 68, draws: 18, losses: 14, goalsScored: 215, goalsConceded: 78, cleanSheets: 48, form: ["V", "V", "E", "V", "V"] },
+    ARG: { wins: 72, draws: 16, losses: 12, goalsScored: 202, goalsConceded: 65, cleanSheets: 55, form: ["V", "V", "V", "D", "V"] },
+    FRA: { wins: 64, draws: 20, losses: 16, goalsScored: 198, goalsConceded: 84, cleanSheets: 42, form: ["V", "E", "V", "V", "E"] },
+    ESP: { wins: 62, draws: 22, losses: 16, goalsScored: 195, goalsConceded: 81, cleanSheets: 45, form: ["V", "V", "E", "V", "V"] },
+    ENG: { wins: 60, draws: 24, losses: 16, goalsScored: 190, goalsConceded: 79, cleanSheets: 46, form: ["E", "V", "V", "E", "V"] },
+    GER: { wins: 54, draws: 26, losses: 20, goalsScored: 188, goalsConceded: 98, cleanSheets: 35, form: ["V", "E", "V", "D", "V"] },
+    POR: { wins: 61, draws: 19, losses: 20, goalsScored: 204, goalsConceded: 86, cleanSheets: 41, form: ["V", "V", "D", "V", "V"] },
+    URU: { wins: 52, draws: 24, losses: 24, goalsScored: 154, goalsConceded: 95, cleanSheets: 38, form: ["V", "E", "V", "V", "D"] }
   },
 
   // Escalações oficiais, posições e dados reais dos convocados de 2026

@@ -241,9 +241,9 @@ select.neo-select:focus {
   border: 2px solid var(--dark-accent);
 }
 
-.form-badge.W { background: var(--neon-green); color: var(--dark-accent); }
-.form-badge.D { background: #bbb; color: var(--dark-accent); }
-.form-badge.L { background: #ff4d4d; color: var(--off-white); }
+.form-badge.V { background: var(--neon-green); color: var(--dark-accent); }
+.form-badge.E { background: #bbb; color: var(--dark-accent); }
+.form-badge.D { background: #ff4d4d; color: var(--off-white); }
 
 /* Campo de Futebol Tático Retrô */
 .field-container {
