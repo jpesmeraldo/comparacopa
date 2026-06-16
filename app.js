@@ -92,6 +92,21 @@ function ensureSquadAndStats(teamId) {
     };
   }
 
+  // Se já existe no data.js (como G8 ou Senegal), garantir origPos nos jogadores
+  if (window.comparacopaData.squads[teamId]) {
+    const s = window.comparacopaData.squads[teamId];
+    if (s.players) {
+      s.players.forEach(p => {
+        if (!p.origPos) p.origPos = p.pos;
+      });
+    }
+    if (s.bench) {
+      s.bench.forEach(p => {
+        if (!p.origPos) p.origPos = p.pos;
+      });
+    }
+  }
+
   // 2. Elenco tático de titulares e reservas
   if (!window.comparacopaData.squads[teamId]) {
     const tier = getTeamTier(teamId);
@@ -120,6 +135,7 @@ function ensureSquadAndStats(teamId) {
       return {
         name: pName,
         pos: posInfo.pos,
+        origPos: posInfo.pos,
         no: posInfo.no,
         club: "Clube Local",
         ovr: ovr,
@@ -142,6 +158,7 @@ function ensureSquadAndStats(teamId) {
       return {
         name: bName,
         pos: pos,
+        origPos: pos,
         club: "Clube Local",
         ovr: ovr,
         pac: baseOvr + 2,
@@ -173,6 +190,7 @@ function getPlayerNamesByNationality(teamId) {
   const portSurnames = ["Silva", "Santos", "Oliveira", "Souza", "Pereira", "Costa", "Carvalho", "Ferreira", "Ribeiro", "Gomes", "Martins", "Rocha", "Almeida", "Lopes", "Soares", "Cardoso", "Teixeira", "Mendes", "Jesus", "Pinto"];
   const japaneseSurnames = ["Sato", "Tanaka", "Watanabe", "Ito", "Nakamura", "Kobayashi", "Takahashi", "Saito", "Suzuki", "Yamamoto", "Aoki", "Ishii", "Kondo", "Ono", "Ueda", "Mori", "Hasegawa", "Shida", "Inoue", "Kato"];
   const koreanSurnames = ["Kim", "Lee", "Park", "Choi", "Jung", "Kang", "Cho", "Yoon", "Jang", "Lim", "Han", "Shin", "Song", "Oh", "Suh", "Hwang", "Kwon", "Ahn", "Hong", "Yoo"];
+  const senegaleseSurnames = ["Ndiaye", "Diop", "Ba", "Diallo", "Sow", "Diouf", "Gueye", "Fall", "Faye", "Sarr", "Seck", "Niang", "Diagne", "Mbaye", "Thiam", "Sene", "Dieng", "Cisse", "Sy", "Sall"];
   
   const spanishTeams = ["MEX", "COL", "PAR", "ECU", "ESP", "ARG", "URU", "HAI", "CUW"];
   const englishTeams = ["USA", "CAN", "ENG", "NZL", "SCO", "RSA", "GHA", "PAN"];
@@ -190,6 +208,8 @@ function getPlayerNamesByNationality(teamId) {
     pool = japaneseSurnames;
   } else if (teamId === "KOR") {
     pool = koreanSurnames;
+  } else if (teamId === "SEN") {
+    pool = senegaleseSurnames;
   } else {
     return Array.from({length: 25}, (_, i) => `${teamId} Craque ${i+1}`);
   }
@@ -288,8 +308,20 @@ function renderStats() {
   // Probabilidade de Resultado Futuro
   const squadA = window.comparacopaData.squads[activeTeamA].players;
   const squadB = window.comparacopaData.squads[activeTeamB].players;
-  const avgOvrA = squadA.reduce((sum, p) => sum + p.ovr, 0) / 11;
-  const avgOvrB = squadB.reduce((sum, p) => sum + p.ovr, 0) / 11;
+  const formA = window.comparacopaData.squads[activeTeamA].formation || "4-3-3";
+  const formB = window.comparacopaData.squads[activeTeamB].formation || "4-3-3";
+  const coordsA = formationsCoordinates[formA];
+  const coordsB = formationsCoordinates[formB];
+
+  const avgOvrA = squadA.reduce((sum, p, idx) => {
+    const slotPos = coordsA[idx] ? coordsA[idx].pos : p.pos;
+    return sum + getEffectivePlayerOvr(p, slotPos);
+  }, 0) / 11;
+
+  const avgOvrB = squadB.reduce((sum, p, idx) => {
+    const slotPos = coordsB[idx] ? coordsB[idx].pos : p.pos;
+    return sum + getEffectivePlayerOvr(p, slotPos);
+  }, 0) / 11;
   
   const strA = (avgOvrA * 0.65) + (statsA.wins * 0.35);
   const strB = (avgOvrB * 0.65) + (statsB.wins * 0.35);
@@ -382,6 +414,15 @@ function toggleFieldTeam(teamType) {
   renderTacticalField();
 }
 
+// Obter OVR Efetivo com penalidade caso esteja fora de sua posição original
+function getEffectivePlayerOvr(player, slotPos) {
+  const orig = player.origPos || player.pos;
+  if (orig !== slotPos) {
+    return Math.max(40, player.ovr - 8);
+  }
+  return player.ovr;
+}
+
 function renderTacticalField() {
   const container = document.getElementById("tactical-field-players");
   container.innerHTML = "";
@@ -395,6 +436,8 @@ function renderTacticalField() {
   // Renderizar o seletor de formação correspondente ao time atual
   renderFormationSelector(squad.formation || "4-3-3");
 
+  const coords = formationsCoordinates[squad.formation || "4-3-3"];
+
   squad.players.forEach((player, index) => {
     const node = document.createElement("div");
     node.className = "player-node";
@@ -404,10 +447,22 @@ function renderTacticalField() {
     node.style.color = colors.text || "#ffffff";
     node.style.borderColor = colors.secondary;
 
+    const slotPos = coords[index] ? coords[index].pos : player.pos;
+    const effectiveOvr = getEffectivePlayerOvr(player, slotPos);
+    const isOutOfPosition = (player.origPos || player.pos) !== slotPos;
+
+    let ovrTagStyle = "";
+    let alertSymbol = "";
+    if (isOutOfPosition) {
+      ovrTagStyle = "background-color: #f39c12; color: #fff; font-weight: 900;";
+      alertSymbol = `<span style="color: #f39c12; font-weight: 900; margin-left: 2px;" title="Fora de posição! Penalidade de -8 OVR.">⚠️</span>`;
+      node.style.boxShadow = "3px 3px 0 #f39c12";
+    }
+
     node.innerHTML = `
       <span class="player-number">${player.no}</span>
-      <div class="player-ovr-tag">${player.ovr}</div>
-      <div class="player-name-tag">${player.name}</div>
+      <div class="player-ovr-tag" style="${ovrTagStyle}">${effectiveOvr}</div>
+      <div class="player-name-tag">${player.name}${alertSymbol}</div>
     `;
 
     node.onclick = () => showPlayerModal(player, teamId);
@@ -633,16 +688,33 @@ function startMatchSimulation() {
   const formationA = window.comparacopaData.squads[activeTeamA].formation || "4-3-3";
   const formationB = window.comparacopaData.squads[activeTeamB].formation || "4-3-3";
 
-  // Lógica de duelo de setores e influência tática
-  const getSectorAverages = (players) => {
-    const defense = players.filter(p => p.pos === "GK" || p.pos === "DF");
-    const midfield = players.filter(p => p.pos === "MF");
-    const attack = players.filter(p => p.pos === "FW");
+  const coordsA = formationsCoordinates[formationA];
+  const coordsB = formationsCoordinates[formationB];
+
+  // Lógica de duelo de setores e influência tática com OVR Efetivo
+  const getSectorAverages = (players, coords) => {
+    const defense = [];
+    const midfield = [];
+    const attack = [];
+
+    players.forEach((p, idx) => {
+      const slotPos = coords[idx] ? coords[idx].pos : p.pos;
+      const effOvr = getEffectivePlayerOvr(p, slotPos);
+      const playerWithEff = { ...p, effectiveOvr: effOvr };
+
+      if (slotPos === "GK" || slotPos === "DF") {
+        defense.push(playerWithEff);
+      } else if (slotPos === "MF") {
+        midfield.push(playerWithEff);
+      } else if (slotPos === "FW") {
+        attack.push(playerWithEff);
+      }
+    });
     
     return {
-      def: defense.reduce((sum, p) => sum + p.ovr, 0) / (defense.length || 1),
-      mid: midfield.reduce((sum, p) => sum + p.ovr, 0) / (midfield.length || 1),
-      att: attack.reduce((sum, p) => sum + p.ovr, 0) / (attack.length || 1)
+      def: defense.reduce((sum, p) => sum + p.effectiveOvr, 0) / (defense.length || 1),
+      mid: midfield.reduce((sum, p) => sum + p.effectiveOvr, 0) / (midfield.length || 1),
+      att: attack.reduce((sum, p) => sum + p.effectiveOvr, 0) / (attack.length || 1)
     };
   };
 
@@ -660,8 +732,8 @@ function startMatchSimulation() {
     return factors[form] || { att: 1.0, def: 1.0 };
   };
 
-  const secA = getSectorAverages(squadA);
-  const secB = getSectorAverages(squadB);
+  const secA = getSectorAverages(squadA, coordsA);
+  const secB = getSectorAverages(squadB, coordsB);
 
   const formFactorsA = getFormationFactors(formationA);
   const formFactorsB = getFormationFactors(formationB);

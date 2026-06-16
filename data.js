@@ -9,7 +9,8 @@ window.comparacopaData = {
     ENG: { primary: "#ffffff", secondary: "#cf081b", accent: "#002060", text: "#111111" },
     GER: { primary: "#111111", secondary: "#d90000", accent: "#ffcc00", text: "#ffffff" },
     POR: { primary: "#da121a", secondary: "#046a38", accent: "#f4c430", text: "#ffffff" },
-    URU: { primary: "#5bc2e7", secondary: "#ffffff", accent: "#f6b426", text: "#111111" }
+    URU: { primary: "#5bc2e7", secondary: "#ffffff", accent: "#f6b426", text: "#111111" },
+    SEN: { primary: "#00853f", secondary: "#fdef42", accent: "#e31b23", text: "#ffffff" }
   },
 
   // 12 Grupos Customizados da Copa de 2026 (48 seleções)
@@ -391,6 +392,35 @@ window.comparacopaData = {
         { name: "Brian Rodríguez", pos: "FW", club: "América-MEX", ovr: 76, pac: 85, sho: 72, pas: 71, dri: 79, def: 32, phy: 64 },
         { name: "Rodrigo Aguirre", pos: "FW", club: "Tigres", ovr: 76, pac: 78, sho: 75, pas: 68, dri: 74, def: 34, phy: 75 },
         { name: "Federico Viñas", pos: "FW", club: "Oviedo", ovr: 76, pac: 75, sho: 76, pas: 65, dri: 72, def: 35, phy: 78 }
+      ]
+    },
+    SEN: {
+      formation: "4-3-3",
+      players: [
+        { name: "Edouard Mendy", pos: "GK", no: 16, club: "Al-Ahli", ovr: 84, pac: 80, sho: 44, pas: 78, dri: 82, def: 85, phy: 80, x: 50, y: 12 },
+        { name: "Krepin Diatta", pos: "DF", no: 15, club: "AS Monaco", ovr: 79, pac: 85, sho: 70, pas: 74, dri: 80, def: 72, phy: 74, x: 85, y: 35 },
+        { name: "K. Koulibaly", pos: "DF", no: 3, club: "Al-Hilal", ovr: 83, pac: 70, sho: 45, pas: 60, dri: 63, def: 85, phy: 84, x: 65, y: 28 },
+        { name: "Moussa Niakhate", pos: "DF", no: 19, club: "Lyon", ovr: 80, pac: 72, sho: 42, pas: 65, dri: 66, def: 81, phy: 82, x: 35, y: 28 },
+        { name: "Ismail Jakobs", pos: "DF", no: 14, club: "Galatasaray SK", ovr: 78, pac: 82, sho: 54, pas: 71, dri: 75, def: 76, phy: 75, x: 15, y: 35 },
+        { name: "Lamine Camara", pos: "MF", no: 5, club: "AS Monaco", ovr: 80, pac: 74, sho: 71, pas: 78, dri: 77, def: 75, phy: 76, x: 50, y: 50 },
+        { name: "P. Matar Sarr", pos: "MF", no: 17, club: "Tottenham", ovr: 82, pac: 77, sho: 73, pas: 79, dri: 80, def: 77, phy: 78, x: 30, y: 55 },
+        { name: "Pape Gueye", pos: "MF", no: 8, club: "Villarreal CF", ovr: 78, pac: 68, sho: 69, pas: 74, dri: 74, def: 76, phy: 78, x: 70, y: 55 },
+        { name: "Ismaila Sarr", pos: "FW", no: 18, club: "Crystal Palace", ovr: 80, pac: 89, sho: 75, pas: 73, dri: 81, def: 35, phy: 68, x: 80, y: 80 },
+        { name: "Nicolas Jackson", pos: "FW", no: 9, club: "Chelsea", ovr: 84, pac: 85, sho: 81, pas: 72, dri: 82, def: 40, phy: 79, x: 50, y: 85 },
+        { name: "Sadio Mane", pos: "FW", no: 10, club: "Al-Nassr", ovr: 85, pac: 86, sho: 83, pas: 80, dri: 88, def: 38, phy: 73, x: 20, y: 80 }
+      ],
+      bench: [
+        { name: "Yehvann Diouf", pos: "GK", club: "OGC Nice", ovr: 79, pac: 78, sho: 40, pas: 72, dri: 75, def: 80, phy: 77 },
+        { name: "Mory Diaw", pos: "GK", club: "Le Havre AC", ovr: 77, pac: 74, sho: 38, pas: 68, dri: 72, def: 78, phy: 76 },
+        { name: "Mamadou Sarr", pos: "DF", club: "Chelsea", ovr: 75, pac: 70, sho: 35, pas: 58, dri: 60, def: 76, phy: 74 },
+        { name: "Abdoulaye Seck", pos: "DF", club: "Maccabi Haifa", ovr: 76, pac: 62, sho: 38, pas: 52, dri: 54, def: 77, phy: 79 },
+        { name: "E. Malick Diouf", pos: "DF", club: "West Ham United", ovr: 77, pac: 80, sho: 55, pas: 68, dri: 72, def: 75, phy: 74 },
+        { name: "Idrissa Gueye", pos: "MF", club: "Everton", ovr: 79, pac: 64, sho: 66, pas: 73, dri: 75, def: 80, phy: 76 },
+        { name: "Pathe Ciss", pos: "MF", club: "Rayo Vallecano", ovr: 76, pac: 66, sho: 64, pas: 71, dri: 70, def: 75, phy: 78 },
+        { name: "Habib Diarra", pos: "MF", club: "Sunderland", ovr: 77, pac: 79, sho: 70, pas: 74, dri: 78, def: 70, phy: 74 },
+        { name: "Bamba Dieng", pos: "FW", club: "Lorient", ovr: 76, pac: 81, sho: 76, pas: 64, dri: 74, def: 32, phy: 73 },
+        { name: "Iliman Ndiaye", pos: "FW", club: "Everton", ovr: 79, pac: 80, sho: 74, pas: 75, dri: 82, def: 42, phy: 70 },
+        { name: "Ibrahim Mbaye", pos: "FW", club: "PSG", ovr: 74, pac: 82, sho: 70, pas: 66, dri: 76, def: 28, phy: 65 }
       ]
     }
   }
