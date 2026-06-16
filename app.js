@@ -398,8 +398,8 @@ function renderTacticalField() {
   squad.players.forEach((player, index) => {
     const node = document.createElement("div");
     node.className = "player-node";
-    node.style.left = `${player.x}%`;
-    node.style.top = `${player.y}%`;
+    node.style.left = `${player.y}%`; // y vira o progresso da esquerda para a direita (GK na esquerda, FW na direita)
+    node.style.top = `${player.x}%`;  // x vira a distribuição vertical de largura
     node.style.backgroundColor = colors.primary;
     node.style.color = colors.text || "#ffffff";
     node.style.borderColor = colors.secondary;
@@ -819,20 +819,26 @@ function renderBrackets() {
   // Renderizar Rodada de 32 (Fidelidade do Mata-Mata)
   const matches = window.comparacopaData.brackets.roundOf32;
   matches.forEach(m => {
-    const detailsA = getTeamNameAndFlag(m.teamA);
-    const detailsB = getTeamNameAndFlag(m.teamB);
+    const isDefined = m.teamA && m.teamB;
+    const detailsA = m.teamA ? getTeamNameAndFlag(m.teamA) : { name: "A confirmar", flag: "🏳️" };
+    const detailsB = m.teamB ? getTeamNameAndFlag(m.teamB) : { name: "A confirmar", flag: "🏳️" };
 
     const matchCard = document.createElement("div");
     matchCard.className = "bracket-match";
-    matchCard.onclick = () => loadBracketMatchToSim(m.teamA, m.teamB);
+    if (isDefined) {
+      matchCard.onclick = () => loadBracketMatchToSim(m.teamA, m.teamB);
+    } else {
+      matchCard.style.cursor = "default";
+      matchCard.style.opacity = "0.8";
+    }
 
     matchCard.innerHTML = `
       <div class="bracket-team-row">
-        <span>${detailsA.flag} ${m.teamA}</span>
+        <span>${detailsA.flag} ${m.teamA || "A confirmar"}</span>
         <span class="score-placeholder" style="font-family: 'Space Mono', monospace;">-</span>
       </div>
       <div class="bracket-team-row">
-        <span>${detailsB.flag} ${m.teamB}</span>
+        <span>${detailsB.flag} ${m.teamB || "A confirmar"}</span>
         <span class="score-placeholder" style="font-family: 'Space Mono', monospace;">-</span>
       </div>
       <div class="bracket-match-date">${m.date}</div>
@@ -915,4 +921,42 @@ function renderBrackets() {
     <div class="bracket-match-date" style="border-top-color: var(--retro-yellow); color: var(--retro-yellow); font-weight: 800;">${finalData.date}</div>
   `;
   rFinalCol.appendChild(finalCard);
+}
+
+// Atualizar estatísticas e resultados reais em tempo real
+function updateRealTimeResults() {
+  const btn = document.getElementById("btn-update-results");
+  if (!btn) return;
+  
+  const originalText = btn.innerHTML;
+  btn.innerHTML = `<span style="font-family: 'Space Mono', monospace; font-size: 0.75rem;">Atualizando...</span>`;
+  btn.disabled = true;
+
+  // Remover script dinâmico antigo se houver
+  const oldScript = document.getElementById("data-script-dyn");
+  if (oldScript) oldScript.remove();
+
+  // Criar script dinâmico com cache bypass (timestamp)
+  const script = document.createElement("script");
+  script.id = "data-script-dyn";
+  script.src = "data.js?t=" + Date.now();
+  script.onload = () => {
+    // Re-renderizar tudo com os dados recém-carregados
+    renderGroupTable();
+    renderBrackets();
+    initSelectors();
+    loadComparison();
+    
+    btn.innerHTML = `<span style="font-family: 'Space Mono', monospace; font-size: 0.75rem; color: var(--dark-accent);">Atualizado!</span>`;
+    setTimeout(() => {
+      btn.innerHTML = originalText;
+      btn.disabled = false;
+    }, 2500);
+  };
+  script.onerror = () => {
+    alert("Falha ao se conectar com o GitHub para obter atualizações em tempo real.");
+    btn.innerHTML = originalText;
+    btn.disabled = false;
+  };
+  document.body.appendChild(script);
 }

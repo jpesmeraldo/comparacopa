@@ -249,7 +249,7 @@ select.neo-select:focus {
 .field-container {
   position: relative;
   width: 100%;
-  aspect-ratio: 0.75;
+  aspect-ratio: 1.6; /* Proporção wide horizontal */
   background-color: #1a5e37; /* Grama vintage */
   border: var(--border-size) solid var(--dark-accent);
   box-shadow: var(--neo-shadow);
@@ -269,11 +269,11 @@ select.neo-select:focus {
 
 .field-midline {
   position: absolute;
-  top: 50%;
-  left: 0;
-  width: 100%;
-  height: 0;
-  border-top: 3px dashed rgba(250, 250, 245, 0.4);
+  top: 0;
+  left: 50%;
+  width: 0;
+  height: 100%;
+  border-left: 3px dashed rgba(250, 250, 245, 0.4);
 }
 
 .field-center-circle {
@@ -289,26 +289,26 @@ select.neo-select:focus {
 
 .field-penalty-a {
   position: absolute;
-  top: 0;
-  left: 50%;
-  width: 150px;
-  height: 70px;
+  top: 50%;
+  left: 0;
+  width: 70px;
+  height: 150px;
+  border-top: 3px dashed rgba(250, 250, 245, 0.4);
   border-bottom: 3px dashed rgba(250, 250, 245, 0.4);
-  border-left: 3px dashed rgba(250, 250, 245, 0.4);
   border-right: 3px dashed rgba(250, 250, 245, 0.4);
-  transform: translateX(-50%);
+  transform: translateY(-50%);
 }
 
 .field-penalty-b {
   position: absolute;
-  bottom: 0;
-  left: 50%;
-  width: 150px;
-  height: 70px;
+  top: 50%;
+  right: 0;
+  width: 70px;
+  height: 150px;
   border-top: 3px dashed rgba(250, 250, 245, 0.4);
+  border-bottom: 3px dashed rgba(250, 250, 245, 0.4);
   border-left: 3px dashed rgba(250, 250, 245, 0.4);
-  border-right: 3px dashed rgba(250, 250, 245, 0.4);
-  transform: translateX(-50%);
+  transform: translateY(-50%);
 }
 
 /* Jogadores estilo Futebol de Botão */
