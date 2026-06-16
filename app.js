@@ -851,17 +851,17 @@ function renderBrackets() {
   octavesData.forEach((m, idx) => {
     const card = document.createElement("div");
     card.className = "bracket-match";
-    card.style.opacity = "0.7";
+    card.style.opacity = "0.75";
     card.innerHTML = `
-      <div class="bracket-team-row" style="color: #666;">
+      <div class="bracket-team-row" style="color: var(--dark-accent); font-weight: 600;">
         <span>Vencedor M${idx*2 + 1}</span>
         <span>-</span>
       </div>
-      <div class="bracket-team-row" style="color: #666;">
+      <div class="bracket-team-row" style="color: var(--dark-accent); font-weight: 600;">
         <span>Vencedor M${idx*2 + 2}</span>
         <span>-</span>
       </div>
-      <div class="bracket-match-date">${m.date}</div>
+      <div class="bracket-match-date" style="color: #444; border-top-color: #ddd;">${m.date}</div>
     `;
     r16Col.appendChild(card);
   });
@@ -870,17 +870,17 @@ function renderBrackets() {
   quartersData.forEach((m, idx) => {
     const card = document.createElement("div");
     card.className = "bracket-match";
-    card.style.opacity = "0.5";
+    card.style.opacity = "0.6";
     card.innerHTML = `
-      <div class="bracket-team-row" style="color: #666;">
+      <div class="bracket-team-row" style="color: var(--dark-accent); font-weight: 600;">
         <span>Vencedor Q${idx*2 + 1}</span>
         <span>-</span>
       </div>
-      <div class="bracket-team-row" style="color: #666;">
+      <div class="bracket-team-row" style="color: var(--dark-accent); font-weight: 600;">
         <span>Vencedor Q${idx*2 + 2}</span>
         <span>-</span>
       </div>
-      <div class="bracket-match-date">${m.date}</div>
+      <div class="bracket-match-date" style="color: #444; border-top-color: #ddd;">${m.date}</div>
     `;
     r8Col.appendChild(card);
   });
@@ -889,17 +889,17 @@ function renderBrackets() {
   semisData.forEach((m, idx) => {
     const card = document.createElement("div");
     card.className = "bracket-match";
-    card.style.opacity = "0.4";
+    card.style.opacity = "0.5";
     card.innerHTML = `
-      <div class="bracket-team-row" style="color: #666;">
+      <div class="bracket-team-row" style="color: var(--dark-accent); font-weight: 600;">
         <span>Vencedor S1</span>
         <span>-</span>
       </div>
-      <div class="bracket-team-row" style="color: #666;">
+      <div class="bracket-team-row" style="color: var(--dark-accent); font-weight: 600;">
         <span>Vencedor S2</span>
         <span>-</span>
       </div>
-      <div class="bracket-match-date">${m.date}</div>
+      <div class="bracket-match-date" style="color: #444; border-top-color: #ddd;">${m.date}</div>
     `;
     r4Col.appendChild(card);
   });
@@ -907,18 +907,18 @@ function renderBrackets() {
   const finalData = window.comparacopaData.brackets.final;
   const finalCard = document.createElement("div");
   finalCard.className = "bracket-match";
-  finalCard.style.opacity = "0.3";
-  finalCard.style.boxShadow = "6px 6px 0 var(--retro-yellow)";
+  finalCard.style.opacity = "0.45";
+  finalCard.style.boxShadow = "6px 6px 0 var(--retro-blue)";
   finalCard.innerHTML = `
-    <div class="bracket-team-row" style="color: #666;">
+    <div class="bracket-team-row" style="color: var(--dark-accent); font-weight: 700;">
       <span>Vencedor Semifinal 1</span>
       <span>-</span>
     </div>
-    <div class="bracket-team-row" style="color: #666;">
+    <div class="bracket-team-row" style="color: var(--dark-accent); font-weight: 700;">
       <span>Vencedor Semifinal 2</span>
       <span>-</span>
     </div>
-    <div class="bracket-match-date" style="border-top-color: var(--retro-yellow); color: var(--retro-yellow); font-weight: 800;">${finalData.date}</div>
+    <div class="bracket-match-date" style="border-top-color: var(--retro-blue); color: var(--retro-blue); font-weight: 800;">${finalData.date}</div>
   `;
   rFinalCol.appendChild(finalCard);
 }
@@ -959,4 +959,30 @@ function updateRealTimeResults() {
     btn.disabled = false;
   };
   document.body.appendChild(script);
+}
+
+// Funções de Compartilhamento Social para Viralização
+function shareOnWhatsApp() {
+  const text = encodeURIComponent("Quem tem o melhor elenco e a melhor tática para a Copa de 2026? Acabei de comparar os times no Comparacopa! Faça o seu teste também: https://jpesmeraldo.github.io/comparacopa/");
+  window.open(`https://api.whatsapp.com/send?text=${text}`, '_blank');
+}
+
+function shareOnTwitter() {
+  const text = encodeURIComponent("Simulei os confrontos e táticas da Copa do Mundo 2026 no Comparacopa! Quem leva a taça? Monte sua tática e simule você também: https://jpesmeraldo.github.io/comparacopa/ @FIFAWorldCup");
+  window.open(`https://twitter.com/intent/tweet?text=${text}`, '_blank');
+}
+
+function copyLink() {
+  navigator.clipboard.writeText("https://jpesmeraldo.github.io/comparacopa/").then(() => {
+    alert("Link copiado para a área de transferência! Envie para seus amigos no WhatsApp ou redes sociais.");
+  }).catch(() => {
+    // Fallback se navigator.clipboard falhar
+    const tempInput = document.createElement("input");
+    tempInput.value = "https://jpesmeraldo.github.io/comparacopa/";
+    document.body.appendChild(tempInput);
+    tempInput.select();
+    document.execCommand("copy");
+    document.body.removeChild(tempInput);
+    alert("Link copiado para a área de transferência! Envie para seus amigos no WhatsApp ou redes sociais.");
+  });
 }

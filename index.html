@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Comparacopa 2026 — Anos 80 Edition</title>
+  <title>Comparacopa 2026</title>
   <link rel="stylesheet" href="style.css">
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
@@ -264,7 +264,7 @@
             
             <!-- Rodada de 32 (1/16 de Final) -->
             <div class="bracket-column">
-              <h3 style="font-size: 0.85rem; font-family: 'Space Mono', monospace; text-align: center; color: var(--retro-yellow);">Rodada de 32 avos</h3>
+              <h3 style="font-size: 0.8rem; font-family: 'Space Mono', monospace; text-align: center; color: var(--retro-yellow); background: var(--dark-accent); padding: 5px 8px; border: 2px solid var(--dark-accent); text-transform: uppercase;">32 Avos</h3>
               <div id="bracket-r32-col" style="display: flex; flex-direction: column; gap: 15px;">
                 <!-- JS -->
               </div>
@@ -272,7 +272,7 @@
 
             <!-- Oitavas de Final -->
             <div class="bracket-column">
-              <h3 style="font-size: 0.85rem; font-family: 'Space Mono', monospace; text-align: center; color: var(--retro-yellow);">Oitavas de Final</h3>
+              <h3 style="font-size: 0.8rem; font-family: 'Space Mono', monospace; text-align: center; color: var(--retro-yellow); background: var(--dark-accent); padding: 5px 8px; border: 2px solid var(--dark-accent); text-transform: uppercase;">Oitavas</h3>
               <div id="bracket-r16-col" style="display: flex; flex-direction: column; gap: 30px;">
                 <!-- JS -->
               </div>
@@ -280,7 +280,7 @@
 
             <!-- Quartas de Final -->
             <div class="bracket-column">
-              <h3 style="font-size: 0.85rem; font-family: 'Space Mono', monospace; text-align: center; color: var(--retro-yellow);">Quartas de Final</h3>
+              <h3 style="font-size: 0.8rem; font-family: 'Space Mono', monospace; text-align: center; color: var(--retro-yellow); background: var(--dark-accent); padding: 5px 8px; border: 2px solid var(--dark-accent); text-transform: uppercase;">Quartas</h3>
               <div id="bracket-r8-col" style="display: flex; flex-direction: column; gap: 80px;">
                 <!-- JS -->
               </div>
@@ -288,7 +288,7 @@
 
             <!-- Semifinais -->
             <div class="bracket-column">
-              <h3 style="font-size: 0.85rem; font-family: 'Space Mono', monospace; text-align: center; color: var(--retro-yellow);">Semifinal</h3>
+              <h3 style="font-size: 0.8rem; font-family: 'Space Mono', monospace; text-align: center; color: var(--retro-yellow); background: var(--dark-accent); padding: 5px 8px; border: 2px solid var(--dark-accent); text-transform: uppercase;">Semifinal</h3>
               <div id="bracket-r4-col" style="display: flex; flex-direction: column; gap: 180px;">
                 <!-- JS -->
               </div>
@@ -296,7 +296,7 @@
 
             <!-- Final -->
             <div class="bracket-column" style="justify-content: center;">
-              <h3 style="font-size: 0.85rem; font-family: 'Space Mono', monospace; text-align: center; color: var(--retro-yellow); margin-bottom: 10px;">Grande Final</h3>
+              <h3 style="font-size: 0.8rem; font-family: 'Space Mono', monospace; text-align: center; color: var(--retro-yellow); background: var(--dark-accent); padding: 5px 8px; border: 2px solid var(--dark-accent); text-transform: uppercase; margin-bottom: 10px;">Final</h3>
               <div id="bracket-final" style="display: flex; flex-direction: column; justify-content: center; height: 100%;">
                 <!-- JS -->
               </div>
@@ -306,7 +306,24 @@
         </div>
       </div>
 
-    </section>
+    <!-- CARD DE COMPARTILHAMENTO / VIRALIZAÇÃO -->
+    <div class="neo-card" style="margin-top: 35px; background: var(--retro-yellow); border-color: var(--dark-accent); text-align: center;">
+      <div style="font-weight: 900; font-size: 1.4rem; text-transform: uppercase; margin-bottom: 8px; display: flex; align-items: center; justify-content: center; gap: 8px; color: var(--dark-accent);">
+        <i data-lucide="megaphone" style="width: 24px; height: 24px;"></i> Desafie seus amigos no Comparacopa!
+      </div>
+      <p style="font-size: 0.95rem; font-weight: 700; margin-bottom: 15px; color: var(--dark-accent);">Compartilhe o simulador e mostre quem monta a melhor escalação para a Copa 2026!</p>
+      <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+        <button class="neo-btn btn-green" style="font-size: 0.85rem; padding: 8px 16px; display: flex; align-items: center; gap: 8px; box-shadow: 3px 3px 0 var(--dark-accent);" onclick="shareOnWhatsApp()">
+          <i data-lucide="message-circle" style="width: 18px; height: 18px;"></i> WhatsApp
+        </button>
+        <button class="neo-btn btn-blue" style="font-size: 0.85rem; padding: 8px 16px; display: flex; align-items: center; gap: 8px; box-shadow: 3px 3px 0 var(--dark-accent);" onclick="shareOnTwitter()">
+          <i data-lucide="share-2" style="width: 18px; height: 18px;"></i> Postar no X (Twitter)
+        </button>
+        <button class="neo-btn" style="font-size: 0.85rem; padding: 8px 16px; display: flex; align-items: center; gap: 8px; background: var(--off-white); box-shadow: 3px 3px 0 var(--dark-accent);" onclick="copyLink()">
+          <i data-lucide="copy" style="width: 18px; height: 18px;"></i> Copiar Link
+        </button>
+      </div>
+    </div>
 
   </div>
 
