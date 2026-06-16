@@ -185,8 +185,8 @@ function getTeamTier(teamId) {
 }
 
 function getPlayerNamesByNationality(teamId) {
-  // Elencos Reais Completos (Titulares + Reservas) para as seleções adicionais populares
-  const realSquads = {
+  const all48RealSquads = {
+    // Grupo A
     MEX: [
       "Raúl Rangel", "Jorge Sánchez", "César Montes", "Johan Vásquez", "Gerardo Arteaga",
       "Edson Álvarez", "Luis Chávez", "Erick Sánchez", "Uriel Antuna", "Santiago Giménez",
@@ -195,45 +195,38 @@ function getPlayerNamesByNationality(teamId) {
       "Jesús Gallardo", "Luis Romo", "Carlos Rodríguez", "Orbelín Pineda", "Roberto Alvarado",
       "César Huerta", "Alexis Vega", "Henry Martín", "Guillermo Martínez"
     ],
-    USA: [
-      "Matt Turner", "Joe Scally", "Chris Richards", "Tim Ream", "Antonee Robinson",
-      "Tyler Adams", "Weston McKennie", "Gio Reyna", "Timothy Weah", "Folarin Balogun",
-      "Christian Pulisic", // Reservas
-      "Ethan Horvath", "Sean Johnson", "Miles Robinson", "Cameron Carter-Vickers", "Mark McKenzie",
-      "Kristoffer Lund", "Yunus Musah", "Johnny Cardoso", "Malik Tillman", "Luca de la Torre",
-      "Brenden Aaronson", "Haji Wright", "Ricardo Pepi", "Josh Sargent"
+    RSA: [
+      "Ronwen Williams", "Khuliso Mudau", "Aubrey Modiba", "Olwethu Makhanya", "Bradley Cross",
+      "Teboho Mokoena", "Sphephelo Sithole", "Themba Zwane", "Percy Tau", "Evidence Makgopa",
+      "Lyle Foster", // Reservas
+      "Ricardo Goss", "Sipho Chaine", "Thabang Matuludi", "Nkosinathi Sibisi", "Ime Okon",
+      "Grant Kekana", "Mothobi Mvala", "Bathusi Aubaas", "Jayden Adams", "Patrick Maswanganyi",
+      "Relebohile Mofokeng", "Iqraam Rayners", "Elias Mokwana", "Oswin Appollis"
     ],
-    COL: [
-      "Camilo Vargas", "Daniel Muñoz", "Davinson Sánchez", "Carlos Cuesta", "Johan Mojica",
-      "Jefferson Lerma", "Richard Ríos", "James Rodríguez", "Jhon Arias", "Jhon Córdoba",
-      "Luis Díaz", // Reservas
-      "David Ospina", "Álvaro Montero", "Yerry Mina", "Santiago Arias", "Jhon Lucumí",
-      "Deiver Machado", "Kevin Castaño", "Mateus Uribe", "Juan F. Quintero", "Yáser Asprilla",
-      "Jorge Carrascal", "Luis Sinisterra", "Jhon Durán", "Rafael Santos Borré"
+    KOR: [
+      "Jo Hyeon-woo", "Kim Tae-hwan", "Kim Min-jae", "Kim Young-gwon", "Seol Young-woo",
+      "Park Yong-woo", "Hwang In-beom", "Lee Kang-in", "Son Heung-min", "Cho Gue-sung",
+      "Hwang Hee-chan", // Reservas
+      "Song Bum-keun", "Lee Chang-geun", "Jung Seung-hyun", "Kim Ju-sung", "Kim Jin-su",
+      "Lee Jae-sung", "Hong Hyun-seok", "Lee Soon-min", "Jeong Woo-yeong", "Moon Seon-min",
+      "Oh Hyeon-gyu", "Yang Hyun-jun", "Park Jin-seob", "Joo Min-kyu"
     ],
-    NED: [
-      "Bart Verbruggen", "Denzel Dumfries", "Stefan de Vrij", "Virgil van Dijk", "Nathan Aké",
-      "Jerdy Schouten", "Tijjani Reijnders", "Xavi Simons", "Jeremie Frimpong", "Memphis Depay",
-      "Cody Gakpo", // Reservas
-      "Justin Bijlow", "Mark Flekken", "Matthijs de Ligt", "Micky van de Ven", "Daley Blind",
-      "Lutsharel Geertruida", "Ryan Gravenberch", "Joey Veerman", "Georginio Wijnaldum", "Ian Maatsen",
-      "Donyell Malen", "Steven Bergwijn", "Brian Brobbey", "Joshua Zirkzee"
+    CZE: [
+      "Matej Kovar", "Vladimir Coufal", "Robin Hranac", "David Zima", "David Jurasek",
+      "Tomas Soucek", "Lukas Provod", "Michal Sadilek", "Pavel Sulc", "Patrik Schick",
+      "Adam Hlozek", // Reservas
+      "Jindrich Stanek", "Lukas Hornicek", "Tomas Holes", "Stepan Chaloupek", "Ladislav Krejci",
+      "Jaroslav Zeleny", "David Doudera", "Lukas Cerv", "Alexandr Sojka", "Denis Visinsky",
+      "Jan Kuchta", "Mojmir Chytil", "Tomas Chory", "Vaclav Cerny"
     ],
-    BEL: [
-      "Koen Casteels", "Timothy Castagne", "Wout Faes", "Jan Vertonghen", "Arthur Theate",
-      "Amadou Onana", "Orel Mangala", "Kevin De Bruyne", "Jeremy Doku", "Romelu Lukaku",
-      "Leandro Trossard", // Reservas
-      "Thomas Kaminski", "Matz Sels", "Zeno Debast", "Maxim De Cuyper", "Axel Witsel",
-      "Youri Tielemans", "Aster Vranckx", "Arthur Vermeeren", "Charles De Ketelaere", "Dodi Lukebakio",
-      "Johan Bakayoko", "Lois Openda", "Yannick Carrasco", "Michy Batshuayi"
-    ],
-    CRO: [
-      "Dominik Livakovic", "Josip Stanisic", "Josip Sutalo", "Marin Pongracic", "Josko Gvardiol",
-      "Luka Modric", "Marcelo Brozovic", "Mateo Kovacic", "Lovro Majer", "Bruno Petkovic",
-      "Andrej Kramaric", // Reservas
-      "Ivica Ivusic", "Nediljko Labrovic", "Martin Erlic", "Domagoj Vida", "Borna Sosa",
-      "Josip Juranovic", "Mario Pasalic", "Luka Sucic", "Martin Baturina", "Ivan Perisic",
-      "Luka Ivanusec", "Marco Pasalic", "Ante Budimir", "Nikola Vlasic"
+    // Grupo B
+    CAN: [
+      "Maxime Crépeau", "Alistair Johnston", "Moïse Bombito", "Derek Cornelius", "Luc de Fougerolles",
+      "Stephen Eustaquio", "Ismaël Koné", "Tajon Buchanan", "Tajon Buchanan", "Jonathan David",
+      "Cyle Larin", // Reservas
+      "Dayne St. Clair", "Owen Goodman", "Alfie Jones", "Joel Waterman", "Niko Sigur",
+      "Mathieu Choinière", "Liam Millar", "Jacob Shaffelburg", "Jayden Nelson", "Tani Oluwaseyi",
+      "Junior Hoilett", "Samuel Piette", "Kamal Miller", "Kamaldeen Sulemana"
     ],
     SUI: [
       "Yann Sommer", "Silvan Widmer", "Manuel Akanji", "Fabian Schär", "Ricardo Rodríguez",
@@ -243,6 +236,31 @@ function getPlayerNamesByNationality(teamId) {
       "Denis Zakaria", "Vincent Sierro", "Xherdan Shaqiri", "Fabian Rieder", "Ardon Jashari",
       "Zeki Amdouni", "Kwadwo Duah", "Noah Okafor", "Renato Steffen"
     ],
+    QAT: [
+      "Meshaal Barsham", "Pedro Miguel", "Lucas Mendes", "Boualem Khoukhi", "Homam Ahmed",
+      "Tarek Salman", "Assim Madibo", "Hassan Al-Haydos", "Akram Afif", "Almoez Ali",
+      "Yusuf Abdurisag", // Reservas
+      "Saad Al-Sheeb", "Salah Zakaria", "Bassam Al-Rawi", "Musab Kheder", "Hazem Shehata",
+      "Ali Asad", "Karim Boudiaf", "Mostafa Meshaal", "Ahmed Alaaeldin", "Mohammed Muntari",
+      "Hazem Ahmed", "Jassem Gaber", "Ahmed Fathy", "Khalid Muneer"
+    ],
+    BIH: [
+      "Nikola Vasilj", "Amar Dedić", "Nikola Katić", "Dennis Hadžikadunić", "Sead Kolašinac",
+      "Ivan Šunjić", "Amir Hadžiahmetović", "Ivan Bašić", "Esmir Bajraktarevic", "Edin Džeko",
+      "Ermedin Demirovic", // Reservas
+      "Martin Zlomislić", "Osman Hadžikić", "Nihad Mujakić", "Tarik Muharemović", "Stjepan Radeljić",
+      "Nidal Čelik", "Dzenis Burnić", "Haris Tabakovic", "Benjamin Tahirović", "Rade Krunić",
+      "Luka Menalo", "Kenan Kodro", "Smail Prevljak", "Jusuf Gazibegović"
+    ],
+    // Grupo C
+    BRA: [
+      "Alisson", "Danilo", "Marquinhos", "G. Magalhães", "Alex Sandro",
+      "Casemiro", "B. Guimarães", "L. Paquetá", "Raphinha", "Neymar",
+      "Vini Júnior", // Reservas
+      "Ederson", "Weverton", "Bremer", "Douglas Santos", "Léo Pereira",
+      "Roger Ibañez", "Danilo", "Éderson", "Fabinho", "Endrick",
+      "G. Martinelli", "Igor Thiago", "Luiz Henrique", "Matheus Cunha", "Rayan"
+    ],
     MAR: [
       "Yassine Bounou", "Achraf Hakimi", "Nayef Aguerd", "Romain Saïss", "Yahia Attiyat Allah",
       "Sofyan Amrabat", "Azzedine Ounahi", "Selim Amallah", "Hakim Ziyech", "Youssef En-Nesyri",
@@ -250,6 +268,97 @@ function getPlayerNamesByNationality(teamId) {
       "Munir Mohamedi", "El Mehdi Benabid", "Achraf Dari", "Abdel Abqar", "Chadi Riad",
       "Noussair Mazraoui", "Bilal El Khannouss", "Amir Richardson", "Oussama El Azzouzi", "Ismael Saibari",
       "Amine Harit", "Abde Ezzalzouli", "Tarik Tissoudali", "Ayoub El Kaabi"
+    ],
+    SCO: [
+      "Angus Gunn", "Anthony Ralston", "Jack Hendry", "Scott McKenna", "Andrew Robertson",
+      "Billy Gilmour", "Callum McGregor", "Scott McTominay", "John McGinn", "Ché Adams",
+      "Lawrence Shankland", // Reservas
+      "Zander Clark", "Liam Kelly", "Liam Cooper", "Grant Hanley", "Ryan Porteous",
+      "Greg Taylor", "Ryan Jack", "Kenny McLean", "Stuart Armstrong", "Ryan Christie",
+      "James Forrest", "Tommy Conway", "Lewis Morgan", "Ben Doak"
+    ],
+    HAI: [
+      "Johnny Placide", "Carlens Arcus", "Jérome Duverne", "Ricardo Adé", "Duke Lacroix",
+      "Carl-Fred Sainté", "Jean-Jacques Danley", "Woodensky Pierre", "Derrick Etienne", "Frantzdy Pierrot",
+      "Wilson Isidor", // Reservas
+      "Alexandre Pierre", "Josué Duverger", "Wilguens Paugain", "Martin Expérience", "Hannes Delcroix",
+      "Keety Thémoncy", "Bryan Alceus", "Leverton Pierre", "Mondy Prunier", "Duckens Nazon",
+      "Carnejy Antoine", "Deedson Louicius", "Louicius Don Deedson", "Jayro Jean"
+    ],
+    // Grupo D
+    USA: [
+      "Matt Turner", "Joe Scally", "Chris Richards", "Tim Ream", "Antonee Robinson",
+      "Tyler Adams", "Weston McKennie", "Gio Reyna", "Timothy Weah", "Folarin Balogun",
+      "Christian Pulisic", // Reservas
+      "Ethan Horvath", "Sean Johnson", "Miles Robinson", "Cameron Carter-Vickers", "Mark McKenzie",
+      "Kristoffer Lund", "Yunus Musah", "Johnny Cardoso", "Malik Tillman", "Luca de la Torre",
+      "Brenden Aaronson", "Haji Wright", "Ricardo Pepi", "Josh Sargent"
+    ],
+    AUS: [
+      "Maty Ryan", "Jason Geria", "Harry Souttar", "Cameron Burgess", "Aziz Behich",
+      "Jackson Irvine", "Aiden O'Neill", "Ajdin Hrustic", "Nestory Irankunda", "Mohamed Toure",
+      "Mathew Leckie", // Reservas
+      "Patrick Beach", "Paul Izzo", "Jordan Bos", "Alessandro Circati", "Milos Degenek",
+      "Lucas Herrington", "Jacob Italiano", "Kai Trewin", "Cameron Devlin", "Connor Metcalfe",
+      "Paul Okon-Engstler", "Awer Mabil", "Nishan Velupillay", "Cristian Volpato"
+    ],
+    TUR: [
+      "Mert Günok", "Zeki Çelik", "Merih Demiral", "Çağlar Söyüncü", "Ferdi Kadıoğlu",
+      "Hakan Çalhanoğlu", "Salih Özcan", "Orkun Kökçü", "Arda Güler", "Barış Alper Yılmaz",
+      "Kenan Yıldız", // Reservas
+      "Altay Bayındır", "Uğurcan Çakır", "Eren Elmalı", "Abdülkerim Bardakcı", "Ozan Kabak",
+      "Mert Müldür", "Samet Akaydın", "İsmail Yüksek", "Kaan Ayhan", "Kerem Aktürkoğlu",
+      "Deniz Gül", "İrfan Can Kahveci", "Yunus Akgün", "Can Uzun"
+    ],
+    PAR: [
+      "Gatito Fernández", "Juan José Cáceres", "Gustavo Gómez", "Fabián Balbuena", "Júnior Alonso",
+      "Andrés Cubas", "Mathías Villasanti", "Miguel Almirón", "Julio Enciso", "Ramón Sosa",
+      "Antonio Sanabria", // Reservas
+      "Orlando Gill", "Gastón Olveira", "Gustavo Velázquez", "Omar Alderete", "José Canale",
+      "Kaku Romero", "Damián Bobadilla", "Richard Sánchez", "Matías Rojas", "Ángel Romero",
+      "Isidro Pitta", "Adam Bareiro", "Derlis González", "Gabriel Ávalos"
+    ],
+    // Grupo E
+    GER: [
+      "Manuel Neuer", "Joshua Kimmich", "Antonio Rüdiger", "Jonathan Tah", "Maximilian Mittelstädt",
+      "Robert Andrich", "Toni Kroos", "İlkay Gündoğan", "Jamal Musiala", "Florian Wirtz",
+      "Kai Havertz", // Reservas
+      "Marc-André ter Stegen", "Oliver Baumann", "David Raum", "Waldemar Anton", "Benjamin Henrichs",
+      "Robin Koch", "Nico Schlotterbeck", "Pascal Groß", "Chris Führich", "Thomas Müller",
+      "Leroy Sané", "Niclas Füllkrug", "Maximilian Beier", "Deniz Undav"
+    ],
+    CIV: [
+      "Yahia Fofana", "Wilfried Singo", "Ousmane Diomande", "Evan Ndicka", "Ghislain Konan",
+      "Franck Kessié", "Ibrahim Sangaré", "Seko Fofana", "Amad Diallo", "Ange-Yoan Bonny",
+      "Nicolas Pépé", // Reservas
+      "Mohamed Koné", "Alban Lafont", "Emmanuel Agbadou", "Clément Akpa", "Guéla Doué",
+      "Odilon Kossounou", "Parfait Guiagon", "Christ Inao Oulaï", "Jean Michaël Seri", "Simon Adingra",
+      "Oumar Diakité", "Yan Diomande", "Evann Guessand", "Bazoumana Touré"
+    ],
+    ECU: [
+      "Hernán Galíndez", "Félix Torres", "Willian Pacho", "Piero Hincapié", "Pervis Estupiñán",
+      "Moisés Caicedo", "Alan Franco", "Kendry Páez", "John Yeboah", "Alan Minda",
+      "Enner Valencia", // Reservas
+      "Moisés Ramírez", "Gonzalo Valle", "Joel Ordóñez", "Jackson Porozo", "Layan Loor",
+      "Jhoanner Chávez", "Carlos Gruezo", "João Ortiz", "Angel Mena", "Jeremy Sarmiento",
+      "Kevin Rodríguez", "Jordy Caicedo", "Denil Castillo", "Nilson Angulo"
+    ],
+    CUW: [
+      "Eloy Room", "Juriën Gaari", "Cuco Martina", "Roshon van Eijma", "Sherel Floranus",
+      "Vurnon Anita", "Leandro Bacuna", "Juninho Bacuna", "Gervane Kastaneer", "Rangelo Janga",
+      "Kenji Gorré", // Reservas
+      "Zeus de la Paz", "Tyrick Bodak", "Suently Alberto", "Bradley Martis", "Justin Ogenia",
+      "Kevin Felida", "Godfried Roemeratoe", "Roly Bonevacia", "Brandley Kuwas", "Jearl Margaritha",
+      "Jeremy Antonisse", "Joshua Zimmerman", "Anthony van den Hurk", "Tyrone Coniah"
+    ],
+    // Grupo F
+    SWE: [
+      "Viktor Johansson", "Emil Krafth", "Victor Lindelöf", "Carl Starfelt", "Gabriel Gudmundsson",
+      "Eric Smith", "Mattias Svanberg", "Lucas Bergvall", "Anthony Elanga", "Alexander Isak",
+      "Viktor Gyökeres", // Reservas
+      "Kristoffer Nordfeldt", "Jacob Widell Zetterström", "Hjalmar Ekdal", "Isak Hien", "Daniel Svensson",
+      "Yasin Ayari", "Jesper Karlström", "Benjamin Nygren", "Ken Sema", "Elliot Stroud",
+      "Alexander Bernhardsson", "Dejan Kulusevski", "Emil Forsberg", "Gustaf Nilsson"
     ],
     JPN: [
       "Zion Suzuki", "Yukinari Sugawara", "Ko Itakura", "Shogo Taniguchi", "Hiroki Ito",
@@ -259,67 +368,228 @@ function getPlayerNamesByNationality(teamId) {
       "Reo Hatate", "Kaoru Mitoma", "Ritsu Doan", "Junya Ito", "Mao Hosoya",
       "Takuma Asano", "Daizen Maeda", "Kyogo Furuhashi", "Ao Tanaka"
     ],
-    KOR: [
-      "Jo Hyeon-woo", "Kim Tae-hwan", "Kim Min-jae", "Kim Young-gwon", "Seol Young-woo",
-      "Park Yong-woo", "Hwang In-beom", "Lee Kang-in", "Son Heung-min", "Cho Gue-sung",
-      "Hwang Hee-chan", // Reservas
-      "Song Bum-keun", "Lee Chang-geun", "Jung Seung-hyun", "Kim Ju-sung", "Kim Jin-su",
-      "Lee Jae-sung", "Hong Hyun-seok", "Lee Soon-min", "Jeong Woo-yeong", "Moon Seon-min",
-      "Oh Hyeon-gyu", "Yang Hyun-jun", "Park Jin-seob", "Joo Min-kyu"
+    NED: [
+      "Bart Verbruggen", "Denzel Dumfries", "Stefan de Vrij", "Virgil van Dijk", "Nathan Aké",
+      "Jerdy Schouten", "Tijjani Reijnders", "Xavi Simons", "Jeremie Frimpong", "Memphis Depay",
+      "Cody Gakpo", // Reservas
+      "Justin Bijlow", "Mark Flekken", "Matthijs de Ligt", "Micky van de Ven", "Daley Blind",
+      "Lutsharel Geertruida", "Ryan Gravenberch", "Joey Veerman", "Georginio Wijnaldum", "Ian Maatsen",
+      "Donyell Malen", "Steven Bergwijn", "Brian Brobbey", "Joshua Zirkzee"
+    ],
+    TUN: [
+      "Aymen Dahmen", "Wajdi Kechrida", "Dylan Bronn", "Montassár Talbi", "Ali Maâloul",
+      "Ellyes Skhiri", "Aïssa Laïdouni", "Anis Ben Slimane", "Naïm Sliti", "Youssef Msakni",
+      "Seifeddine Jaziri", // Reservas
+      "Mouez Hassen", "Bechir Ben Saïd", "Yassine Meriah", "Yan Valery", "Alaa Ghram",
+      "Ali Abdi", "Mohamed Ali Ben Romdhane", "Hamza Rafia", "Sayfallah Ltaief", "Elias Achouri",
+      "Haythem Jouini", "Taha Yassine Khenissi", "Bassem Srarfi", "Mortadha Ben Ouanes"
+    ],
+    // Grupo G
+    NZL: [
+      "Max Crocombe", "Alistair Johnston", "Michael Boxall", "Tyler Bindon", "Liberato Cacace",
+      "Joe Bell", "Matthew Garbett", "Sarpreet Singh", "Kosta Barbarouses", "Chris Wood",
+      "Ben Waine", // Reservas
+      "Alex Paulsen", "Michael Woud", "Tommy Smith", "Nando Pijnaker", "Dalton Wilkins",
+      "Cam Howieson", "Clayton Lewis", "Elijah Just", "Callum McCowatt", "Marco Rojas",
+      "Alex Greive", "Max Mata", "Logan Rogerson", "Storm Roux"
+    ],
+    IRN: [
+      "Alireza Beiranvand", "Ramin Rezaeian", "Hossein Kanaanizadegan", "Shojae Khalilzadeh", "Milad Mohammadi",
+      "Saeid Ezatolahi", "Saman Ghoddos", "Ali Gholizadeh", "Mehdi Taremi", "Sardar Azmoun",
+      "Alireza Jahanbakhsh", // Reservas
+      "Payam Niazmand", "Hossein Hosseini", "Ehsan Hajsafi", "Sadegh Moharrami", "Majid Hosseini",
+      "Aria Yousefi", "Roozbeh Cheshmi", "Mehdi Torabi", "Omid Noorafkan", "Mohammad Mohebi",
+      "Shahriyar Moghanlou", "Mehdi Ghaedi", "Karim Ansarifard", "Javad Nekounam"
+    ],
+    BEL: [
+      "Koen Casteels", "Timothy Castagne", "Wout Faes", "Jan Vertonghen", "Arthur Theate",
+      "Amadou Onana", "Orel Mangala", "Kevin De Bruyne", "Jeremy Doku", "Romelu Lukaku",
+      "Leandro Trossard", // Reservas
+      "Thomas Kaminski", "Matz Sels", "Zeno Debast", "Maxim De Cuyper", "Axel Witsel",
+      "Youri Tielemans", "Aster Vranckx", "Arthur Vermeeren", "Charles De Ketelaere", "Dodi Lukebakio",
+      "Johan Bakayoko", "Lois Openda", "Yannick Carrasco", "Michy Batshuayi"
+    ],
+    EGY: [
+      "Mohamed El Shenawy", "Mohamed Hany", "Mohamed Abdelmonem", "Ahmed Hegazi", "Mohamed Hamdy",
+      "Hamdi Fathi", "Marwan Attia", "Emam Ashour", "Mohamed Salah", "Mostafa Mohamed",
+      "Trézéguet", // Reservas
+      "Mohamed Sobhy", "Mostafa Shobeir", "Ramy Rabia", "Yasser Ibrahim", "Omar Kamal",
+      "Mohamed Elneny", "Akram Tawfik", "Zizo", "Mustafa Fathi", "Kahraba",
+      "Mohamed Sherif", "Ahmed Hassan Koka", "Omar Marmoush", "Ibrahim Adel"
+    ],
+    // Grupo H
+    URU: [
+      "Sergio Rochet", "Nahitan Nández", "Ronald Araújo", "José María Giménez", "Mathías Olivera",
+      "Manuel Ugarte", "Federico Valverde", "Nicolás de la Cruz", "Facundo Pellistri", "Darwin Núñez",
+      "Maximilian Araújo", // Reservas
+      "F. Muslera", "Santiago Mele", "Santiago Bueno", "Sebastián Cáceres", "Joaquín Piquerez",
+      "Matías Viña", "Emiliano Martínez", "Agustín Canobbio", "J. M. Sanabria", "Rodrigo Zalazar",
+      "Brian Rodríguez", "Rodrigo Aguirre", "Federico Viñas", "Luis Suárez", "Giorgian de Arrascaeta"
+    ],
+    KSA: [
+      "Mohamed Al-Owais", "Saud Abdulhamid", "Hassan Altambakti", "Abdulelah Alamri", "Moteb Alharbi",
+      "Abdullah Alkhaibari", "Mohamed Kanno", "Nasser Aldawsari", "Salem Aldawsari", "Feras Albrikan",
+      "Saleh Alshehri", // Reservas
+      "Nawaf Al-Aqidi", "Ahmed Alkassar", "Ali Lajami", "Ali Majrashi", "Hassan Kadish",
+      "Jehad Thikri", "Mohammed Abualshamat", "Nawaf Buwashl", "Aiman Yahya", "Khalid Alghannam",
+      "Musab Aljuwayr", "Sultan Mandash", "Ziyad Aljohani", "Alaa Al-Hejji", "Abdullah Alhamddan"
+    ],
+    ESP: [
+      "Unai Simón", "Pedro Porro", "Pau Cubarsí", "A. Laporte", "M. Cucurella",
+      "Rodri", "Pedri", "Fabián Ruiz", "Lamine Yamal", "M. Oyarzabal",
+      "Nico Williams", // Reservas
+      "David Raya", "Joan García", "Dani Carvajal", "Robin Le Normand", "Dani Vivian",
+      "Álex Grimaldo", "Martín Zubimendi", "Mikel Merino", "Dani Olmo", "Alex Baena",
+      "Ferran Torres", "Ayoze Pérez", "Álvaro Morata", "Joselu"
+    ],
+    CPV: [
+      "Vozinha", "Steven Moreira", "Roberto Lopes", "Logan Costa", "João Paulo",
+      "Kevin Pina", "Jamiro Monteiro", "Kenny Rocha", "Ryan Mendes", "Dailon Livramento",
+      "Jovane Cabral", // Reservas
+      "Márcio Rosa", "Dylan Silva", "Stopira", "Dylan Tavares", "Diney Borges",
+      "Willy Semedo", "Deroy Duarte", "Cuca", "Laros Duarte", "Garry Rodrigues",
+      "Bebé", "Bryan Teixeira", "Gilson Tavares", "Hélio Varela"
+    ],
+    // Grupo I
+    FRA: [
+      "M. Maignan", "J. Koundé", "W. Saliba", "D. Upamecano", "T. Hernández",
+      "A. Tchouaméni", "W. Zaïre-Emery", "A. Rabiot", "O. Dembélé", "K. Mbappé",
+      "M. Thuram", // Reservas
+      "Robin Risser", "Brice Samba", "Lucas Digne", "Malo Gusto", "Lucas Hernandez",
+      "Ibrahima Konaté", "Maxence Lacroix", "N'Golo Kanté", "Manu Koné", "M. Akliouche",
+      "Rayan Cherki", "Désiré Doué", "J. Mateta", "Michael Olise", "Marcus Thuram"
+    ],
+    SEN: [
+      "Edouard Mendy", "Krepin Diatta", "K. Koulibaly", "Moussa Niakhate", "Ismail Jakobs",
+      "Lamine Camara", "P. Matar Sarr", "Pape Gueye", "Ismaila Sarr", "Nicolas Jackson",
+      "Sadio Mane", // Reservas
+      "Yehvann Diouf", "Mory Diaw", "Mamadou Sarr", "Abdoulaye Seck", "E. Malick Diouf",
+      "Idrissa Gueye", "Pathe Ciss", "Habib Diarra", "Bamba Dieng", "Iliman Ndiaye",
+      "Ibrahim Mbaye", "Mory Diaw", "Antoine Mendy", "Bara Sapoko Ndiaye", "Cherif Ndiaye"
+    ],
+    IRQ: [
+      "Jalal Hassan", "Hussein Ali", "Saad Natiq", "Rebin Sulaka", "Merchas Doski",
+      "Amir Al-Ammari", "Osama Rashid", "Ibrahim Bayesh", "Ali Jasim", "Youssef Amyn",
+      "Aymen Hussein", // Reservas
+      "Fahad Talib", "Ahmed Basil", "Ali Adnan", "Frans Putros", "Zaid Tahseen",
+      "Mustafa Saadoun", "Amjad Attwan", "Bashar Resan", "Zidan Iqbal", "Youssef Amyn",
+      "Mohanad Ali", "Ali Al-Hamadi", "Montader Madjed", "Danilo Al-Saed"
+    ],
+    NOR: [
+      "Ørjan Nyland", "Julian Ryerson", "Kristoffer Ajer", "Leo Østigård", "David Møller Wolfe",
+      "Sander Berge", "Fredrik Aursnes", "Martin Ødegaard", "Oscar Bobb", "Erling Haaland",
+      "Alexander Sørloth", // Reservas
+      "Sander Tangvik", "Egil Selvik", "Fredrik André Bjørkan", "Marcus Holmgren Pedersen", "Torbjørn Heggem",
+      "Sondre Langås", "Henrik Falchener", "Morten Thorsby", "Patrick Berg", "Kristian Thorstvedt",
+      "Thelo Aasgaard", "Antonio Nusa", "Andreas Schjelderup", "Jens Petter Hauge", "Jørgen Strand Larsen"
+    ],
+    // Grupo J
+    ARG: [
+      "E. Martínez", "N. Molina", "C. Romero", "N. Otamendi", "N. Tagliafico",
+      "R. De Paul", "Enzo F.", "Mac Allister", "L. Messi", "J. Álvarez",
+      "L. Martínez", // Reservas
+      "G. Rulli", "Juan Musso", "L. Martínez", "G. Montiel", "L. Balerdi",
+      "Facundo Medina", "L. Paredes", "G. Lo Celso", "E. Palacios", "Valentín Barco",
+      "Flaco López", "Nico González", "Thiago Almada", "G. Simeone", "Nico Paz"
+    ],
+    ALG: [
+      "Anthony Mandrea", "Youcef Atal", "Aïssa Mandi", "Mohamed Amine Tougai", "Rayan Aït-Nouri",
+      "Nabil Bentaleb", "Ismaël Bennacer", "Faris Chaïbi", "Riyad Mahrez", "Baghdad Bounedjah",
+      "Amine Gouiri", // Reservas
+      "Mustapha Zeghba", "Oussama Benbot", "Jaouen Hadjam", "Kevin Guitoun", "Zineddine Belaïd",
+      "Houssem Aouar", "Ramiz Zerrouki", "Hicham Boudaoui", "Said Benrahma", "Yassine Benzia",
+      "Mohamed Amoura", "Islam Slimani", "Badredine Bouanani", "Anis Hadj Moussa"
+    ],
+    AUT: [
+      "Patrick Pentz", "Stefan Posch", "Kevin Danso", "Philipp Lienhart", "Phillipp Mwene",
+      "Konrad Laimer", "Nicolas Seiwald", "Marcel Sabitzer", "Christoph Baumgartner", "Marko Arnautović",
+      "Michael Gregoritsch", // Reservas
+      "Alexander Schlager", "Florian Wiegele", "David Affengruber", "David Alaba", "Marco Friedl",
+      "Alexander Prass", "Michael Svoboda", "Carney Chukwuemeka", "Florian Grillitsch", "Xaver Schlager",
+      "Romano Schmid", "Alessandro Schöpf", "Paul Wanner", "Patrick Wimmer", "Sasa Kalajdzic"
+    ],
+    JOR: [
+      "Yazeed Abulaila", "Ihsan Haddad", "Yazan Al-Arab", "Saad Al-Rousan", "Salem Al-Ajalin",
+      "Nizar Al-Rashdan", "Noor Al-Rawabdeh", "Mousa Al-Tamari", "Ali Olwan", "Yazan Al-Naimat",
+      "Mahmoud Al-Mardi", // Reservas
+      "Abdallah Al-Fakhouri", "Ahmad Al-Juaidi", "Bara' Marei", "Feras Shelbaieh", "Hadi Al-Hourani",
+      "Rajaei Ayed", "Ibrahim Sadeh", "Saleh Rateb", "Anas Al-Awadat", "Mohammad Abu Zrayq",
+      "Reziq Bani Hani", "Hamza Al-Dardour", "Yazan Dahal", "Ahmad Ersan"
+    ],
+    // Grupo K
+    POR: [
+      "Diogo Costa", "João Cancelo", "Rúben Dias", "Pepe", "Nuno Mendes",
+      "João Palhinha", "Vitinha", "Bruno Fernandes", "Bernardo Silva", "Cristiano Ronaldo",
+      "Rafael Leão", // Reservas
+      "José Sá", "Rui Patrício", "Diogo Dalot", "António Silva", "Gonçalo Inácio",
+      "Nélson Semedo", "Rúben Neves", "João Neves", "Matheus Nunes", "Otávio",
+      "Diogo Jota", "Gonçalo Ramos", "João Félix", "Francisco Conceição", "Pedro Neto"
+    ],
+    COD: [
+      "Dimitry Bertaud", "Gédéon Kalulu", "Chancel Mbemba", "Dylan Batubinsika", "Arthur Masuaku",
+      "Samuel Moutoussamy", "Charles Pickel", "Meschak Elia", "Gaël Kakuta", "Yoane Wissa",
+      "Simon Banza", // Reservas
+      "Lionel Mpasi", "Baggio Siadi", "Henock Inonga", "Rocky Bushiri", "Brian Bayeye",
+      "Joris Kayembe", "Aaron Tshibola", "Edo Kayembe", "Omenuke Mfulu", "Theo Bongonda",
+      "Grady Diangana", "Fiston Mayele", "Cedric Bakambu", "Silas Katompa Mvumpa"
+    ],
+    UZB: [
+      "Utkir Yusupov", "Zafarmurad Abdurakhmatov", "Rustam Ashurmatov", "Abdukodir Khusanov", "Sherzod Nasrullaev",
+      "Otabek Shukurov", "Odiljon Hamrobekov", "Abbosbek Fayzullaev", "Jaloliddin Masharipov", "Eldor Shomurodov",
+      "Igor Sergeev", // Reservas
+      "Abduvohid Nematov", "Botirali Ergashev", "Husniddin Aliqulov", "Farrukh Sayfiev", "Abdulla Abdullaev",
+      "Azizbek Turgunboev", "Jamshid Iskanderov", "Diyor Kholmatov", "Khozhimat Erkinov", "Oston Urunov",
+      "Jasur Yakhshiboev", "Bobur Abdikholikov", "Azizbek Amonov", "Muhammadkodir Khamraliev"
+    ],
+    COL: [
+      "Camilo Vargas", "Daniel Muñoz", "Davinson Sánchez", "Carlos Cuesta", "Johan Mojica",
+      "Jefferson Lerma", "Richard Ríos", "James Rodríguez", "Jhon Arias", "Jhon Córdoba",
+      "Luis Díaz", // Reservas
+      "David Ospina", "Álvaro Montero", "Yerry Mina", "Santiago Arias", "Jhon Lucumí",
+      "Deiver Machado", "Kevin Castaño", "Mateus Uribe", "Juan F. Quintero", "Yáser Asprilla",
+      "Jorge Carrascal", "Luis Sinisterra", "Jhon Durán", "Rafael Santos Borré"
+    ],
+    // Grupo L
+    ENG: [
+      "Jordan Pickford", "Kyle Walker", "John Stones", "Marc Guéhi", "Kieran Trippier",
+      "Trent Alexander-Arnold", "Declan Rice", "Jude Bellingham", "Bukayo Saka", "Harry Kane",
+      "Phil Foden", // Reservas
+      "Aaron Ramsdale", "Dean Henderson", "Ezri Konsa", "Lewis Dunk", "Joe Gomez",
+      "Luke Shaw", "Adam Wharton", "Kobbie Mainoo", "Conor Gallagher", "Cole Palmer",
+      "Jarrod Bowen", "Eberechi Eze", "Anthony Gordon", "Ollie Watkins", "Ivan Toney"
+    ],
+    CRO: [
+      "Dominik Livakovic", "Josip Stanisic", "Josip Sutalo", "Marin Pongracic", "Josko Gvardiol",
+      "Luka Modric", "Marcelo Brozovic", "Mateo Kovacic", "Lovro Majer", "Bruno Petkovic",
+      "Andrej Kramaric", // Reservas
+      "Ivica Ivusic", "Nediljko Labrovic", "Martin Erlic", "Domagoj Vida", "Borna Sosa",
+      "Josip Juranovic", "Mario Pasalic", "Luka Sucic", "Martin Baturina", "Ivan Perisic",
+      "Luka Ivanusec", "Marco Pasalic", "Ante Budimir", "Nikola Vlasic"
+    ],
+    GHA: [
+      "Lawrence Ati-Zigi", "Alidu Seidu", "Alexander Djiku", "Mohammed Salisu", "Gideon Mensah",
+      "Salis Abdul Samed", "Elisha Owusu", "Mohammed Kudus", "Ernest Nuamah", "Jordan Ayew",
+      "Antoine Semenyo", // Reservas
+      "Joseph Anang", "Benjamin Asare", "Tariq Lamptey", "Abdul Mumin", "Denis Odoi",
+      "Thomas Partey", "Majid Ashimeru", "Baba Iddrisu", "Iñaki Williams", "Kamaldeen Sulemana",
+      "Abdul Fatawu", "Brandon Thomas-Asante", "Osman Bukari", "Ibrahim Osman"
+    ],
+    PAN: [
+      "Orlando Mosquera", "Michael Amir Murillo", "José Córdoba", "Andrés Andrade", "Eric Davis",
+      "Adalberto Carrasquilla", "Aníbal Godoy", "Edgar Yoel Bárcenas", "José Luis Rodríguez", "Ismael Díaz",
+      "José Fajardo", // Reservas
+      "César Samudio", "Luis Mejía", "Fidel Escobar", "César Blackman", "Roderick Miller",
+      "Jovani Welch", "Cristian Martínez", "Abdiel Ayarza", "Kahiser Lenis", "Freddy Góndola",
+      "Eduardo Guerrero", "Cecilio Waterman", "César Yanis", "Ivan Anderson"
     ]
   };
 
-  // Se a seleção solicitada estiver mapeada com elenco real, retornar
-  if (realSquads[teamId]) {
-    return realSquads[teamId];
+  if (all48RealSquads[teamId]) {
+    return all48RealSquads[teamId];
   }
 
-  // Fallbacks regionais e base de dados de sobrenomes reais para outras seleções menos populares
-  const spanishSurnames = ["Rodriguez", "Lopez", "Sanchez", "Gomez", "Perez", "Hernandez", "Diaz", "Torres", "Ramirez", "Flores", "Morales", "Ortiz", "Castro", "Rios", "Alvarez", "Castillo", "Ruiz", "Vargas", "Mendez", "Guzman"];
-  const englishSurnames = ["Smith", "Johnson", "Williams", "Brown", "Jones", "Miller", "Davis", "Wilson", "Taylor", "Thomas", "Anderson", "White", "Harris", "Martin", "Thompson", "Garcia", "Martinez", "Robinson", "Clark", "Rodriguez"];
-  const portSurnames = ["Silva", "Santos", "Oliveira", "Souza", "Pereira", "Costa", "Carvalho", "Ferreira", "Ribeiro", "Gomes", "Martins", "Rocha", "Almeida", "Lopes", "Soares", "Cardoso", "Teixeira", "Mendes", "Jesus", "Pinto"];
-  const japaneseSurnames = ["Sato", "Tanaka", "Watanabe", "Ito", "Nakamura", "Kobayashi", "Takahashi", "Saito", "Suzuki", "Yamamoto", "Aoki", "Ishii", "Kondo", "Ono", "Ueda", "Mori", "Hasegawa", "Shida", "Inoue", "Kato"];
-  const koreanSurnames = ["Kim", "Lee", "Park", "Choi", "Jung", "Kang", "Cho", "Yoon", "Jang", "Lim", "Han", "Shin", "Song", "Oh", "Suh", "Hwang", "Kwon", "Ahn", "Hong", "Yoo"];
-  const senegaleseSurnames = ["Ndiaye", "Diop", "Ba", "Diallo", "Sow", "Diouf", "Gueye", "Fall", "Faye", "Sarr", "Seck", "Niang", "Diagne", "Mbaye", "Thiam", "Sene", "Dieng", "Cisse", "Sy", "Sall"];
-  const frenchSurnames = ["Martin", "Bernard", "Dubois", "Thomas", "Robert", "Richard", "Petit", "Durand", "Moreau", "Laurent", "Lefebvre", "Mercier", "Blanc", "Simon", "Michel", "Lambert"];
-  
-  const spanishTeams = ["PAR", "ECU", "HAI", "CUW"];
-  const englishTeams = ["CAN", "NZL", "SCO", "RSA", "GHA", "PAN"];
-  const portTeams = ["CPV", "COD"];
-  const asianTeams = ["UZB", "IRN", "IRQ", "JOR", "QAT", "KSA"];
-  const frenchTeams = ["TUN", "CIV", "ALG"];
-
-  let pool = spanishSurnames;
-  let firstNames = ["J.", "M.", "R.", "C.", "D.", "F.", "L.", "P.", "S.", "A."];
-  
-  if (spanishTeams.includes(teamId)) {
-    pool = spanishSurnames;
-  } else if (englishTeams.includes(teamId)) {
-    pool = englishSurnames;
-    firstNames = ["John", "Mark", "Robert", "Chris", "David", "Fred", "Luke", "Paul", "Sam", "Alex"];
-  } else if (portTeams.includes(teamId)) {
-    pool = portSurnames;
-    firstNames = ["Joao", "Manuel", "Rui", "Carlos", "Duarte", "Filipe", "Luis", "Pedro", "Simão", "Antonio"];
-  } else if (frenchTeams.includes(teamId)) {
-    pool = frenchSurnames;
-    firstNames = ["Jean", "Michel", "Pierre", "Charles", "David", "François", "Louis", "Philippe", "Sébastien", "Antoine"];
-  } else if (asianTeams.includes(teamId)) {
-    if (teamId === "KSA" || teamId === "QAT" || teamId === "IRQ") {
-      pool = ["Al-Dawsari", "Al-Muwallad", "Al-Shehri", "Al-Shahrani", "Al-Faraj", "Al-Hassan", "Al-Ghamdi", "Al-Najei", "Al-Buraikan", "Al-Owais"];
-      firstNames = ["Salem", "Fahad", "Saleh", "Yasser", "Salman", "Ali", "Faisal", "Sami", "Firas", "Mohammed"];
-    } else {
-      pool = ["Ahmad", "Ali", "Hassan", "Hussein", "Mustafa", "Abbas", "Karim", "Jafar", "Mahdi", "Reza"];
-      firstNames = ["M.", "A.", "H.", "S.", "K.", "F.", "R.", "N.", "Y.", "Z."];
-    }
-  } else {
-    // Generics fallback
-    return Array.from({length: 25}, (_, i) => `${teamId} Craque ${i+1}`);
-  }
-
-  return Array.from({length: 25}, (_, i) => {
-    const fn = firstNames[i % firstNames.length] + " ";
-    return fn + pool[i % pool.length];
-  });
+  // Fallback seguro caso algum ID inexistente seja solicitado por engano (não deve ocorrer)
+  return Array.from({length: 25}, (_, i) => `${teamId} Jogador Real ${i+1}`);
 }
 
 // Obter nome e bandeira de um país pelo ID
