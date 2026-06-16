@@ -185,37 +185,139 @@ function getTeamTier(teamId) {
 }
 
 function getPlayerNamesByNationality(teamId) {
+  // Elencos Reais Completos (Titulares + Reservas) para as seleções adicionais populares
+  const realSquads = {
+    MEX: [
+      "Raúl Rangel", "Jorge Sánchez", "César Montes", "Johan Vásquez", "Gerardo Arteaga",
+      "Edson Álvarez", "Luis Chávez", "Erick Sánchez", "Uriel Antuna", "Santiago Giménez",
+      "Julián Quiñones", // Reservas
+      "Luis Malagón", "Julio González", "Jesús Orozco", "Brian García", "Julián Araujo",
+      "Jesús Gallardo", "Luis Romo", "Carlos Rodríguez", "Orbelín Pineda", "Roberto Alvarado",
+      "César Huerta", "Alexis Vega", "Henry Martín", "Guillermo Martínez"
+    ],
+    USA: [
+      "Matt Turner", "Joe Scally", "Chris Richards", "Tim Ream", "Antonee Robinson",
+      "Tyler Adams", "Weston McKennie", "Gio Reyna", "Timothy Weah", "Folarin Balogun",
+      "Christian Pulisic", // Reservas
+      "Ethan Horvath", "Sean Johnson", "Miles Robinson", "Cameron Carter-Vickers", "Mark McKenzie",
+      "Kristoffer Lund", "Yunus Musah", "Johnny Cardoso", "Malik Tillman", "Luca de la Torre",
+      "Brenden Aaronson", "Haji Wright", "Ricardo Pepi", "Josh Sargent"
+    ],
+    COL: [
+      "Camilo Vargas", "Daniel Muñoz", "Davinson Sánchez", "Carlos Cuesta", "Johan Mojica",
+      "Jefferson Lerma", "Richard Ríos", "James Rodríguez", "Jhon Arias", "Jhon Córdoba",
+      "Luis Díaz", // Reservas
+      "David Ospina", "Álvaro Montero", "Yerry Mina", "Santiago Arias", "Jhon Lucumí",
+      "Deiver Machado", "Kevin Castaño", "Mateus Uribe", "Juan F. Quintero", "Yáser Asprilla",
+      "Jorge Carrascal", "Luis Sinisterra", "Jhon Durán", "Rafael Santos Borré"
+    ],
+    NED: [
+      "Bart Verbruggen", "Denzel Dumfries", "Stefan de Vrij", "Virgil van Dijk", "Nathan Aké",
+      "Jerdy Schouten", "Tijjani Reijnders", "Xavi Simons", "Jeremie Frimpong", "Memphis Depay",
+      "Cody Gakpo", // Reservas
+      "Justin Bijlow", "Mark Flekken", "Matthijs de Ligt", "Micky van de Ven", "Daley Blind",
+      "Lutsharel Geertruida", "Ryan Gravenberch", "Joey Veerman", "Georginio Wijnaldum", "Ian Maatsen",
+      "Donyell Malen", "Steven Bergwijn", "Brian Brobbey", "Joshua Zirkzee"
+    ],
+    BEL: [
+      "Koen Casteels", "Timothy Castagne", "Wout Faes", "Jan Vertonghen", "Arthur Theate",
+      "Amadou Onana", "Orel Mangala", "Kevin De Bruyne", "Jeremy Doku", "Romelu Lukaku",
+      "Leandro Trossard", // Reservas
+      "Thomas Kaminski", "Matz Sels", "Zeno Debast", "Maxim De Cuyper", "Axel Witsel",
+      "Youri Tielemans", "Aster Vranckx", "Arthur Vermeeren", "Charles De Ketelaere", "Dodi Lukebakio",
+      "Johan Bakayoko", "Lois Openda", "Yannick Carrasco", "Michy Batshuayi"
+    ],
+    CRO: [
+      "Dominik Livakovic", "Josip Stanisic", "Josip Sutalo", "Marin Pongracic", "Josko Gvardiol",
+      "Luka Modric", "Marcelo Brozovic", "Mateo Kovacic", "Lovro Majer", "Bruno Petkovic",
+      "Andrej Kramaric", // Reservas
+      "Ivica Ivusic", "Nediljko Labrovic", "Martin Erlic", "Domagoj Vida", "Borna Sosa",
+      "Josip Juranovic", "Mario Pasalic", "Luka Sucic", "Martin Baturina", "Ivan Perisic",
+      "Luka Ivanusec", "Marco Pasalic", "Ante Budimir", "Nikola Vlasic"
+    ],
+    SUI: [
+      "Yann Sommer", "Silvan Widmer", "Manuel Akanji", "Fabian Schär", "Ricardo Rodríguez",
+      "Remo Freuler", "Granit Xhaka", "Michel Aebischer", "Dan Ndoye", "Breel Embolo",
+      "Ruben Vargas", // Reservas
+      "Yvon Mvogo", "Gregor Kobel", "Nico Elvedi", "Cédric Zesiger", "Leonidas Stergiou",
+      "Denis Zakaria", "Vincent Sierro", "Xherdan Shaqiri", "Fabian Rieder", "Ardon Jashari",
+      "Zeki Amdouni", "Kwadwo Duah", "Noah Okafor", "Renato Steffen"
+    ],
+    MAR: [
+      "Yassine Bounou", "Achraf Hakimi", "Nayef Aguerd", "Romain Saïss", "Yahia Attiyat Allah",
+      "Sofyan Amrabat", "Azzedine Ounahi", "Selim Amallah", "Hakim Ziyech", "Youssef En-Nesyri",
+      "Sofiane Boufal", // Reservas
+      "Munir Mohamedi", "El Mehdi Benabid", "Achraf Dari", "Abdel Abqar", "Chadi Riad",
+      "Noussair Mazraoui", "Bilal El Khannouss", "Amir Richardson", "Oussama El Azzouzi", "Ismael Saibari",
+      "Amine Harit", "Abde Ezzalzouli", "Tarik Tissoudali", "Ayoub El Kaabi"
+    ],
+    JPN: [
+      "Zion Suzuki", "Yukinari Sugawara", "Ko Itakura", "Shogo Taniguchi", "Hiroki Ito",
+      "Wataru Endo", "Hidemasa Morita", "Takefusa Kubo", "Takumi Minamino", "Ayase Ueda",
+      "Keito Nakamura", // Reservas
+      "Keisuke Osako", "Taishi Brandon Nozawa", "Koki Machida", "Seiya Maikuma", "Tsuyoshi Watanabe",
+      "Reo Hatate", "Kaoru Mitoma", "Ritsu Doan", "Junya Ito", "Mao Hosoya",
+      "Takuma Asano", "Daizen Maeda", "Kyogo Furuhashi", "Ao Tanaka"
+    ],
+    KOR: [
+      "Jo Hyeon-woo", "Kim Tae-hwan", "Kim Min-jae", "Kim Young-gwon", "Seol Young-woo",
+      "Park Yong-woo", "Hwang In-beom", "Lee Kang-in", "Son Heung-min", "Cho Gue-sung",
+      "Hwang Hee-chan", // Reservas
+      "Song Bum-keun", "Lee Chang-geun", "Jung Seung-hyun", "Kim Ju-sung", "Kim Jin-su",
+      "Lee Jae-sung", "Hong Hyun-seok", "Lee Soon-min", "Jeong Woo-yeong", "Moon Seon-min",
+      "Oh Hyeon-gyu", "Yang Hyun-jun", "Park Jin-seob", "Joo Min-kyu"
+    ]
+  };
+
+  // Se a seleção solicitada estiver mapeada com elenco real, retornar
+  if (realSquads[teamId]) {
+    return realSquads[teamId];
+  }
+
+  // Fallbacks regionais e base de dados de sobrenomes reais para outras seleções menos populares
   const spanishSurnames = ["Rodriguez", "Lopez", "Sanchez", "Gomez", "Perez", "Hernandez", "Diaz", "Torres", "Ramirez", "Flores", "Morales", "Ortiz", "Castro", "Rios", "Alvarez", "Castillo", "Ruiz", "Vargas", "Mendez", "Guzman"];
   const englishSurnames = ["Smith", "Johnson", "Williams", "Brown", "Jones", "Miller", "Davis", "Wilson", "Taylor", "Thomas", "Anderson", "White", "Harris", "Martin", "Thompson", "Garcia", "Martinez", "Robinson", "Clark", "Rodriguez"];
   const portSurnames = ["Silva", "Santos", "Oliveira", "Souza", "Pereira", "Costa", "Carvalho", "Ferreira", "Ribeiro", "Gomes", "Martins", "Rocha", "Almeida", "Lopes", "Soares", "Cardoso", "Teixeira", "Mendes", "Jesus", "Pinto"];
   const japaneseSurnames = ["Sato", "Tanaka", "Watanabe", "Ito", "Nakamura", "Kobayashi", "Takahashi", "Saito", "Suzuki", "Yamamoto", "Aoki", "Ishii", "Kondo", "Ono", "Ueda", "Mori", "Hasegawa", "Shida", "Inoue", "Kato"];
   const koreanSurnames = ["Kim", "Lee", "Park", "Choi", "Jung", "Kang", "Cho", "Yoon", "Jang", "Lim", "Han", "Shin", "Song", "Oh", "Suh", "Hwang", "Kwon", "Ahn", "Hong", "Yoo"];
   const senegaleseSurnames = ["Ndiaye", "Diop", "Ba", "Diallo", "Sow", "Diouf", "Gueye", "Fall", "Faye", "Sarr", "Seck", "Niang", "Diagne", "Mbaye", "Thiam", "Sene", "Dieng", "Cisse", "Sy", "Sall"];
+  const frenchSurnames = ["Martin", "Bernard", "Dubois", "Thomas", "Robert", "Richard", "Petit", "Durand", "Moreau", "Laurent", "Lefebvre", "Mercier", "Blanc", "Simon", "Michel", "Lambert"];
   
-  const spanishTeams = ["MEX", "COL", "PAR", "ECU", "ESP", "ARG", "URU", "HAI", "CUW"];
-  const englishTeams = ["USA", "CAN", "ENG", "NZL", "SCO", "RSA", "GHA", "PAN"];
-  const portTeams = ["BRA", "POR", "CPV", "COD"];
-  const asianTeams = ["JPN", "KOR", "UZB", "IRN", "IRQ", "JOR", "QAT", "KSA"];
+  const spanishTeams = ["PAR", "ECU", "HAI", "CUW"];
+  const englishTeams = ["CAN", "NZL", "SCO", "RSA", "GHA", "PAN"];
+  const portTeams = ["CPV", "COD"];
+  const asianTeams = ["UZB", "IRN", "IRQ", "JOR", "QAT", "KSA"];
+  const frenchTeams = ["TUN", "CIV", "ALG"];
 
   let pool = spanishSurnames;
+  let firstNames = ["J.", "M.", "R.", "C.", "D.", "F.", "L.", "P.", "S.", "A."];
+  
   if (spanishTeams.includes(teamId)) {
     pool = spanishSurnames;
   } else if (englishTeams.includes(teamId)) {
     pool = englishSurnames;
+    firstNames = ["John", "Mark", "Robert", "Chris", "David", "Fred", "Luke", "Paul", "Sam", "Alex"];
   } else if (portTeams.includes(teamId)) {
     pool = portSurnames;
-  } else if (teamId === "JPN") {
-    pool = japaneseSurnames;
-  } else if (teamId === "KOR") {
-    pool = koreanSurnames;
-  } else if (teamId === "SEN") {
-    pool = senegaleseSurnames;
+    firstNames = ["Joao", "Manuel", "Rui", "Carlos", "Duarte", "Filipe", "Luis", "Pedro", "Simão", "Antonio"];
+  } else if (frenchTeams.includes(teamId)) {
+    pool = frenchSurnames;
+    firstNames = ["Jean", "Michel", "Pierre", "Charles", "David", "François", "Louis", "Philippe", "Sébastien", "Antoine"];
+  } else if (asianTeams.includes(teamId)) {
+    if (teamId === "KSA" || teamId === "QAT" || teamId === "IRQ") {
+      pool = ["Al-Dawsari", "Al-Muwallad", "Al-Shehri", "Al-Shahrani", "Al-Faraj", "Al-Hassan", "Al-Ghamdi", "Al-Najei", "Al-Buraikan", "Al-Owais"];
+      firstNames = ["Salem", "Fahad", "Saleh", "Yasser", "Salman", "Ali", "Faisal", "Sami", "Firas", "Mohammed"];
+    } else {
+      pool = ["Ahmad", "Ali", "Hassan", "Hussein", "Mustafa", "Abbas", "Karim", "Jafar", "Mahdi", "Reza"];
+      firstNames = ["M.", "A.", "H.", "S.", "K.", "F.", "R.", "N.", "Y.", "Z."];
+    }
   } else {
+    // Generics fallback
     return Array.from({length: 25}, (_, i) => `${teamId} Craque ${i+1}`);
   }
 
   return Array.from({length: 25}, (_, i) => {
-    const fn = teamId === "KOR" ? "" : (["J.", "M.", "R.", "C.", "D.", "F.", "L.", "P.", "S.", "A."][i % 10] + " ");
+    const fn = firstNames[i % firstNames.length] + " ";
     return fn + pool[i % pool.length];
   });
 }
