@@ -630,9 +630,49 @@ function startMatchSimulation() {
   const squadA = window.comparacopaData.squads[activeTeamA].players;
   const squadB = window.comparacopaData.squads[activeTeamB].players;
   
-  // Calcular média de ataque e defesa de cada seleção
-  const avgOvrA = squadA.reduce((sum, p) => sum + p.ovr, 0) / 11;
-  const avgOvrB = squadB.reduce((sum, p) => sum + p.ovr, 0) / 11;
+  const formationA = window.comparacopaData.squads[activeTeamA].formation || "4-3-3";
+  const formationB = window.comparacopaData.squads[activeTeamB].formation || "4-3-3";
+
+  // Lógica de duelo de setores e influência tática
+  const getSectorAverages = (players) => {
+    const defense = players.filter(p => p.pos === "GK" || p.pos === "DF");
+    const midfield = players.filter(p => p.pos === "MF");
+    const attack = players.filter(p => p.pos === "FW");
+    
+    return {
+      def: defense.reduce((sum, p) => sum + p.ovr, 0) / (defense.length || 1),
+      mid: midfield.reduce((sum, p) => sum + p.ovr, 0) / (midfield.length || 1),
+      att: attack.reduce((sum, p) => sum + p.ovr, 0) / (attack.length || 1)
+    };
+  };
+
+  const getFormationFactors = (form) => {
+    const factors = {
+      "4-2-4": { att: 1.25, def: 0.85 },
+      "3-4-3": { att: 1.20, def: 0.85 },
+      "4-3-3": { att: 1.00, def: 1.00 },
+      "4-2-3-1": { att: 1.00, def: 1.00 },
+      "4-4-2": { att: 0.95, def: 1.05 },
+      "3-5-2": { att: 1.05, def: 1.00 },
+      "5-3-2": { att: 0.80, def: 1.25 },
+      "4-5-1": { att: 0.80, def: 1.20 }
+    };
+    return factors[form] || { att: 1.0, def: 1.0 };
+  };
+
+  const secA = getSectorAverages(squadA);
+  const secB = getSectorAverages(squadB);
+
+  const formFactorsA = getFormationFactors(formationA);
+  const formFactorsB = getFormationFactors(formationB);
+
+  // Força de ataque calculada combinando ataque e suporte do meio de campo
+  const attackPowerA = (secA.att * 0.7 + secA.mid * 0.3) * formFactorsA.att;
+  const attackPowerB = (secB.att * 0.7 + secB.mid * 0.3) * formFactorsB.att;
+
+  // Força defensiva baseada na zaga/goleiro e suporte tático
+  const defensePowerA = secA.def * formFactorsA.def;
+  const defensePowerB = secB.def * formFactorsB.def;
 
   // Lances narrativos possíveis
   const narrativeTemplates = [
@@ -654,12 +694,12 @@ function startMatchSimulation() {
       return;
     }
 
-    // Decidir evento com base nos Overalls
+    // Decidir evento com base no duelo Ataque vs Defesa
     const randomVal = Math.random() * 100;
     
-    // Fatores de chance de gol
-    const chanceGoalA = 5 + (avgOvrA - avgOvrB) * 1.5;
-    const chanceGoalB = 5 + (avgOvrB - avgOvrA) * 1.5;
+    // Chance de gol final adaptada taticamente
+    const chanceGoalA = 5.0 + (attackPowerA - defensePowerB) * 1.5;
+    const chanceGoalB = 5.0 + (attackPowerB - defensePowerA) * 1.5;
 
     let logLine = "";
 
@@ -667,13 +707,16 @@ function startMatchSimulation() {
       // Gol do Time A
       scoreA++;
       scoreBoxA.textContent = scoreA;
-      const scorer = squadA[Math.floor(Math.random() * 6) + 5].name; // atacante/meia
+      // Escolher goleador realista (meias e atacantes têm preferência)
+      const offensivePlayersA = squadA.filter(p => p.pos === "FW" || p.pos === "MF");
+      const scorer = offensivePlayersA.length > 0 ? offensivePlayersA[Math.floor(Math.random() * offensivePlayersA.length)].name : "Jogador";
       logLine = `<span style="color: var(--neon-green); font-weight:800;">&gt; [${minute}'] GOOOOOOOOL do ${activeTeamA}! ${scorer} chuta forte no canto esquerdo sem chances! (${scoreA}-${scoreB})</span>`;
     } else if (randomVal < chanceGoalA + chanceGoalB) {
       // Gol do Time B
       scoreB++;
       scoreBoxB.textContent = scoreB;
-      const scorer = squadB[Math.floor(Math.random() * 6) + 5].name;
+      const offensivePlayersB = squadB.filter(p => p.pos === "FW" || p.pos === "MF");
+      const scorer = offensivePlayersB.length > 0 ? offensivePlayersB[Math.floor(Math.random() * offensivePlayersB.length)].name : "Jogador";
       logLine = `<span style="color: var(--neon-green); font-weight:800;">&gt; [${minute}'] GOOOOOOOOL do ${activeTeamB}! ${scorer} recebe cruzamento perfeito e escora de cabeça! (${scoreA}-${scoreB})</span>`;
     } else {
       // Lance normal de rádio
