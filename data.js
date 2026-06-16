@@ -15,52 +15,52 @@ window.comparacopaData = {
   // 12 Grupos Customizados da Copa de 2026 (48 seleções)
   groups: {
     A: [
-      { id: "MEX", name: "México", flag: "🇲🇽", pts: 0, pj: 0, v: 0, e: 0, d: 0, gp: 0, gc: 0 },
-      { id: "RSA", name: "África do Sul", flag: "🇿🇦", pts: 0, pj: 0, v: 0, e: 0, d: 0, gp: 0, gc: 0 },
-      { id: "KOR", name: "Coreia do Sul", flag: "🇰🇷", pts: 0, pj: 0, v: 0, e: 0, d: 0, gp: 0, gc: 0 },
-      { id: "CZE", name: "República Tcheca", flag: "🇨🇿", pts: 0, pj: 0, v: 0, e: 0, d: 0, gp: 0, gc: 0 }
+      { id: "MEX", name: "México", flag: "🇲🇽", pts: 3, pj: 1, v: 1, e: 0, d: 0, gp: 2, gc: 0 },
+      { id: "RSA", name: "África do Sul", flag: "🇿🇦", pts: 0, pj: 1, v: 0, e: 0, d: 1, gp: 0, gc: 2 },
+      { id: "KOR", name: "Coreia do Sul", flag: "🇰🇷", pts: 3, pj: 1, v: 1, e: 0, d: 0, gp: 2, gc: 1 },
+      { id: "CZE", name: "República Tcheca", flag: "🇨🇿", pts: 0, pj: 1, v: 0, e: 0, d: 1, gp: 1, gc: 2 }
     ],
     B: [
-      { id: "CAN", name: "Canadá", flag: "🇨🇦", pts: 0, pj: 0, v: 0, e: 0, d: 0, gp: 0, gc: 0 },
-      { id: "SUI", name: "Suíça", flag: "🇨🇭", pts: 0, pj: 0, v: 0, e: 0, d: 0, gp: 0, gc: 0 },
-      { id: "QAT", name: "Catar", flag: "🇶🇦", pts: 0, pj: 0, v: 0, e: 0, d: 0, gp: 0, gc: 0 },
-      { id: "BIH", name: "Bósnia e Herzegovina", flag: "🇧🇦", pts: 0, pj: 0, v: 0, e: 0, d: 0, gp: 0, gc: 0 }
+      { id: "CAN", name: "Canadá", flag: "🇨🇦", pts: 1, pj: 1, v: 0, e: 1, d: 0, gp: 1, gc: 1 },
+      { id: "SUI", name: "Suíça", flag: "🇨🇭", pts: 1, pj: 1, v: 0, e: 1, d: 0, gp: 1, gc: 1 },
+      { id: "QAT", name: "Catar", flag: "🇶🇦", pts: 1, pj: 1, v: 0, e: 1, d: 0, gp: 1, gc: 1 },
+      { id: "BIH", name: "Bósnia e Herzegovina", flag: "🇧🇦", pts: 1, pj: 1, v: 0, e: 1, d: 0, gp: 1, gc: 1 }
     ],
     C: [
-      { id: "BRA", name: "Brasil", flag: "🇧🇷", pts: 0, pj: 0, v: 0, e: 0, d: 0, gp: 0, gc: 0 },
-      { id: "MAR", name: "Marrocos", flag: "🇲🇦", pts: 0, pj: 0, v: 0, e: 0, d: 0, gp: 0, gc: 0 },
-      { id: "SCO", name: "Escócia", flag: "🏴󠁧󠁢󠁳󠁣󠁴󠁿", pts: 0, pj: 0, v: 0, e: 0, d: 0, gp: 0, gc: 0 },
-      { id: "HAI", name: "Haiti", flag: "🇭🇹", pts: 0, pj: 0, v: 0, e: 0, d: 0, gp: 0, gc: 0 }
+      { id: "BRA", name: "Brasil", flag: "🇧🇷", pts: 1, pj: 1, v: 0, e: 1, d: 0, gp: 1, gc: 1 },
+      { id: "MAR", name: "Marrocos", flag: "🇲🇦", pts: 1, pj: 1, v: 0, e: 1, d: 0, gp: 1, gc: 1 },
+      { id: "SCO", name: "Escócia", flag: "🏴󠁧󠁢󠁳󠁣󠁴󠁿", pts: 3, pj: 1, v: 1, e: 0, d: 0, gp: 1, gc: 0 },
+      { id: "HAI", name: "Haiti", flag: "🇭🇹", pts: 0, pj: 1, v: 0, e: 0, d: 1, gp: 0, gc: 1 }
     ],
     D: [
-      { id: "USA", name: "Estados Unidos", flag: "🇺🇸", pts: 0, pj: 0, v: 0, e: 0, d: 0, gp: 0, gc: 0 },
-      { id: "AUS", name: "Austrália", flag: "🇦🇺", pts: 0, pj: 0, v: 0, e: 0, d: 0, gp: 0, gc: 0 },
-      { id: "TUR", name: "Turquia", flag: "🇹🇷", pts: 0, pj: 0, v: 0, e: 0, d: 0, gp: 0, gc: 0 },
-      { id: "PAR", name: "Paraguai", flag: "🇵🇾", pts: 0, pj: 0, v: 0, e: 0, d: 0, gp: 0, gc: 0 }
+      { id: "USA", name: "Estados Unidos", flag: "🇺🇸", pts: 3, pj: 1, v: 1, e: 0, d: 0, gp: 4, gc: 1 },
+      { id: "AUS", name: "Austrália", flag: "🇦🇺", pts: 3, pj: 1, v: 1, e: 0, d: 0, gp: 2, gc: 0 },
+      { id: "TUR", name: "Turquia", flag: "🇹🇷", pts: 0, pj: 1, v: 0, e: 0, d: 1, gp: 0, gc: 2 },
+      { id: "PAR", name: "Paraguai", flag: "🇵🇾", pts: 0, pj: 1, v: 0, e: 0, d: 1, gp: 1, gc: 4 }
     ],
     E: [
-      { id: "GER", name: "Alemanha", flag: "🇩🇪", pts: 0, pj: 0, v: 0, e: 0, d: 0, gp: 0, gc: 0 },
-      { id: "CIV", name: "Costa do Marfim", flag: "🇨🇮", pts: 0, pj: 0, v: 0, e: 0, d: 0, gp: 0, gc: 0 },
-      { id: "ECU", name: "Equador", flag: "🇪🇨", pts: 0, pj: 0, v: 0, e: 0, d: 0, gp: 0, gc: 0 },
-      { id: "CUW", name: "Curaçau", flag: "🇨🇼", pts: 0, pj: 0, v: 0, e: 0, d: 0, gp: 0, gc: 0 }
+      { id: "GER", name: "Alemanha", flag: "🇩🇪", pts: 3, pj: 1, v: 1, e: 0, d: 0, gp: 7, gc: 1 },
+      { id: "CIV", name: "Costa do Marfim", flag: "🇨🇮", pts: 3, pj: 1, v: 1, e: 0, d: 0, gp: 1, gc: 0 },
+      { id: "ECU", name: "Equador", flag: "🇪🇨", pts: 0, pj: 1, v: 0, e: 0, d: 1, gp: 0, gc: 1 },
+      { id: "CUW", name: "Curaçau", flag: "🇨🇼", pts: 0, pj: 1, v: 0, e: 0, d: 1, gp: 1, gc: 7 }
     ],
     F: [
-      { id: "SWE", name: "Suécia", flag: "🇸🇪", pts: 0, pj: 0, v: 0, e: 0, d: 0, gp: 0, gc: 0 },
-      { id: "JPN", name: "Japão", flag: "🇯🇵", pts: 0, pj: 0, v: 0, e: 0, d: 0, gp: 0, gc: 0 },
-      { id: "NED", name: "Holanda", flag: "🇳🇱", pts: 0, pj: 0, v: 0, e: 0, d: 0, gp: 0, gc: 0 },
-      { id: "TUN", name: "Tunísia", flag: "🇹🇳", pts: 0, pj: 0, v: 0, e: 0, d: 0, gp: 0, gc: 0 }
+      { id: "SWE", name: "Suécia", flag: "🇸🇪", pts: 3, pj: 1, v: 1, e: 0, d: 0, gp: 5, gc: 1 },
+      { id: "JPN", name: "Japão", flag: "🇯🇵", pts: 1, pj: 1, v: 0, e: 1, d: 0, gp: 2, gc: 2 },
+      { id: "NED", name: "Holanda", flag: "🇳🇱", pts: 1, pj: 1, v: 0, e: 1, d: 0, gp: 2, gc: 2 },
+      { id: "TUN", name: "Tunísia", flag: "🇹🇳", pts: 0, pj: 1, v: 0, e: 0, d: 1, gp: 1, gc: 5 }
     ],
     G: [
-      { id: "NZL", name: "Nova Zelândia", flag: "🇳🇿", pts: 0, pj: 0, v: 0, e: 0, d: 0, gp: 0, gc: 0 },
-      { id: "IRN", name: "Irã", flag: "🇮🇷", pts: 0, pj: 0, v: 0, e: 0, d: 0, gp: 0, gc: 0 },
-      { id: "BEL", name: "Bélgica", flag: "🇧🇪", pts: 0, pj: 0, v: 0, e: 0, d: 0, gp: 0, gc: 0 },
-      { id: "EGY", name: "Egito", flag: "🇪🇬", pts: 0, pj: 0, v: 0, e: 0, d: 0, gp: 0, gc: 0 }
+      { id: "NZL", name: "Nova Zelândia", flag: "🇳🇿", pts: 1, pj: 1, v: 0, e: 1, d: 0, gp: 2, gc: 2 },
+      { id: "IRN", name: "Irã", flag: "🇮🇷", pts: 1, pj: 1, v: 0, e: 1, d: 0, gp: 2, gc: 2 },
+      { id: "BEL", name: "Bélgica", flag: "🇧🇪", pts: 1, pj: 1, v: 0, e: 1, d: 0, gp: 1, gc: 1 },
+      { id: "EGY", name: "Egito", flag: "🇪🇬", pts: 1, pj: 1, v: 0, e: 1, d: 0, gp: 1, gc: 1 }
     ],
     H: [
-      { id: "URU", name: "Uruguai", flag: "🇺🇾", pts: 0, pj: 0, v: 0, e: 0, d: 0, gp: 0, gc: 0 },
-      { id: "KSA", name: "Arábia Saudita", flag: "🇸🇦", pts: 0, pj: 0, v: 0, e: 0, d: 0, gp: 0, gc: 0 },
-      { id: "ESP", name: "Espanha", flag: "🇪🇸", pts: 0, pj: 0, v: 0, e: 0, d: 0, gp: 0, gc: 0 },
-      { id: "CPV", name: "Cabo Verde", flag: "🇨🇻", pts: 0, pj: 0, v: 0, e: 0, d: 0, gp: 0, gc: 0 }
+      { id: "URU", name: "Uruguai", flag: "🇺🇾", pts: 1, pj: 1, v: 0, e: 1, d: 0, gp: 1, gc: 1 },
+      { id: "KSA", name: "Arábia Saudita", flag: "🇸🇦", pts: 1, pj: 1, v: 0, e: 1, d: 0, gp: 1, gc: 1 },
+      { id: "ESP", name: "Espanha", flag: "🇪🇸", pts: 1, pj: 1, v: 0, e: 1, d: 0, gp: 0, gc: 0 },
+      { id: "CPV", name: "Cabo Verde", flag: "🇨🇻", pts: 1, pj: 1, v: 0, e: 1, d: 0, gp: 0, gc: 0 }
     ],
     I: [
       { id: "FRA", name: "França", flag: "🇫🇷", pts: 0, pj: 0, v: 0, e: 0, d: 0, gp: 0, gc: 0 },
@@ -87,18 +87,18 @@ window.comparacopaData = {
       { id: "PAN", name: "Panamá", flag: "🇵🇦", pts: 0, pj: 0, v: 0, e: 0, d: 0, gp: 0, gc: 0 }
     ]
   },
-
+ 
   // Estrutura de Chaveamento Pré-Definido (Mata-Mata da Copa de 2026)
   brackets: {
     roundOf32: [
-      { id: "m1", teamA: "BRA", teamB: "SEN", scoreA: null, scoreB: null, date: "25 Jun 2026" },
-      { id: "m2", teamA: "URU", teamB: "SUI", scoreA: null, scoreB: null, date: "25 Jun 2026" },
-      { id: "m3", teamA: "FRA", teamB: "KOR", scoreA: null, scoreB: null, date: "26 Jun 2026" },
-      { id: "m4", teamA: "GER", teamB: "MAR", scoreA: null, scoreB: null, date: "26 Jun 2026" },
-      { id: "m5", teamA: "ARG", teamB: "AUS", scoreA: null, scoreB: null, date: "27 Jun 2026" },
-      { id: "m6", teamA: "POR", teamB: "NED", scoreA: null, scoreB: null, date: "27 Jun 2026" },
-      { id: "m7", teamA: "ESP", teamB: "JPN", scoreA: null, scoreB: null, date: "28 Jun 2026" },
-      { id: "m8", teamA: "ENG", teamB: "COL", scoreA: null, scoreB: null, date: "28 Jun 2026" }
+      { id: "m1", teamA: null, teamB: null, scoreA: null, scoreB: null, date: "25 Jun 2026" },
+      { id: "m2", teamA: null, teamB: null, scoreA: null, scoreB: null, date: "25 Jun 2026" },
+      { id: "m3", teamA: null, teamB: null, scoreA: null, scoreB: null, date: "26 Jun 2026" },
+      { id: "m4", teamA: null, teamB: null, scoreA: null, scoreB: null, date: "26 Jun 2026" },
+      { id: "m5", teamA: null, teamB: null, scoreA: null, scoreB: null, date: "27 Jun 2026" },
+      { id: "m6", teamA: null, teamB: null, scoreA: null, scoreB: null, date: "27 Jun 2026" },
+      { id: "m7", teamA: null, teamB: null, scoreA: null, scoreB: null, date: "28 Jun 2026" },
+      { id: "m8", teamA: null, teamB: null, scoreA: null, scoreB: null, date: "28 Jun 2026" }
     ],
     octaves: [
       { id: "m9", teamA: null, teamB: null, prevMatchA: "m1", prevMatchB: "m2", scoreA: null, scoreB: null, date: "30 Jun 2026" },

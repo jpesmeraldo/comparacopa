@@ -1,0 +1,26 @@
+# Lista de Tarefas - Comparacopa 2026
+
+- [x] Criar base de dados `data.js`
+  - [x] Cadastrar as 48 seleções divididas nos 12 grupos reais (A a L) da Copa 2026
+  - [x] Estruturar a árvore inicial de mata-mata (rodada de 32 avos)
+  - [x] Cadastrar dados táticos e elencos detalhados (OVR e atributos) para o G8 (Brasil, Argentina, França, Espanha, Inglaterra, Alemanha, Portugal, Uruguai)
+  - [x] Incluir histórico de 100 jogos para cada seleção do G8 (vitórias/empates/derrotas, gols, forma recente)
+- [x] Criar folha de estilo `style.css`
+  - [x] Definir variáveis de cores e fontes vintage (Anos 80, Neo-Brutalist)
+  - [x] Estilizar o layout geral com cards de bordas grossas e sombras duras
+  - [x] Desenhar o campo de futebol tático (futebol de botão/cartas retrô)
+  - [x] Estilizar a grade dos grupos e o chaveamento do mata-mata (brackets retrô com conexões)
+  - [x] Adicionar efeitos de clique "físico" de botão dos anos 80
+- [x] Criar estrutura de tela `index.html`
+  - [x] Adicionar cabeçalho, seletores de times e container do placar comparativo
+  - [x] Montar seção do campo tático de escalação
+  - [x] Adicionar área do simulador de partidas
+  - [x] Montar visualizador de grupos (abas) e brackets do torneio
+- [x] Implementar a lógica principal em `app.js`
+  - [x] Gerenciar estado das seleções selecionadas (Time A e B)
+  - [x] Atualizar placar de estatísticas dos últimos 100 jogos ao selecionar times
+  - [x] Renderizar escalações dinâmicas no campo tático
+  - [x] Implementar motor de simulação heurístico com comentários minuto a minuto estilo rádio retro
+  - [x] Renderizar tabelas dos grupos e brackets interativos (clicar em time/confronto preenche os comparadores)
+- [x] Validar e ajustar
+  - [x] Testar usabilidade, responsividade e verificar se todos os links internos funcionam

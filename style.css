@@ -721,3 +721,38 @@ select.neo-select:focus {
   box-shadow: none;
   transform: translate(2px, 2px);
 }
+
+/* Responsividade para Telas Pequenas (Mobile) */
+@media (max-width: 600px) {
+  .field-container {
+    overflow: visible; /* Impede o corte dos nomes nas bordas inferiores/laterais */
+    margin-bottom: 25px; /* Margem extra para acomodar as tags que saem ligeiramente do campo */
+  }
+
+  .player-node {
+    width: 32px !important;
+    height: 32px !important;
+    border-width: 2px !important;
+    box-shadow: 2px 2px 0 var(--dark-accent) !important;
+  }
+
+  .player-number {
+    font-size: 0.65rem !important;
+  }
+
+  .player-name-tag {
+    font-size: 0.55rem !important;
+    bottom: -15px !important;
+    padding: 0px 3px !important;
+    border-width: 1px !important;
+  }
+
+  .player-ovr-tag {
+    width: 14px !important;
+    height: 14px !important;
+    font-size: 0.52rem !important;
+    top: -8px !important;
+    right: -8px !important;
+    border-width: 1.2px !important;
+  }
+}
