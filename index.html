@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Comparacopa 2026 — Anos 80 Edition</title>
+  <link rel="stylesheet" href="style.css">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+
+  <div class="container">
+    
+    <!-- Cabeçalho Retrô -->
+    <header>
+      <div class="header-title-box">
+        <h1>Comparacopa 2026</h1>
+      </div>
+      <div class="header-subtitle">[ EDICÃO RETRÔ ANOS 80 // BRASIL COPA AMÉRICA STYLE ]</div>
+    </header>
+
+    <!-- Menu de Abas de Seções -->
+    <div class="nav-section-btns">
+      <button class="neo-btn btn-green active" id="btn-sec-compare" onclick="switchSection('compare')">Comparador & Simulação</button>
+      <button class="neo-btn" id="btn-sec-tournament" onclick="switchSection('tournament')">Tabela & Mata-Mata</button>
+    </div>
+
+    <!-- SEÇÃO 1: COMPARADOR & SIMULADOR -->
+    <section id="section-compare" class="content-section active">
+      
+      <!-- Seletores de Seleção A e B -->
+      <div class="neo-card" style="margin-bottom: 25px;">
+        <div class="selectors-wrapper">
+          <div class="selector-box">
+            <label for="select-team-a">SELEÇÃO A</label>
+            <select id="select-team-a" class="neo-select" onchange="loadComparison()">
+              <!-- Carregado via JS -->
+            </select>
+          </div>
+          <div class="selector-box">
+            <label for="select-team-b">SELEÇÃO B</label>
+            <select id="select-team-b" class="neo-select" onchange="loadComparison()">
+              <!-- Carregado via JS -->
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="dashboard-grid">
+        
+        <!-- Esquerda: Estatísticas H2H & Campo de Futebol -->
+        <div style="display: flex; flex-direction: column; gap: 30px;">
+          
+          <!-- Placar H2H Retrô -->
+          <div class="neo-card">
+            <div class="neo-card-title">
+              <span>Histórico dos Últimos 100 Jogos</span>
+              <i data-lucide="bar-chart-2"></i>
+            </div>
+            
+            <div class="h2h-panel">
+              <div class="h2h-stats-grid">
+                <!-- Vitórias -->
+                <div class="stat-row">
+                  <div class="stat-label-row">
+                    <span id="label-wins-a">Vitórias A</span>
+                    <span>Vitórias</span>
+                    <span id="label-wins-b">Vitórias B</span>
+                  </div>
+                  <div class="stat-bar-container">
+                    <div id="bar-wins-a" class="stat-bar-left" style="width: 50%;"></div>
+                    <div id="bar-wins-b" class="stat-bar-right" style="width: 50%;"></div>
+                  </div>
+                </div>
+
+                <!-- Gols Marcados -->
+                <div class="stat-row">
+                  <div class="stat-label-row">
+                    <span id="label-goals-a">Gols A</span>
+                    <span>Gols Marcados</span>
+                    <span id="label-goals-b">Gols B</span>
+                  </div>
+                  <div class="stat-bar-container">
+                    <div id="bar-goals-a" class="stat-bar-left" style="width: 50%;"></div>
+                    <div id="bar-goals-b" class="stat-bar-right" style="width: 50%;"></div>
+                  </div>
+                </div>
+
+                <!-- Clean Sheets -->
+                <div class="stat-row">
+                  <div class="stat-label-row">
+                    <span id="label-sheets-a">Jogos sem Sofrer Gols A</span>
+                    <span>Clean Sheets</span>
+                    <span id="label-sheets-b">Jogos sem Sofrer Gols B</span>
+                  </div>
+                  <div class="stat-bar-container">
+                    <div id="bar-sheets-a" class="stat-bar-left" style="width: 50%;"></div>
+                    <div id="bar-sheets-b" class="stat-bar-right" style="width: 50%;"></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Probabilidade de Resultado Futuro -->
+              <div class="stat-row" style="margin-top: 15px; border-top: 2px dashed var(--dark-accent); padding-top: 15px;">
+                <div class="stat-label-row">
+                  <span id="label-prob-a" style="font-weight: 800;">Vitória A: 40%</span>
+                  <span style="color: #555; font-weight: 800; font-size: 0.95rem;">PREVISÃO DE RESULTADO</span>
+                  <span id="label-prob-b" style="font-weight: 800;">Vitória B: 35%</span>
+                </div>
+                <div class="stat-bar-container" style="background: #bbb;">
+                  <div id="bar-prob-a" class="stat-bar-left" style="width: 40%;"></div>
+                  <div id="bar-prob-draw" style="width: 25%; background: #999; height: 100%; transition: width 0.5s ease;"></div>
+                  <div id="bar-prob-b" class="stat-bar-right" style="width: 35%;"></div>
+                </div>
+                <div style="text-align: center; font-size: 0.85rem; font-weight: 800; color: var(--dark-accent); margin-top: 6px;" id="label-prob-draw-txt">
+                  Empate: 25%
+                </div>
+              </div>
+
+              <!-- Formas Recentes -->
+              <div class="form-row">
+                <div>
+                  <div style="font-weight: 800; font-size: 0.8rem; text-transform: uppercase; margin-bottom: 4px;">Forma Recente A</div>
+                  <div id="form-badges-a" class="form-badges"></div>
+                </div>
+                <div>
+                  <div style="font-weight: 800; font-size: 0.8rem; text-transform: uppercase; margin-bottom: 4px; text-align: right;">Forma Recente B</div>
+                  <div id="form-badges-b" class="form-badges"></div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Escalação e Campo Tático -->
+          <div class="neo-card">
+            <div class="neo-card-title">
+              <span>Mesa Tática & Jogadores</span>
+              <div style="display: flex; gap: 8px;">
+                <button class="neo-btn" style="padding: 4px 8px; font-size: 0.75rem; box-shadow: 2px 2px 0 var(--dark-accent);" onclick="toggleFieldTeam('A')">Time A</button>
+                <button class="neo-btn btn-blue" style="padding: 4px 8px; font-size: 0.75rem; box-shadow: 2px 2px 0 var(--dark-accent);" onclick="toggleFieldTeam('B')">Time B</button>
+              </div>
+            </div>
+            
+            <p style="font-size: 0.85rem; margin-bottom: 10px; font-weight: 600;">Clique nos botões de jogadores para ver suas estatísticas detalhadas como cartas Panini!</p>
+            
+            <!-- Seleção de Esquema Tático -->
+            <div style="margin-bottom: 15px; border-top: 2px dashed var(--dark-accent); border-bottom: 2px dashed var(--dark-accent); padding: 12px 0;">
+              <div style="font-family: 'Space Mono', monospace; font-size: 0.8rem; font-weight: 800; text-transform: uppercase; color: var(--dark-accent); margin-bottom: 8px;">Esquema Tático (Formação):</div>
+              <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;" id="formation-btn-grid">
+                <!-- Preenchido via JS -->
+              </div>
+            </div>
+            
+            <div class="field-container">
+              <div class="field-lines"></div>
+              <div class="field-midline"></div>
+              <div class="field-center-circle"></div>
+              <div class="field-penalty-a"></div>
+              <div class="field-penalty-b"></div>
+              
+              <!-- Nós de Jogadores renderizados dinamicamente pelo JS -->
+              <div id="tactical-field-players"></div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Direita: Simulador de Jogos e Radar de Jogador -->
+        <div style="display: flex; flex-direction: column; gap: 30px;">
+          
+          <!-- Simulador de Partida -->
+          <div class="neo-card" style="background: #111;">
+            <div class="neo-card-title" style="color: var(--off-white); border-color: #333;">
+              <span style="color: var(--retro-yellow);"><i class="sim-icon" data-lucide="play-circle"></i> TRANSMISSÃO DE RÁDIO AM</span>
+            </div>
+            
+            <div class="simulator-panel">
+              <div class="sim-scoreboard">
+                <div class="scoreboard-team">
+                  <span id="score-flag-a" class="scoreboard-flag">🇧🇷</span>
+                  <span id="score-name-a" class="scoreboard-name">BRA</span>
+                </div>
+                <div id="sim-score-a" class="scoreboard-score">0</div>
+                <div style="font-weight: 900; font-size: 1.5rem; color: #555;">X</div>
+                <div id="sim-score-b" class="scoreboard-score">0</div>
+                <div class="scoreboard-team">
+                  <span id="score-flag-b" class="scoreboard-flag">🇫🇷</span>
+                  <span id="score-name-b" class="scoreboard-name">FRA</span>
+                </div>
+              </div>
+
+              <!-- Console Retrô de Comentários -->
+              <div id="sim-console" class="sim-console">
+                <div class="sim-console-line">&gt; Aperte o botão abaixo para iniciar a transmissão...</div>
+              </div>
+
+              <button class="neo-btn btn-green" style="width: 100%;" onclick="startMatchSimulation()">Simular Partida Retrô</button>
+            </div>
+          </div>
+
+          <!-- Comparador Rápido de Jogadores -->
+          <div class="neo-card">
+            <div class="neo-card-title">
+              <span>Duelo de Titulares</span>
+              <i data-lucide="swords"></i>
+            </div>
+            <p style="font-size: 0.85rem; margin-bottom: 12px;">Selecione um jogador de cada time para ver o comparativo direto de atributos:</p>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px;">
+              <select id="select-player-a" class="neo-select" onchange="comparePlayers()">
+                <!-- JS -->
+              </select>
+              <select id="select-player-b" class="neo-select" onchange="comparePlayers()">
+                <!-- JS -->
+              </select>
+            </div>
+
+            <!-- Tabela comparativa de Atributos -->
+            <div id="player-comp-attributes" style="display: flex; flex-direction: column; gap: 8px;">
+              <!-- JS -->
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- SEÇÃO 2: TABELA DA COPA E BRACKETS -->
+    <section id="section-tournament" class="content-section">
+      
+      <!-- Tabelas dos Grupos -->
+      <div class="neo-card" style="margin-bottom: 30px;">
+        <div class="neo-card-title">
+          <span>Grupos Oficiais - Copa do Mundo 2026</span>
+          <i data-lucide="globe"></i>
+        </div>
+        
+        <div class="tabs-header" id="groups-tabs-container">
+          <!-- Abas de Grupos A a L geradas via JS -->
+        </div>
+
+        <div id="group-table-content">
+          <!-- Tabela do grupo ativo renderizada pelo JS -->
+        </div>
+      </div>
+
+      <!-- Árvore do Mata-Mata -->
+      <div class="neo-card">
+        <div class="neo-card-title">
+          <span>Chaveamento das Fases Finais (Brackets)</span>
+          <i data-lucide="git-branch"></i>
+        </div>
+        <p style="font-size: 0.85rem; margin-bottom: 15px;">Clique em qualquer jogo do chaveamento do mata-mata para carregá-lo imediatamente no simulador acima!</p>
+
+        <div class="bracket-wrapper">
+          <div class="bracket-container">
+            
+            <!-- Rodada de 32 (1/16 de Final) -->
+            <div class="bracket-column">
+              <h3 style="font-size: 0.85rem; font-family: 'Space Mono', monospace; text-align: center; color: var(--retro-yellow);">Rodada de 32 avos</h3>
+              <div id="bracket-r32-col" style="display: flex; flex-direction: column; gap: 15px;">
+                <!-- JS -->
+              </div>
+            </div>
+
+            <!-- Oitavas de Final -->
+            <div class="bracket-column">
+              <h3 style="font-size: 0.85rem; font-family: 'Space Mono', monospace; text-align: center; color: var(--retro-yellow);">Oitavas de Final</h3>
+              <div id="bracket-r16-col" style="display: flex; flex-direction: column; gap: 30px;">
+                <!-- JS -->
+              </div>
+            </div>
+
+            <!-- Quartas de Final -->
+            <div class="bracket-column">
+              <h3 style="font-size: 0.85rem; font-family: 'Space Mono', monospace; text-align: center; color: var(--retro-yellow);">Quartas de Final</h3>
+              <div id="bracket-r8-col" style="display: flex; flex-direction: column; gap: 80px;">
+                <!-- JS -->
+              </div>
+            </div>
+
+            <!-- Semifinais -->
+            <div class="bracket-column">
+              <h3 style="font-size: 0.85rem; font-family: 'Space Mono', monospace; text-align: center; color: var(--retro-yellow);">Semifinal</h3>
+              <div id="bracket-r4-col" style="display: flex; flex-direction: column; gap: 180px;">
+                <!-- JS -->
+              </div>
+            </div>
+
+            <!-- Final -->
+            <div class="bracket-column" style="justify-content: center;">
+              <h3 style="font-size: 0.85rem; font-family: 'Space Mono', monospace; text-align: center; color: var(--retro-yellow); margin-bottom: 10px;">Grande Final</h3>
+              <div id="bracket-final" style="display: flex; flex-direction: column; justify-content: center; height: 100%;">
+                <!-- JS -->
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <!-- MODAL: Carta Panini do Jogador -->
+  <div class="modal-overlay" id="player-modal" onclick="closePlayerModal()">
+    <div class="player-sticker-card" onclick="event.stopPropagation()">
+      <button class="neo-btn" style="position: absolute; top: 10px; right: 10px; padding: 4px 10px; font-size: 0.8rem; box-shadow: 2px 2px 0 var(--dark-accent);" onclick="closePlayerModal()">X</button>
+      
+      <div class="sticker-header">
+        <span class="sticker-flag" id="sticker-flag">🇧🇷</span>
+        <div class="sticker-name" id="sticker-name">NOME JOGADOR</div>
+        <div class="sticker-club" id="sticker-club">CLUBE JOGADOR</div>
+      </div>
+
+      <div style="background: var(--retro-blue); color: var(--off-white); border: 2px solid var(--dark-accent); font-size: 2.2rem; font-weight: 900; width: 70px; height: 70px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px auto; box-shadow: 3px 3px 0 var(--dark-accent);" id="sticker-ovr">
+        99
+      </div>
+
+      <div class="sticker-stats-grid">
+        <div class="sticker-stat-item">
+          <span class="sticker-stat-val" id="sticker-pac">99</span>
+          <span class="sticker-stat-lbl">PAC</span>
+        </div>
+        <div class="sticker-stat-item">
+          <span class="sticker-stat-val" id="sticker-sho">99</span>
+          <span class="sticker-stat-lbl">SHO</span>
+        </div>
+        <div class="sticker-stat-item">
+          <span class="sticker-stat-val" id="sticker-pas">99</span>
+          <span class="sticker-stat-lbl">PAS</span>
+        </div>
+        <div class="sticker-stat-item">
+          <span class="sticker-stat-val" id="sticker-dri">99</span>
+          <span class="sticker-stat-lbl">DRI</span>
+        </div>
+        <div class="sticker-stat-item">
+          <span class="sticker-stat-val" id="sticker-def">99</span>
+          <span class="sticker-stat-lbl">DEF</span>
+        </div>
+        <div class="sticker-stat-item">
+          <span class="sticker-stat-val" id="sticker-phy">99</span>
+          <span class="sticker-stat-lbl">PHY</span>
+        </div>
+      </div>
+
+      <!-- Área de Substituição -->
+      <div id="substitute-section" style="margin-top: 15px; border-top: 2px dashed var(--dark-accent); padding-top: 12px; text-align: left;">
+        <label for="select-substitute" style="font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: var(--dark-accent); display: block; margin-bottom: 4px;">Substituir por Reserva:</label>
+        <div style="display: flex; gap: 8px;">
+          <select id="select-substitute" class="neo-select" style="font-size: 0.85rem; padding: 6px; flex: 1; box-shadow: 2px 2px 0 var(--dark-accent); height: 32px;">
+            <!-- Opções via JS -->
+          </select>
+          <button id="btn-confirm-sub" class="neo-btn" style="padding: 4px 12px; font-size: 0.8rem; box-shadow: 2px 2px 0 var(--dark-accent); height: 32px; background: var(--neon-green);">Trocar</button>
+        </div>
+      </div>
+
+      <p style="font-family: 'Space Mono', monospace; font-size: 0.75rem; color: #444; border-top: 1px dashed var(--dark-accent); padding-top: 10px; margin-top: 15px;">ÁLBUM OFICIAL COMPARACOPA 2026</p>
+    </div>
+  </div>
+
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
