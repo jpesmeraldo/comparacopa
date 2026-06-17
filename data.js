@@ -82,7 +82,7 @@ window.comparacopaData = {
       { id: "COL", name: "Colômbia", flag: "🇨🇴", pts: 0, pj: 0, v: 0, e: 0, d: 0, gp: 0, gc: 0 }
     ],
     L: [
-      { id: "ENG", name: "Inglaterra", flag: "🏴\u200d󠁡󠁩󠁲󠁿", pts: 0, pj: 0, v: 0, e: 0, d: 0, gp: 0, gc: 0 },
+      { id: "ENG", name: "Inglaterra", flag: "🏴󠁧󠁢󠁥󠁮󠁧󠁿", pts: 0, pj: 0, v: 0, e: 0, d: 0, gp: 0, gc: 0 },
       { id: "CRO", name: "Croácia", flag: "🇭🇷", pts: 0, pj: 0, v: 0, e: 0, d: 0, gp: 0, gc: 0 },
       { id: "GHA", name: "Gana", flag: "🇬🇭", pts: 0, pj: 0, v: 0, e: 0, d: 0, gp: 0, gc: 0 },
       { id: "PAN", name: "Panamá", flag: "🇵🇦", pts: 0, pj: 0, v: 0, e: 0, d: 0, gp: 0, gc: 0 }

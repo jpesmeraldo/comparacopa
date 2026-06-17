@@ -24,3 +24,7 @@
   - [x] Renderizar tabelas dos grupos e brackets interativos (clicar em time/confronto preenche os comparadores)
 - [x] Validar e ajustar
   - [x] Testar usabilidade, responsividade e verificar se todos os links internos funcionam
+- [x] Política de Privacidade
+  - [x] Adaptar texto da política a partir do modelo 7a0.com.br
+  - [x] Criar arquivo privacidade.html com design retrô e botão de voltar
+  - [x] Adicionar link da política no footer da index.html

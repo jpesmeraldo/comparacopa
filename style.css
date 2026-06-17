@@ -755,4 +755,102 @@ select.neo-select:focus {
     right: -8px !important;
     border-width: 1.2px !important;
   }
+
+  /* Ajustes de tabelas e brackets */
+  .neo-card {
+    padding: 12px !important;
+    overflow-x: auto !important; /* Permite scroll se necessário no próprio card em mobile */
+  }
+  
+  .nav-section-btns button {
+    padding: 10px 15px !important;
+    font-size: 0.85rem !important;
+  }
+
+  .selectors-wrapper {
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+  }
+  
+  /* Garantir que as tabelas de classificação rolem horizontalmente sem quebrar o layout */
+  #group-table-content {
+    overflow-x: auto;
+    display: block;
+    width: 100%;
+  }
 }
+
+/* Espaços para Anúncios (AdSense Placeholders) */
+.ad-banner-top {
+  margin: 15px auto 25px auto;
+  max-width: 728px;
+  min-height: 90px;
+  background: var(--off-white);
+  border: var(--border-size) dashed var(--dark-accent);
+  box-shadow: var(--neo-shadow);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  position: relative;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.ad-banner-bottom {
+  margin: 30px auto;
+  max-width: 728px;
+  min-height: 90px;
+  background: var(--off-white);
+  border: var(--border-size) dashed var(--dark-accent);
+  box-shadow: var(--neo-shadow);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.field-ad-wrapper {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 15px;
+  align-items: center;
+}
+
+@media (min-width: 1200px) {
+  .field-ad-wrapper {
+    grid-template-columns: 120px 1fr 120px;
+  }
+  .ad-side-skyscraper {
+    display: flex !important;
+  }
+}
+
+.ad-side-skyscraper {
+  display: none;
+  align-self: stretch;
+  min-height: 300px;
+  background: var(--off-white);
+  border: var(--border-size) dashed var(--dark-accent);
+  box-shadow: var(--neo-shadow);
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  text-align: center;
+  box-sizing: border-box;
+  overflow: hidden;
+  padding: 10px;
+}
+
+.ad-label {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.6rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #777;
+  letter-spacing: 1px;
+  margin-bottom: 6px;
+}
+
