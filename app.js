@@ -5,6 +5,17 @@ let activeFieldTeam = "A"; // 'A' ou 'B'
 let currentGroupTab = "A";
 let simulationInterval = null;
 
+// Helper de escape para segurança de dados dinâmicos (XSS)
+function escapeHtml(text) {
+  if (typeof text !== "string") return text;
+  return text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
 // Inicialização ao carregar a página
 document.addEventListener("DOMContentLoaded", () => {
   initSelectors();
@@ -925,7 +936,7 @@ function renderTacticalField() {
     node.innerHTML = `
       <span class="player-number">${player.no}</span>
       <div class="player-ovr-tag" style="${ovrTagStyle}">${effectiveOvr}</div>
-      <div class="player-name-tag">${player.name}${alertSymbol}</div>
+      <div class="player-name-tag">${escapeHtml(player.name)}${alertSymbol}</div>
     `;
 
     node.onclick = () => showPlayerModal(player, teamId);
