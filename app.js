@@ -161,8 +161,8 @@ function ensureSquadAndStats(teamId) {
       };
     });
 
-    // Banco de Reservas
-    const benchPositions = ["GK", "DF", "DF", "MF", "MF", "FW", "FW", "FW"];
+    // Banco de Reservas (15 reservas, garantindo 26 jogadores e 3 goleiros no total)
+    const benchPositions = ["GK", "GK", "DF", "DF", "DF", "DF", "MF", "MF", "MF", "MF", "FW", "FW", "FW", "FW", "FW"];
     const bench = benchPositions.map((pos, index) => {
       const bName = names[11 + index] || `Reserva ${index + 1}`;
       const ovr = Math.min(90, Math.max(55, baseOvr - 2 - (index % 3)));
@@ -903,6 +903,10 @@ function renderTacticalField() {
 
   const teamId = activeFieldTeam === "A" ? activeTeamA : activeTeamB;
   const squad = window.comparacopaData.squads[teamId];
+  
+  // Atualizar a exibição do técnico
+  const coachName = window.comparacopaData.coaches[teamId] || "Sem Técnico Cadastrado";
+  document.getElementById("coach-display").textContent = `Técnico: ${coachName}`;
   
   // Obter cores do time
   const colors = window.comparacopaData.teamColors[teamId] || { primary: "#222", secondary: "#fff" };
