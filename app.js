@@ -24,7 +24,9 @@ document.addEventListener("DOMContentLoaded", () => {
   renderBrackets();
   
   // Inicializar ícones do Lucide
-  lucide.createIcons();
+  if (window.lucide) {
+    lucide.createIcons();
+  }
 
   // Atualizar resultados em tempo real silenciosamente ao inicializar
   updateRealTimeResults(true);
@@ -199,7 +201,9 @@ async function updateSquadsRealTime() {
   
   const originalText = btn.innerHTML;
   btn.innerHTML = `<i data-lucide="refresh-cw" class="spinning" style="width:12px; height:12px;"></i> Carregando...`;
-  lucide.createIcons();
+  if (window.lucide) {
+    lucide.createIcons();
+  }
   
   const teamA = window.comparacopaData.groups[currentGroupTab]?.find(t => t.id === activeTeamA) 
                 || { name: "Brasil" };
@@ -278,7 +282,9 @@ async function updateSquadsRealTime() {
     alert("Não foi possível conectar com os servidores de atualização. Tente novamente em breve.");
   } finally {
     btn.innerHTML = originalText;
-    lucide.createIcons();
+    if (window.lucide) {
+      lucide.createIcons();
+    }
   }
 }
 
