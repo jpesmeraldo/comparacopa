@@ -113,28 +113,28 @@ window.comparacopaData = {
       { id: "CPV", name: "Cabo Verde", flag: "🇨🇻", pts: 1, pj: 1, v: 0, e: 1, d: 0, gp: 0, gc: 0 }
     ],
     I: [
-      { id: "FRA", name: "França", flag: "🇫🇷", pts: 0, pj: 0, v: 0, e: 0, d: 0, gp: 0, gc: 0 },
-      { id: "SEN", name: "Senegal", flag: "🇸🇳", pts: 0, pj: 0, v: 0, e: 0, d: 0, gp: 0, gc: 0 },
-      { id: "IRQ", name: "Iraque", flag: "🇮🇶", pts: 0, pj: 0, v: 0, e: 0, d: 0, gp: 0, gc: 0 },
-      { id: "NOR", name: "Noruega", flag: "🇳🇴", pts: 0, pj: 0, v: 0, e: 0, d: 0, gp: 0, gc: 0 }
+      { id: "FRA", name: "França", flag: "🇫🇷", pts: 3, pj: 1, v: 1, e: 0, d: 0, gp: 2, gc: 1 },
+      { id: "NOR", name: "Noruega", flag: "🇳🇴", pts: 3, pj: 1, v: 1, e: 0, d: 0, gp: 1, gc: 0 },
+      { id: "SEN", name: "Senegal", flag: "🇸🇳", pts: 0, pj: 1, v: 0, e: 0, d: 1, gp: 1, gc: 2 },
+      { id: "IRQ", name: "Iraque", flag: "🇮🇶", pts: 0, pj: 1, v: 0, e: 0, d: 1, gp: 0, gc: 1 }
     ],
     J: [
-      { id: "ARG", name: "Argentina", flag: "🇦🇷", pts: 0, pj: 0, v: 0, e: 0, d: 0, gp: 0, gc: 0 },
-      { id: "ALG", name: "Argélia", flag: "🇩🇿", pts: 0, pj: 0, v: 0, e: 0, d: 0, gp: 0, gc: 0 },
-      { id: "AUT", name: "Áustria", flag: "🇦🇹", pts: 0, pj: 0, v: 0, e: 0, d: 0, gp: 0, gc: 0 },
-      { id: "JOR", name: "Jordânia", flag: "🇯🇴", pts: 0, pj: 0, v: 0, e: 0, d: 0, gp: 0, gc: 0 }
+      { id: "ARG", name: "Argentina", flag: "🇦🇷", pts: 3, pj: 1, v: 1, e: 0, d: 0, gp: 3, gc: 1 },
+      { id: "AUT", name: "Áustria", flag: "🇦🇹", pts: 3, pj: 1, v: 1, e: 0, d: 0, gp: 2, gc: 0 },
+      { id: "ALG", name: "Argélia", flag: "🇩🇿", pts: 0, pj: 1, v: 0, e: 0, d: 1, gp: 1, gc: 3 },
+      { id: "JOR", name: "Jordânia", flag: "🇯🇴", pts: 0, pj: 1, v: 0, e: 0, d: 1, gp: 0, gc: 2 }
     ],
     K: [
-      { id: "POR", name: "Portugal", flag: "🇵🇹", pts: 0, pj: 0, v: 0, e: 0, d: 0, gp: 0, gc: 0 },
-      { id: "COD", name: "RD do Congo", flag: "🇨🇩", pts: 0, pj: 0, v: 0, e: 0, d: 0, gp: 0, gc: 0 },
-      { id: "UZB", name: "Uzbequistão", flag: "🇺🇿", pts: 0, pj: 0, v: 0, e: 0, d: 0, gp: 0, gc: 0 },
-      { id: "COL", name: "Colômbia", flag: "🇨🇴", pts: 0, pj: 0, v: 0, e: 0, d: 0, gp: 0, gc: 0 }
+      { id: "COL", name: "Colômbia", flag: "🇨🇴", pts: 3, pj: 1, v: 1, e: 0, d: 0, gp: 2, gc: 1 },
+      { id: "POR", name: "Portugal", flag: "🇵🇹", pts: 1, pj: 1, v: 0, e: 1, d: 0, gp: 1, gc: 1 },
+      { id: "COD", name: "RD do Congo", flag: "🇨🇩", pts: 1, pj: 1, v: 0, e: 1, d: 0, gp: 1, gc: 1 },
+      { id: "UZB", name: "Uzbequistão", flag: "🇺🇿", pts: 0, pj: 1, v: 0, e: 0, d: 1, gp: 1, gc: 2 }
     ],
     L: [
-      { id: "ENG", name: "Inglaterra", flag: "🏴󠁧󠁢󠁥󠁮󠁧󠁿", pts: 0, pj: 0, v: 0, e: 0, d: 0, gp: 0, gc: 0 },
-      { id: "CRO", name: "Croácia", flag: "🇭🇷", pts: 0, pj: 0, v: 0, e: 0, d: 0, gp: 0, gc: 0 },
-      { id: "GHA", name: "Gana", flag: "🇬🇭", pts: 0, pj: 0, v: 0, e: 0, d: 0, gp: 0, gc: 0 },
-      { id: "PAN", name: "Panamá", flag: "🇵🇦", pts: 0, pj: 0, v: 0, e: 0, d: 0, gp: 0, gc: 0 }
+      { id: "ENG", name: "Inglaterra", flag: "🏴󠁧󠁢󠁥󠁮󠁧󠁿", pts: 3, pj: 1, v: 1, e: 0, d: 0, gp: 2, gc: 0 },
+      { id: "GHA", name: "Gana", flag: "🇬🇭", pts: 1, pj: 1, v: 0, e: 1, d: 0, gp: 1, gc: 1 },
+      { id: "PAN", name: "Panamá", flag: "🇵🇦", pts: 1, pj: 1, v: 0, e: 1, d: 0, gp: 1, gc: 1 },
+      { id: "CRO", name: "Croácia", flag: "🇭🇷", pts: 0, pj: 1, v: 0, e: 0, d: 1, gp: 0, gc: 2 }
     ]
   },
  
