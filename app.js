@@ -25,6 +25,9 @@ document.addEventListener("DOMContentLoaded", () => {
   
   // Inicializar ícones do Lucide
   lucide.createIcons();
+
+  // Atualizar resultados em tempo real silenciosamente ao inicializar
+  updateRealTimeResults(true);
 });
 
 // Alternar entre abas principais (Comparador vs Torneio)
@@ -1340,6 +1343,7 @@ function renderGroupTable() {
           <th>V</th>
           <th>E</th>
           <th>D</th>
+          <th>Gols (P/C)</th>
           <th>GP</th>
           <th>GC</th>
           <th>SG</th>
@@ -1363,6 +1367,7 @@ function renderGroupTable() {
         <td>${t.v}</td>
         <td>${t.e}</td>
         <td>${t.d}</td>
+        <td style="font-weight: 700; color: var(--retro-blue);">${t.gp}:${t.gc}</td>
         <td>${t.gp}</td>
         <td>${t.gc}</td>
         <td style="font-family: 'Space Mono', monospace;">${sign}${sg}</td>
@@ -1517,41 +1522,171 @@ function renderBrackets() {
 }
 
 // Atualizar estatísticas e resultados reais em tempo real
-function updateRealTimeResults() {
+function updateRealTimeResults(isSilent = false) {
   const btn = document.getElementById("btn-update-results");
-  if (!btn) return;
+  const originalText = btn ? btn.innerHTML : "";
   
-  const originalText = btn.innerHTML;
-  btn.innerHTML = `<span style="font-family: 'Space Mono', monospace; font-size: 0.75rem;">Atualizando...</span>`;
-  btn.disabled = true;
+  if (btn && !isSilent) {
+    btn.innerHTML = `<span style="font-family: 'Space Mono', monospace; font-size: 0.75rem;">Atualizando...</span>`;
+    btn.disabled = true;
+  }
 
-  // Remover script dinâmico antigo se houver
-  const oldScript = document.getElementById("data-script-dyn");
-  if (oldScript) oldScript.remove();
+  fetch("https://raw.githubusercontent.com/openfootball/worldcup.json/master/2026/worldcup.json")
+    .then(response => {
+      if (!response.ok) throw new Error("Erro de rede");
+      return response.json();
+    })
+    .then(data => {
+      // Mapeamento de nomes de times em inglês para IDs do Comparacopa
+      const nameToId = {
+        "Mexico": "MEX", "México": "MEX",
+        "South Africa": "RSA", "África do Sul": "RSA",
+        "South Korea": "KOR", "Coreia do Sul": "KOR",
+        "Czech Republic": "CZE", "República Tcheca": "CZE",
+        "Canada": "CAN", "Canadá": "CAN",
+        "Switzerland": "SUI", "Suíça": "SUI",
+        "Qatar": "QAT", "Catar": "QAT",
+        "Bosnia & Herzegovina": "BIH", "Bósnia e Herzegovina": "BIH", "Bosnia and Herzegovina": "BIH",
+        "Brazil": "BRA", "Brasil": "BRA",
+        "Morocco": "MAR", "Marrocos": "MAR",
+        "Scotland": "SCO", "Escócia": "SCO",
+        "Haiti": "HAI", "Haiti": "HAI",
+        "United States": "USA", "Estados Unidos": "USA",
+        "Australia": "AUS", "Austrália": "AUS",
+        "Turkey": "TUR", "Turquia": "TUR",
+        "Paraguay": "PAR", "Paraguai": "PAR",
+        "Germany": "GER", "Alemanha": "GER",
+        "Ivory Coast": "CIV", "Costa do Marfim": "CIV",
+        "Ecuador": "ECU", "Equador": "ECU",
+        "Curacao": "CUW", "Curaçau": "CUW", "Curaçao": "CUW",
+        "Sweden": "SWE", "Suécia": "SWE",
+        "Japan": "JPN", "Japão": "JPN",
+        "Netherlands": "NED", "Holanda": "NED",
+        "Tunisia": "TUN", "Tunísia": "TUN",
+        "New Zealand": "NZL", "Nova Zelândia": "NZL",
+        "Iran": "IRN", "Irã": "IRN",
+        "Belgium": "BEL", "Bélgica": "BEL",
+        "Egypt": "EGY", "Egito": "EGY",
+        "Uruguay": "URU", "Uruguai": "URU",
+        "Saudi Arabia": "KSA", "Arábia Saudita": "KSA",
+        "Spain": "ESP", "Espanha": "ESP",
+        "Cape Verde": "CPV", "Cabo Verde": "CPV",
+        "France": "FRA", "França": "FRA",
+        "Senegal": "SEN", "Senegal": "SEN",
+        "Iraq": "IRQ", "Iraque": "IRQ",
+        "Norway": "NOR", "Noruega": "NOR",
+        "Argentina": "ARG", "Argentina": "ARG",
+        "Algeria": "ALG", "Argélia": "ALG",
+        "Austria": "AUT", "Áustria": "AUT",
+        "Jordan": "JOR", "Jordânia": "JOR",
+        "Portugal": "POR", "Portugal": "POR",
+        "Congo DR": "COD", "RD do Congo": "COD", "DR Congo": "COD", "RD Congo": "COD",
+        "Uzbekistan": "UZB", "Uzbequistão": "UZB",
+        "Colombia": "COL", "Colômbia": "COL",
+        "England": "ENG", "Inglaterra": "ENG",
+        "Croatia": "CRO", "Croácia": "CRO",
+        "Ghana": "GHA", "Gana": "GHA",
+        "Panama": "PAN", "Panamá": "PAN"
+      };
 
-  // Criar script dinâmico com cache bypass (timestamp)
-  const script = document.createElement("script");
-  script.id = "data-script-dyn";
-  script.src = "data.js?t=" + Date.now();
-  script.onload = () => {
-    // Re-renderizar tudo com os dados recém-carregados
-    renderGroupTable();
-    renderBrackets();
-    initSelectors();
-    loadComparison();
-    
-    btn.innerHTML = `<span style="font-family: 'Space Mono', monospace; font-size: 0.75rem; color: var(--dark-accent);">Atualizado!</span>`;
-    setTimeout(() => {
-      btn.innerHTML = originalText;
-      btn.disabled = false;
-    }, 2500);
-  };
-  script.onerror = () => {
-    alert("Falha ao se conectar com o GitHub para obter atualizações em tempo real.");
-    btn.innerHTML = originalText;
-    btn.disabled = false;
-  };
-  document.body.appendChild(script);
+      // Resetar estatísticas dos grupos localmente
+      for (const groupKey in window.comparacopaData.groups) {
+        window.comparacopaData.groups[groupKey].forEach(team => {
+          team.pts = 0;
+          team.pj = 0;
+          team.v = 0;
+          team.e = 0;
+          team.d = 0;
+          team.gp = 0;
+          team.gc = 0;
+        });
+      }
+
+      // Criar mapa de busca por ID
+      const teamLookup = {};
+      for (const groupKey in window.comparacopaData.groups) {
+        window.comparacopaData.groups[groupKey].forEach(team => {
+          teamLookup[team.id] = team;
+        });
+      }
+
+      // Processar cada partida do JSON
+      if (data && data.matches) {
+        data.matches.forEach(match => {
+          const id1 = nameToId[match.team1];
+          const id2 = nameToId[match.team2];
+          const t1 = teamLookup[id1];
+          const t2 = teamLookup[id2];
+
+          // Se a partida tem placar final definido
+          if (t1 && t2 && match.score && match.score.ft) {
+            const goals1 = match.score.ft[0];
+            const goals2 = match.score.ft[1];
+
+            t1.pj += 1;
+            t2.pj += 1;
+            t1.gp += goals1;
+            t1.gc += goals2;
+            t2.gp += goals2;
+            t2.gc += goals1;
+
+            if (goals1 > goals2) {
+              t1.v += 1;
+              t1.pts += 3;
+              t2.d += 1;
+            } else if (goals1 < goals2) {
+              t2.v += 1;
+              t2.pts += 3;
+              t1.d += 1;
+            } else {
+              t1.e += 1;
+              t1.pts += 1;
+              t2.e += 1;
+              t2.pts += 1;
+            }
+          }
+        });
+      }
+
+      // Re-renderizar as abas e componentes da interface
+      renderGroupTable();
+      renderBrackets();
+      initSelectors();
+      loadComparison();
+
+      if (btn && !isSilent) {
+        btn.innerHTML = `<span style="font-family: 'Space Mono', monospace; font-size: 0.75rem; color: var(--dark-accent);">Atualizado!</span>`;
+        setTimeout(() => {
+          btn.innerHTML = originalText;
+          btn.disabled = false;
+        }, 2500);
+      }
+    })
+    .catch(error => {
+      console.error("Erro ao processar dados via API:", error);
+      if (!isSilent) {
+        alert("Falha ao se conectar. Carregando dados de backup local...");
+      }
+      
+      // Fallback para script local caso falte internet ou haja CORS
+      const oldScript = document.getElementById("data-script-dyn");
+      if (oldScript) oldScript.remove();
+
+      const script = document.createElement("script");
+      script.id = "data-script-dyn";
+      script.src = "data.js?t=" + Date.now();
+      script.onload = () => {
+        renderGroupTable();
+        renderBrackets();
+        initSelectors();
+        loadComparison();
+        if (btn && !isSilent) {
+          btn.innerHTML = originalText;
+          btn.disabled = false;
+        }
+      };
+      document.body.appendChild(script);
+    });
 }
 
 // Funções de Compartilhamento Social para Viralização
