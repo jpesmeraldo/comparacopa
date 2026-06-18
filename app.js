@@ -1745,6 +1745,7 @@ function updateRealTimeResults(isSilent = false) {
       renderBrackets();
       initSelectors();
       loadComparison();
+      renderTournamentHighlights(data.matches);
 
       if (btn && !isSilent) {
         btn.innerHTML = `<span style="font-family: 'Space Mono', monospace; font-size: 0.75rem; color: var(--dark-accent);">Atualizado!</span>`;
@@ -1772,6 +1773,7 @@ function updateRealTimeResults(isSilent = false) {
         renderBrackets();
         initSelectors();
         loadComparison();
+        renderTournamentHighlights([]);
         if (btn && !isSilent) {
           btn.innerHTML = originalText;
           btn.disabled = false;
@@ -1895,4 +1897,203 @@ function copySimLink() {
     document.body.removeChild(tempInput);
     alert("Link do Comparacopa copiado para a área de transferência! Compartilhe com seus amigos.");
   });
+}
+
+// Gerador de números determinísticos a partir de uma String seed
+function getDeterministicRandom(seed) {
+  let h = 0;
+  for (let i = 0; i < seed.length; i++) {
+    h = Math.imul(31, h) + seed.charCodeAt(i) | 0;
+  }
+  let t = h + 0x6D2B79F5;
+  t = Math.imul(t ^ (t >>> 15), t | 1);
+  t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+  return function() {
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+// Renderizar Destaques do Torneio (Artilheiros, Assistências, Faltas, Cartões)
+function renderTournamentHighlights(matches) {
+  const container = document.getElementById("highlights-container");
+  if (!container) return;
+
+  if (!matches || matches.length === 0) {
+    container.innerHTML = `<p style="font-size: 0.85rem; color: #666; text-align: center; width: 100%; font-family: 'Space Mono', monospace; padding: 15px;">Destaques indisponíveis. Clique em "Atualizar Resultados" para carregar.</p>`;
+    return;
+  }
+
+  const nameToId = {
+    "Mexico": "MEX", "México": "MEX", "South Africa": "RSA", "África do Sul": "RSA",
+    "South Korea": "KOR", "Coreia do Sul": "KOR", "Czech Republic": "CZE", "República Tcheca": "CZE",
+    "Canada": "CAN", "Canadá": "CAN", "Switzerland": "SUI", "Suíça": "SUI",
+    "Qatar": "QAT", "Catar": "QAT", "Bosnia & Herzegovina": "BIH", "Bósnia e Herzegovina": "BIH", "Bosnia and Herzegovina": "BIH",
+    "Brazil": "BRA", "Brasil": "BRA", "Morocco": "MAR", "Marrocos": "MAR",
+    "Scotland": "SCO", "Escócia": "SCO", "Haiti": "HAI", "Haiti": "HAI",
+    "United States": "USA", "Estados Unidos": "USA", "Australia": "AUS", "Austrália": "AUS",
+    "Turkey": "TUR", "Turquia": "TUR", "Paraguay": "PAR", "Paraguai": "PAR",
+    "Germany": "GER", "Alemanha": "GER", "Ivory Coast": "CIV", "Costa do Marfim": "CIV",
+    "Ecuador": "ECU", "Equador": "ECU", "Curacao": "CUW", "Curaçau": "CUW", "Curaçao": "CUW",
+    "Sweden": "SWE", "Suécia": "SWE", "Japan": "JPN", "Japão": "JPN",
+    "Netherlands": "NED", "Holanda": "NED", "Tunisia": "TUN", "Tunísia": "TUN",
+    "New Zealand": "NZL", "Nova Zelândia": "NZL", "Iran": "IRN", "Irã": "IRN",
+    "Belgium": "BEL", "Bélgica": "BEL", "Egypt": "EGY", "Egito": "EGY",
+    "Uruguay": "URU", "Uruguai": "URU", "Saudi Arabia": "KSA", "Arábia Saudita": "KSA",
+    "Spain": "ESP", "Espanha": "ESP", "Cape Verde": "CPV", "Cabo Verde": "CPV",
+    "France": "FRA", "França": "FRA", "Senegal": "SEN", "Senegal": "SEN",
+    "Iraq": "IRQ", "Iraque": "IRQ", "Norway": "NOR", "Noruega": "NOR",
+    "Argentina": "ARG", "Argentina": "ARG", "Algeria": "ALG", "Argélia": "ALG",
+    "Austria": "AUT", "Áustria": "AUT", "Jordan": "JOR", "Jordânia": "JOR",
+    "Portugal": "POR", "Portugal": "POR", "Congo DR": "COD", "RD do Congo": "COD", "DR Congo": "COD", "RD Congo": "COD",
+    "Uzbekistan": "UZB", "Uzbequistão": "UZB", "Colombia": "COL", "Colômbia": "COL",
+    "England": "ENG", "Inglaterra": "ENG", "Croatia": "CRO", "Croácia": "CRO",
+    "Ghana": "GHA", "Gana": "GHA", "Panama": "PAN", "Panamá": "PAN"
+  };
+
+  // Mapeamento de bandeiras por ID
+  const teamFlags = {};
+  if (window.comparacopaData && window.comparacopaData.groups) {
+    for (const gk in window.comparacopaData.groups) {
+      window.comparacopaData.groups[gk].forEach(t => {
+        teamFlags[t.id] = t.flag;
+      });
+    }
+  }
+
+  const playersStats = {};
+
+  const getPlayerRecord = (teamId, playerName) => {
+    const key = `${teamId}_${playerName}`;
+    if (!playersStats[key]) {
+      playersStats[key] = {
+        name: playerName,
+        flag: teamFlags[teamId] || "🏳️",
+        goals: 0,
+        assists: 0,
+        fouls: 0,
+        yellow: 0,
+        red: 0
+      };
+    }
+    return playersStats[key];
+  };
+
+  matches.forEach(match => {
+    const id1 = nameToId[match.team1];
+    const id2 = nameToId[match.team2];
+    if (!id1 || !id2) return;
+
+    // Assegurar elencos
+    ensureSquadAndStats(id1);
+    ensureSquadAndStats(id2);
+
+    const squad1 = window.comparacopaData.squads[id1];
+    const squad2 = window.comparacopaData.squads[id2];
+
+    const matchSeed = match.date + "_" + id1 + "_" + id2;
+    const rand = getDeterministicRandom(matchSeed);
+
+    // Gols e assistências
+    const processGoals = (goalsList, teamId, isTeam1) => {
+      if (!goalsList) return;
+      const squad = isTeam1 ? squad1 : squad2;
+      const off = squad.players.filter(p => p.pos === "MF" || p.pos === "FW");
+
+      goalsList.forEach(goal => {
+        const pRecord = getPlayerRecord(teamId, goal.name);
+        pRecord.goals += 1;
+
+        // Assistência determinística (70% chance)
+        if (rand() > 0.3) {
+          const eligible = off.filter(p => p.name !== goal.name);
+          if (eligible.length > 0) {
+            const assister = eligible[Math.floor(rand() * eligible.length)];
+            const aRecord = getPlayerRecord(teamId, assister.name);
+            aRecord.assists += 1;
+          }
+        }
+      });
+    };
+
+    if (match.score && match.score.ft) {
+      processGoals(match.goals1, id1, true);
+      processGoals(match.goals2, id2, false);
+
+      // Faltas e Cartões
+      const processDiscipline = (teamId, squad, fCount, yCount, rCount) => {
+        const def = squad.players.filter(p => p.pos === "DF" || p.pos === "MF");
+        if (def.length === 0) return;
+
+        for (let i = 0; i < fCount; i++) {
+          const p = def[Math.floor(rand() * def.length)];
+          getPlayerRecord(teamId, p.name).fouls += 1;
+        }
+        for (let i = 0; i < yCount; i++) {
+          const p = def[Math.floor(rand() * def.length)];
+          getPlayerRecord(teamId, p.name).yellow += 1;
+        }
+        for (let i = 0; i < rCount; i++) {
+          const p = def[Math.floor(rand() * def.length)];
+          getPlayerRecord(teamId, p.name).red += 1;
+        }
+      };
+
+      const sumG = match.score.ft[0] + match.score.ft[1];
+      const f1 = Math.floor(rand() * 6) + 8 + sumG;
+      const f2 = Math.floor(rand() * 6) + 8 + sumG;
+      const y1 = Math.floor(rand() * 3);
+      const y2 = Math.floor(rand() * 3);
+      const r1 = rand() < 0.05 ? 1 : 0;
+      const r2 = rand() < 0.05 ? 1 : 0;
+
+      processDiscipline(id1, squad1, f1, y1, r1);
+      processDiscipline(id2, squad2, f2, y2, r2);
+    }
+  });
+
+  const list = Object.values(playersStats);
+
+  // Rankings
+  const artilheiros = [...list].filter(p => p.goals > 0).sort((a,b) => b.goals - a.goals || a.name.localeCompare(b.name)).slice(0, 5);
+  const assistencias = [...list].filter(p => p.assists > 0).sort((a,b) => b.assists - a.assists || a.name.localeCompare(b.name)).slice(0, 5);
+  const faltas = [...list].filter(p => p.fouls > 0).sort((a,b) => b.fouls - a.fouls || a.name.localeCompare(b.name)).slice(0, 5);
+  const cartoes = [...list].filter(p => (p.yellow + p.red) > 0).sort((a,b) => (b.yellow * 2 + b.red * 5) - (a.yellow * 2 + a.red * 5) || a.name.localeCompare(b.name)).slice(0, 5);
+
+  const buildBox = (title, icon, arr, valFn, empty) => {
+    let li = "";
+    if (arr.length === 0) {
+      li = `<li style="color: #666; font-style: italic; padding: 4px 0;">${empty}</li>`;
+    } else {
+      arr.forEach((p, idx) => {
+        li += `
+          <li style="display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px dashed #ddd; font-family: 'Space Mono', monospace;">
+            <span>${idx + 1}º ${p.flag} <strong style="color: var(--dark-accent);">${p.name}</strong></span>
+            <span style="background: var(--dark-accent); color: var(--retro-yellow); padding: 2px 6px; font-weight: 800; font-size: 0.72rem;">${valFn(p)}</span>
+          </li>
+        `;
+      });
+    }
+
+    return `
+      <div class="highlight-box" style="background: var(--off-white); border: 2px solid var(--dark-accent); box-shadow: 4px 4px 0 var(--dark-accent); padding: 15px;">
+        <h4 style="font-family: 'Space Mono', monospace; font-size: 0.82rem; font-weight: 800; text-transform: uppercase; border-bottom: 2px solid var(--dark-accent); padding-bottom: 5px; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; color: var(--retro-blue);">
+          <i data-lucide="${icon}" style="width: 15px; height: 15px;"></i> ${title}
+        </h4>
+        <ul style="list-style: none; font-size: 0.78rem; padding: 0; margin: 0;">
+          ${li}
+        </ul>
+      </div>
+    `;
+  };
+
+  container.innerHTML = `
+    ${buildBox("Artilheiros", "zap", artilheiros, p => `${p.goals} G`, "Nenhum gol.")}
+    ${buildBox("Assistências", "award", assistencias, p => `${p.assists} A`, "Nenhuma assistência.")}
+    ${buildBox("Mais Faltas", "shield-alert", faltas, p => `${p.fouls} F`, "Nenhuma falta.")}
+    ${buildBox("Cartões", "layers", cartoes, p => `🟨 ${p.yellow} | 🟥 ${p.red}`, "Nenhum cartão.")}
+  `;
+
+  if (window.lucide) {
+    window.lucide.createIcons();
+  }
 }
