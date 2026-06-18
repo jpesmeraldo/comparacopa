@@ -1385,7 +1385,9 @@ function startMatchSimulation() {
 
     consoleBox.innerHTML += `<div class="sim-console-line">${logLine}</div>`;
     consoleBox.scrollTop = consoleBox.scrollHeight;
-  }, 1200);
+  };
+
+  simulationInterval = setInterval(runSimulationStep, 1000);
 }
 
 // Inicializar abas da Copa
