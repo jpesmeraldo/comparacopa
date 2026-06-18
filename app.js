@@ -1227,68 +1227,160 @@ function startMatchSimulation() {
   const defensePowerA = secA.def * formFactorsA.def;
   const defensePowerB = secB.def * formFactorsB.def;
 
-  // Lances narrativos possíveis
-  const narrativeTemplates = [
-    "{team} pressiona forte no campo de ataque!",
-    "{player} tenta o drible pela lateral, mas é desarmado.",
-    "Grande defesa de {gk}! Evita a abertura do placar.",
-    "Falta dura de {player}! Juiz adverte verbalmente.",
-    "Jogo truncado no meio campo. Muitas disputas físicas.",
-    "{player} chuta de fora da área! A bola passa raspando a trave!"
-  ];
+  let stats = {
+    A: { shots: 0, corners: 0, fouls: 0, yellow: 0, red: 0, possession: 50 },
+    B: { shots: 0, corners: 0, fouls: 0, yellow: 0, red: 0, possession: 50 }
+  };
 
-  simulationInterval = setInterval(() => {
-    minute += Math.floor(Math.random() * 8) + 5;
-    if (minute >= 90) {
-      minute = 90;
+  // Calcular posse de bola baseada no meio de campo e ataque
+  const totalPower = attackPowerA + attackPowerB;
+  stats.A.possession = Math.round((attackPowerA / totalPower) * 100);
+  stats.B.possession = 100 - stats.A.possession;
+
+  // Track player card warnings to avoid duplicate yellow card bugs
+  const playerWarnings = {};
+
+  let isHalfTimePaused = false;
+
+  const runSimulationStep = () => {
+    if (isHalfTimePaused) return;
+
+    minute += Math.floor(Math.random() * 5) + 3; // Lances mais rápidos
+
+    // Tratamento de Intervalo
+    if (minute >= 45 && minute < 50 && !isHalfTimePaused) {
+      minute = 45;
+      isHalfTimePaused = true;
       clearInterval(simulationInterval);
-      consoleBox.innerHTML += `<div class="sim-console-line" style="color: var(--retro-yellow); font-weight: 800;">&gt; [90'] FIM DE PAPO! Placar final: ${scoreA} x ${scoreB}. Obrigado pela audiência!</div>`;
+      
+      consoleBox.innerHTML += `
+        <div class="sim-console-line" style="color: var(--retro-blue); font-weight: 800; border-top: 2px dashed var(--dark-accent); border-bottom: 2px dashed var(--dark-accent); padding: 8px 0; margin: 10px 0; line-height: 1.4;">
+          &gt; [45'] === INTERVALO DE PARTIDA ===<br>
+          Placar parcial: ${activeTeamA} ${scoreA} x ${scoreB} ${activeTeamB}<br>
+          Estatísticas parciais:<br>
+          - Posse de Bola: ${stats.A.possession}% vs ${stats.B.possession}%<br>
+          - Finalizações: ${stats.A.shots} vs ${stats.B.shots}<br>
+          - Escanteios: ${stats.A.corners} vs ${stats.B.corners}<br>
+          - Faltas: ${stats.A.fouls} vs ${stats.B.fouls}<br>
+          - Amarelos/Vermelhos: ${stats.A.yellow}/${stats.A.red} vs ${stats.B.yellow}/${stats.B.red}
+        </div>
+      `;
       consoleBox.scrollTop = consoleBox.scrollHeight;
+
+      setTimeout(() => {
+        isHalfTimePaused = false;
+        minute = 46;
+        consoleBox.innerHTML += `<div class="sim-console-line" style="color: var(--retro-blue); font-weight: 800;">&gt; [46'] COMEÇA O SEGUNDO TEMPO! A bola volta a rolar!</div>`;
+        consoleBox.scrollTop = consoleBox.scrollHeight;
+        simulationInterval = setInterval(runSimulationStep, 1000);
+      }, 3000);
       return;
     }
 
-    // Decidir evento com base no duelo Ataque vs Defesa
+    // Fim de jogo
+    if (minute >= 90) {
+      minute = 90;
+      clearInterval(simulationInterval);
+      consoleBox.innerHTML += `<div class="sim-console-line" style="color: var(--retro-yellow); font-weight: 800; margin-top: 10px; border-top: 2px solid var(--dark-accent); padding-top: 8px;">&gt; [90'] FIM DE PAPO! Placar final: ${activeTeamA} ${scoreA} x ${scoreB} ${activeTeamB}. Obrigado pela audiência!</div>`;
+      consoleBox.scrollTop = consoleBox.scrollHeight;
+
+      // Exibir modal de resumo do confronto com atraso de 1.5s para suspense
+      setTimeout(() => {
+        showSummaryModal(scoreA, scoreB, stats);
+      }, 1500);
+      return;
+    }
+
+    // Decidir evento
     const randomVal = Math.random() * 100;
-    
-    // Chance de gol final adaptada taticamente
-    const chanceGoalA = 5.0 + (attackPowerA - defensePowerB) * 1.5;
-    const chanceGoalB = 5.0 + (attackPowerB - defensePowerA) * 1.5;
+    const chanceGoalA = 4.0 + (attackPowerA - defensePowerB) * 1.5;
+    const chanceGoalB = 4.0 + (attackPowerB - defensePowerA) * 1.5;
 
     let logLine = "";
 
+    // Goleadores realistas (meio-campistas ou atacantes, sem GK)
+    const getOffensivePlayer = (squad) => {
+      const off = squad.filter(p => p.pos !== "GK");
+      return off.length > 0 ? off[Math.floor(Math.random() * off.length)].name : "Jogador";
+    };
+
+    // Defensor realista
+    const getDefensivePlayer = (squad) => {
+      const def = squad.filter(p => p.pos === "DF" || p.pos === "MF");
+      return def.length > 0 ? def[Math.floor(Math.random() * def.length)].name : "Defensor";
+    };
+
     if (randomVal < chanceGoalA) {
-      // Gol do Time A
+      // GOL TIME A
       scoreA++;
       scoreBoxA.textContent = scoreA;
-      // Escolher goleador realista (meias e atacantes têm preferência)
-      const offensivePlayersA = squadA.filter(p => p.pos === "FW" || p.pos === "MF");
-      const scorer = offensivePlayersA.length > 0 ? offensivePlayersA[Math.floor(Math.random() * offensivePlayersA.length)].name : "Jogador";
-      logLine = `<span style="color: var(--neon-green); font-weight:800;">&gt; [${minute}'] GOOOOOOOOL do ${activeTeamA}! ${scorer} chuta forte no canto esquerdo sem chances! (${scoreA}-${scoreB})</span>`;
+      stats.A.shots++;
+      const scorer = getOffensivePlayer(squadA);
+      logLine = `<span style="color: var(--neon-green); font-weight:800;">&gt; [${minute}'] GOOOOOOOOL do ${activeTeamA}! ${scorer} chuta forte no canto sem chances! (${scoreA}-${scoreB})</span>`;
     } else if (randomVal < chanceGoalA + chanceGoalB) {
-      // Gol do Time B
+      // GOL TIME B
       scoreB++;
       scoreBoxB.textContent = scoreB;
-      const offensivePlayersB = squadB.filter(p => p.pos === "FW" || p.pos === "MF");
-      const scorer = offensivePlayersB.length > 0 ? offensivePlayersB[Math.floor(Math.random() * offensivePlayersB.length)].name : "Jogador";
-      logLine = `<span style="color: var(--neon-green); font-weight:800;">&gt; [${minute}'] GOOOOOOOOL do ${activeTeamB}! ${scorer} recebe cruzamento perfeito e escora de cabeça! (${scoreA}-${scoreB})</span>`;
-    } else {
-      // Lance normal de rádio
+      stats.B.shots++;
+      const scorer = getOffensivePlayer(squadB);
+      logLine = `<span style="color: var(--neon-green); font-weight:800;">&gt; [${minute}'] GOOOOOOOOL do ${activeTeamB}! ${scorer} recebe passe açucarado e balança as redes! (${scoreA}-${scoreB})</span>`;
+    } else if (randomVal < 35) {
+      // CHUTE SEM GOL
+      const isTeamA = Math.random() > 0.5;
+      const oppGk = isTeamA ? squadB[0].name : squadA[0].name;
+      const shooter = isTeamA ? getOffensivePlayer(squadA) : getOffensivePlayer(squadB);
+      
+      if (isTeamA) stats.A.shots++; else stats.B.shots++;
+
+      const shootTemplates = [
+        `&gt; [${minute}'] ${shooter} arrisca de fora da área e a bola explode na trave!`,
+        `&gt; [${minute}'] ${shooter} cabeceia firme no canto, mas ${oppGk} voa para mandar para escanteio!`,
+        `&gt; [${minute}'] ${shooter} recebe na cara do gol, mas finaliza mascado para fora.`
+      ];
+      logLine = shootTemplates[Math.floor(Math.random() * shootTemplates.length)];
+    } else if (randomVal < 50) {
+      // ESCANTEIO
+      const isTeamA = Math.random() > 0.5;
+      const team = isTeamA ? activeTeamA : activeTeamB;
+      if (isTeamA) stats.A.corners++; else stats.B.corners++;
+      logLine = `&gt; [${minute}'] Escanteio cobrado na área do ${team === activeTeamA ? activeTeamB : activeTeamA}! A zaga consegue afastar o perigo.`;
+    } else if (randomVal < 70) {
+      // FALTA E/OU CARTÃO
       const isTeamA = Math.random() > 0.5;
       const actingTeam = isTeamA ? activeTeamA : activeTeamB;
-      const oppTeam = isTeamA ? activeTeamB : activeTeamA;
-      const actingSquad = isTeamA ? squadA : squadB;
-      const oppSquad = isTeamA ? squadB : squadA;
-
-      const randomPlayer = actingSquad[Math.floor(Math.random() * 11)].name;
-      const oppGk = oppSquad[0].name;
-
-      const template = narrativeTemplates[Math.floor(Math.random() * narrativeTemplates.length)];
-      const text = template
-        .replace("{team}", actingTeam)
-        .replace("{player}", randomPlayer)
-        .replace("{gk}", oppGk);
+      const foulSquad = isTeamA ? squadA : squadB;
+      const foulPlayer = getDefensivePlayer(foulSquad);
       
-      logLine = `&gt; [${minute}'] ${text}`;
+      if (isTeamA) stats.A.fouls++; else stats.B.fouls++;
+
+      const cardChance = Math.random();
+      if (cardChance < 0.20) {
+        // CARTÃO AMARELO ou VERMELHO
+        if (isTeamA) stats.A.yellow++; else stats.B.yellow++;
+        
+        let cardText = `<span style="color: #ffdf00; font-weight: 700;">cartão amarelo</span>`;
+        if (playerWarnings[foulPlayer]) {
+          // Segundo amarelo -> Vermelho
+          if (isTeamA) { stats.A.yellow--; stats.A.red++; } else { stats.B.yellow--; stats.B.red++; }
+          cardText = `<span style="color: #e74c3c; font-weight: 800;">segundo amarelo e CARTÃO VERMELHO</span>`;
+        } else {
+          playerWarnings[foulPlayer] = true;
+        }
+        logLine = `&gt; [${minute}'] Falta violenta de ${foulPlayer} (${actingTeam})! O árbitro mostra o ${cardText}.`;
+      } else {
+        logLine = `&gt; [${minute}'] Falta cometida por ${foulPlayer} (${actingTeam}) no grande círculo.`;
+      }
+    } else {
+      // LANCE NORMAL
+      const isTeamA = Math.random() > 0.5;
+      const team = isTeamA ? activeTeamA : activeTeamB;
+      const player = isTeamA ? getOffensivePlayer(squadA) : getOffensivePlayer(squadB);
+      const normalTemplates = [
+        `&gt; [${minute}'] ${team} trabalha a bola com paciência no meio-campo.`,
+        `&gt; [${minute}'] ${player} tenta a jogada individual pela lateral, mas sai com bola e tudo.`,
+        `&gt; [${minute}'] Troca de passes rápida de ${team} procurando brechas na defesa adversária.`
+      ];
+      logLine = normalTemplates[Math.floor(Math.random() * normalTemplates.length)];
     }
 
     consoleBox.innerHTML += `<div class="sim-console-line">${logLine}</div>`;
@@ -1712,5 +1804,95 @@ function copyLink() {
     document.execCommand("copy");
     document.body.removeChild(tempInput);
     alert("Link copiado para a área de transferência! Envie para seus amigos no WhatsApp ou redes sociais.");
+  });
+}
+
+// Estado da última simulação para o Modal de Compartilhamento
+let lastSimResult = {
+  teamAName: "",
+  teamBName: "",
+  scoreA: 0,
+  scoreB: 0
+};
+
+// Funções do Modal de Resumo de Partida Simulada
+function showSummaryModal(scoreA, scoreB, stats) {
+  let flagA = "🇧🇷";
+  let nameA = activeTeamA;
+  let flagB = "🇫🇷";
+  let nameB = activeTeamB;
+
+  // Resolver bandeiras e nomes reais percorrendo todos os grupos cadastrados
+  if (window.comparacopaData && window.comparacopaData.groups) {
+    for (const gk in window.comparacopaData.groups) {
+      const ta = window.comparacopaData.groups[gk].find(t => t.id === activeTeamA);
+      if (ta) { flagA = ta.flag; nameA = ta.name; }
+      const tb = window.comparacopaData.groups[gk].find(t => t.id === activeTeamB);
+      if (tb) { flagB = tb.flag; nameB = tb.name; }
+    }
+  }
+
+  // Guardar estado para os links de compartilhamento
+  lastSimResult = {
+    teamAName: nameA,
+    teamBName: nameB,
+    scoreA: scoreA,
+    scoreB: scoreB
+  };
+
+  // Preencher os dados no modal
+  document.getElementById("sum-flag-a").textContent = flagA;
+  document.getElementById("sum-name-a").textContent = nameA;
+  document.getElementById("sum-flag-b").textContent = flagB;
+  document.getElementById("sum-name-b").textContent = nameB;
+  document.getElementById("sum-score").textContent = `${scoreA} - ${scoreB}`;
+
+  document.getElementById("sum-poss-a").textContent = `${stats.A.possession}%`;
+  document.getElementById("sum-poss-b").textContent = `${stats.B.possession}%`;
+  document.getElementById("sum-shots-a").textContent = stats.A.shots;
+  document.getElementById("sum-shots-b").textContent = stats.B.shots;
+  document.getElementById("sum-corners-a").textContent = stats.A.corners;
+  document.getElementById("sum-corners-b").textContent = stats.B.corners;
+  document.getElementById("sum-fouls-a").textContent = stats.A.fouls;
+  document.getElementById("sum-fouls-b").textContent = stats.B.fouls;
+  document.getElementById("sum-cards-a").textContent = `${stats.A.yellow} / ${stats.A.red}`;
+  document.getElementById("sum-cards-b").textContent = `${stats.B.yellow} / ${stats.B.red}`;
+
+  // Exibir overlay do modal
+  document.getElementById("summary-modal").style.display = "flex";
+  
+  // Recriar ícones lucide dentro do modal
+  if (window.lucide) {
+    window.lucide.createIcons();
+  }
+}
+
+function closeSummaryModal() {
+  document.getElementById("summary-modal").style.display = "none";
+}
+
+function shareSimWhatsApp() {
+  const resultText = `${lastSimResult.teamAName} ${lastSimResult.scoreA} x ${lastSimResult.scoreB} ${lastSimResult.teamBName}`;
+  const text = encodeURIComponent(`Simulei o confronto ${resultText} no Comparacopa! Quem tem o melhor elenco e tática? Faça sua simulação você também em: http://comparacopa.com.br`);
+  window.open(`https://api.whatsapp.com/send?text=${text}`, '_blank');
+}
+
+function shareSimTwitter() {
+  const resultText = `${lastSimResult.teamAName} ${lastSimResult.scoreA} x ${lastSimResult.scoreB} ${lastSimResult.teamBName}`;
+  const text = encodeURIComponent(`Simulei ${resultText} no Comparacopa! Monte sua tática e compare as seleções você também em: http://comparacopa.com.br`);
+  window.open(`https://twitter.com/intent/tweet?text=${text}`, '_blank');
+}
+
+function copySimLink() {
+  navigator.clipboard.writeText("http://comparacopa.com.br").then(() => {
+    alert("Link do Comparacopa copiado para a área de transferência! Compartilhe com seus amigos.");
+  }).catch(() => {
+    const tempInput = document.createElement("input");
+    tempInput.value = "http://comparacopa.com.br";
+    document.body.appendChild(tempInput);
+    tempInput.select();
+    document.execCommand("copy");
+    document.body.removeChild(tempInput);
+    alert("Link do Comparacopa copiado para a área de transferência! Compartilhe com seus amigos.");
   });
 }
