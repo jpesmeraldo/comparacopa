@@ -7,6 +7,8 @@
   <link rel="stylesheet" href="style.css">
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- html2canvas -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <!-- Google AdSense -->
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3265573685840385"
      crossorigin="anonymous"></script>
@@ -573,6 +575,35 @@
         <button class="neo-btn" style="background: var(--off-white); color: var(--dark-accent); display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: 800; font-size: 0.9rem;" onclick="copySimLink()">
           <i data-lucide="copy" style="width: 18px; height: 18px;"></i> Copiar Link do Comparacopa
         </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hidden Challenge Card for Image Generation -->
+  <div id="challenge-card-export" style="position: absolute; top: -9999px; left: -9999px; width: 600px; padding: 30px; background: var(--off-white); border: 4px solid var(--dark-accent); font-family: 'Outfit', sans-serif; box-sizing: border-box;">
+    <div style="text-align: center; margin-bottom: 20px;">
+      <h2 style="font-weight: 900; font-size: 2.2rem; text-transform: uppercase; color: var(--dark-accent); margin: 0; line-height: 1;">DESAFIO COMPARACOPA</h2>
+      <div style="font-family: 'Space Mono', monospace; font-size: 1rem; font-weight: 800; color: var(--retro-red); margin-top: 5px;">EU DUVIDO VOCÊ BATER ESSE PLACAR!</div>
+    </div>
+    
+    <div style="background: var(--dark-accent); color: var(--retro-yellow); font-family: 'Space Mono', monospace; font-size: 2rem; font-weight: 800; padding: 20px; text-align: center; border: 3px solid var(--dark-accent); margin-bottom: 25px;">
+      <span id="cc-team-a">BRA</span> <span id="cc-score-a" style="color: var(--off-white);">2</span> x <span id="cc-score-b" style="color: var(--off-white);">1</span> <span id="cc-team-b">ARG</span>
+    </div>
+
+    <div style="background: #fff; border: 3px solid var(--dark-accent); padding: 15px; margin-bottom: 20px; box-shadow: 4px 4px 0 var(--retro-blue);">
+      <h3 style="font-size: 1.2rem; font-weight: 800; text-transform: uppercase; margin-bottom: 10px; color: var(--dark-accent); border-bottom: 2px solid var(--dark-accent); padding-bottom: 5px;">Minha Tática: <span id="cc-formation" style="color: var(--retro-red);">4-3-3</span></h3>
+      
+      <div>
+        <h4 style="font-size: 0.95rem; font-weight: 800; color: var(--retro-blue); margin-bottom: 8px;">Destaques da Equipe</h4>
+        <div id="cc-stars-list" style="display: flex; flex-wrap: wrap; gap: 10px; font-size: 0.9rem; font-weight: 600;">
+          <!-- Dinâmico -->
+        </div>
+      </div>
+    </div>
+
+    <div style="text-align: center; font-size: 1.1rem; font-weight: 800; color: var(--dark-accent);">
+      <div style="background: var(--retro-yellow); display: inline-block; padding: 8px 15px; border: 2px solid var(--dark-accent); box-shadow: 3px 3px 0 var(--dark-accent); transform: rotate(-2deg);">
+        Acesse comparacopa.com.br e aceite o desafio!
       </div>
     </div>
   </div>

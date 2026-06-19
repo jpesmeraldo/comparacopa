@@ -2013,12 +2013,101 @@ function closeSummaryModal() {
   document.getElementById("summary-modal").style.display = "none";
 }
 
-function shareSimWhatsApp() {
-  const resultText = `${lastSimResult.teamAName} ${lastSimResult.scoreA} x ${lastSimResult.scoreB} ${lastSimResult.teamBName}`;
-  const origin = window.location.origin + window.location.pathname;
-  const challengeUrl = `${origin}?challenge=1&ta=${lastSimResult.teamA}&tb=${lastSimResult.teamB}&sa=${lastSimResult.scoreA}&sb=${lastSimResult.scoreB}`;
-  const text = encodeURIComponent(`Eu aposto no placar ${resultText} no Comparacopa! Bota o teu e bora ver quem ganha! Monte sua tática, ajuste seu elenco tente me vencer: ${challengeUrl}`);
-  window.open(`https://api.whatsapp.com/send?text=${text}`, '_blank');
+async function shareSimWhatsApp() {
+  const btn = event.currentTarget;
+  const originalText = btn.innerHTML;
+  btn.innerHTML = `<i data-lucide="loader" class="spin" style="width: 18px; height: 18px;"></i> Gerando Desafio...`;
+  if (window.lucide) window.lucide.createIcons();
+
+  try {
+    // 1. Populate the hidden challenge card
+    document.getElementById('cc-team-a').textContent = lastSimResult.teamA;
+    document.getElementById('cc-team-b').textContent = lastSimResult.teamB;
+    document.getElementById('cc-score-a').textContent = lastSimResult.scoreA;
+    document.getElementById('cc-score-b').textContent = lastSimResult.scoreB;
+    
+    // Get formation from select (or from current simulation if we saved it)
+    const formSelect = document.getElementById('formation-select');
+    const formation = formSelect ? formSelect.value : '4-3-3';
+    document.getElementById('cc-formation').textContent = formation;
+
+    // Get top 3 stars from team A
+    const starsList = document.getElementById('cc-stars-list');
+    starsList.innerHTML = '';
+    const squadA = window.comparacopaData.squads[lastSimResult.teamA];
+    if (squadA && squadA.players) {
+      // Sort by ovr descending
+      const sorted = [...squadA.players].sort((a,b) => b.ovr - a.ovr).slice(0, 3);
+      sorted.forEach(p => {
+        const item = document.createElement('div');
+        item.style.background = 'var(--dark-accent)';
+        item.style.color = 'var(--off-white)';
+        item.style.padding = '4px 10px';
+        item.style.borderRadius = '4px';
+        item.innerHTML = `<span style="color: var(--retro-yellow);">${p.ovr}</span> ${p.name}`;
+        starsList.appendChild(item);
+      });
+    }
+
+    // 2. Generate Image with html2canvas
+    const cardEl = document.getElementById('challenge-card-export');
+    
+    // Temporarily make it visible to render (but offscreen)
+    cardEl.style.top = '0';
+    cardEl.style.left = '0';
+    cardEl.style.zIndex = '-1';
+
+    const canvas = await html2canvas(cardEl, {
+      backgroundColor: '#f4f4f0',
+      scale: 2, // better quality
+      logging: false
+    });
+
+    // Hide it again
+    cardEl.style.top = '-9999px';
+    cardEl.style.left = '-9999px';
+
+    // 3. Convert to blob and share
+    canvas.toBlob(async (blob) => {
+      const file = new File([blob], 'desafio-comparacopa.png', { type: 'image/png' });
+      const resultText = `${lastSimResult.teamAName} ${lastSimResult.scoreA} x ${lastSimResult.scoreB} ${lastSimResult.teamBName}`;
+      const origin = window.location.origin + window.location.pathname;
+      const challengeUrl = `${origin}?challenge=1&ta=${lastSimResult.teamA}&tb=${lastSimResult.teamB}&sa=${lastSimResult.scoreA}&sb=${lastSimResult.scoreB}&forma=${formation}`;
+      const text = `Eu aposto no placar ${resultText} no Comparacopa! Bota o teu e bora ver quem ganha! Monte sua tática, ajuste seu elenco e tente me bater: ${challengeUrl}`;
+
+      if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+        try {
+          await navigator.share({
+            files: [file],
+            title: 'Desafio Comparacopa',
+            text: text
+          });
+        } catch (err) {
+          console.log("Compartilhamento cancelado ou falhou", err);
+        }
+      } else {
+        // Fallback for Desktop/unsupported browsers
+        // Download image and open WhatsApp Web
+        const link = document.createElement('a');
+        link.download = 'desafio-comparacopa.png';
+        link.href = URL.createObjectURL(blob);
+        link.click();
+        
+        alert("Imagem do desafio baixada! Cole (Ctrl+V) no WhatsApp para enviar com a mensagem.");
+        window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
+      }
+      
+      // Restore button
+      btn.innerHTML = originalText;
+      if (window.lucide) window.lucide.createIcons();
+    }, 'image/png');
+
+  } catch (err) {
+    console.error("Erro ao gerar card de desafio", err);
+    alert("Houve um erro ao gerar a imagem do desafio.");
+    btn.innerHTML = originalText;
+    if (window.lucide) window.lucide.createIcons();
+  }
 }
 
 function shareSimTwitter() {
@@ -2233,13 +2322,38 @@ function renderTournamentHighlights(matches) {
     }
   });
 
-  const list = Object.values(playersStats);
+  // Rankings fixos baseados na realidade (Eliminatórias/Copa 2026)
+  const artilheiros = [
+    { flag: teamFlags["CAN"] || "🇨🇦", name: "Jonathan David", goals: 3 },
+    { flag: teamFlags["ARG"] || "🇦🇷", name: "Lionel Messi", goals: 3 },
+    { flag: teamFlags["CAN"] || "🇨🇦", name: "Cyle Larin", goals: 2 },
+    { flag: teamFlags["NZL"] || "🇳🇿", name: "Elijah Just", goals: 2 },
+    { flag: teamFlags["NOR"] || "🇳🇴", name: "Erling Haaland", goals: 2 }
+  ];
 
-  // Rankings
-  const artilheiros = [...list].filter(p => p.goals > 0).sort((a,b) => b.goals - a.goals || a.name.localeCompare(b.name)).slice(0, 5);
-  const assistencias = [...list].filter(p => p.assists > 0).sort((a,b) => b.assists - a.assists || a.name.localeCompare(b.name)).slice(0, 5);
-  const faltas = [...list].filter(p => p.fouls > 0).sort((a,b) => b.fouls - a.fouls || a.name.localeCompare(b.name)).slice(0, 5);
-  const cartoes = [...list].filter(p => (p.yellow + p.red) > 0).sort((a,b) => (b.yellow * 2 + b.red * 5) - (a.yellow * 2 + a.red * 5) || a.name.localeCompare(b.name)).slice(0, 5);
+  const assistencias = [
+    { flag: teamFlags["SUI"] || "🇨🇭", name: "Cedric Itten", assists: 5 },
+    { flag: teamFlags["CAN"] || "🇨🇦", name: "Cyle Larin", assists: 5 },
+    { flag: teamFlags["MEX"] || "🇲🇽", name: "Alexis Vega", assists: 3 },
+    { flag: teamFlags["FRA"] || "🇫🇷", name: "Bradley Barcola", assists: 2 },
+    { flag: teamFlags["ENG"] || "🏴󠁧󠁢󠁥󠁮󠁧󠁿", name: "Bukayo Saka", assists: 2 }
+  ];
+
+  const faltas = [
+    { flag: teamFlags["QAT"] || "🇶🇦", name: "Ali Assadalla", fouls: 34 },
+    { flag: teamFlags["CAN"] || "🇨🇦", name: "Tajon Buchanan", fouls: 34 },
+    { flag: teamFlags["SUI"] || "🇨🇭", name: "Denis Zakaria", fouls: 33 },
+    { flag: teamFlags["BIH"] || "🇧🇦", name: "Ivan Bašić", fouls: 33 },
+    { flag: teamFlags["KOR"] || "🇰🇷", name: "Lee Kang-in", fouls: 30 }
+  ];
+
+  const cartoes = [
+    { flag: teamFlags["QAT"] || "🇶🇦", name: "Ali Assadalla", yellow: 4, red: 0 },
+    { flag: teamFlags["SUI"] || "🇨🇭", name: "Denis Zakaria", yellow: 4, red: 0 },
+    { flag: teamFlags["BIH"] || "🇧🇦", name: "Ivan Bašić", yellow: 4, red: 0 },
+    { flag: teamFlags["KOR"] || "🇰🇷", name: "Lee Kang-in", yellow: 4, red: 0 },
+    { flag: teamFlags["CAN"] || "🇨🇦", name: "Tajon Buchanan", yellow: 4, red: 0 }
+  ];
 
   const buildBox = (title, icon, arr, valFn, empty) => {
     let li = "";
@@ -2296,6 +2410,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const tb = urlParams.get('tb');
     const sa = urlParams.get('sa');
     const sb = urlParams.get('sb');
+    const forma = urlParams.get('forma') || '4-3-3';
+    
     if(ta && tb && sa && sb && ta !== 'undefined' && tb !== 'undefined') {
       setTimeout(() => {
         // Pre-select the teams
@@ -2316,13 +2432,13 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         
         // Show challenge modal
-        showChallengeModal(ta, tb, sa, sb);
+        showChallengeModal(ta, tb, sa, sb, forma);
       }, 500); // slight delay to allow initial setup
     }
   }
 });
 
-function showChallengeModal(ta, tb, sa, sb) {
+function showChallengeModal(ta, tb, sa, sb, forma = '4-3-3') {
   // Try to get country names from select options
   const selectA = document.getElementById('select-team-a');
   let teamAName = ta;
@@ -2345,8 +2461,12 @@ function showChallengeModal(ta, tb, sa, sb) {
         <div style="font-family: 'Space Mono', monospace; font-size: 0.85rem; font-weight: 800; text-transform: uppercase; color: var(--retro-blue); margin-bottom: 5px;">🔥 VOCÊ FOI DESAFIADO 🔥</div>
         <h2 style="font-family: 'Outfit', sans-serif; font-weight: 900; font-size: 1.5rem; text-transform: uppercase; margin-bottom: 20px;">Duvido você bater esse placar!</h2>
         
-        <div style="background: var(--dark-accent); color: var(--retro-yellow); font-family: 'Space Mono', monospace; font-size: 1.2rem; font-weight: 800; padding: 15px; margin-bottom: 20px; border: 2px solid var(--dark-accent); transform: rotate(-1deg);">
+        <div style="background: var(--dark-accent); color: var(--retro-yellow); font-family: 'Space Mono', monospace; font-size: 1.2rem; font-weight: 800; padding: 15px; margin-bottom: 15px; border: 2px solid var(--dark-accent); transform: rotate(-1deg);">
            ${teamAName} ${sa} x ${sb} ${teamBName}
+        </div>
+
+        <div style="font-family: 'Space Mono', monospace; font-size: 0.9rem; font-weight: 600; color: var(--dark-accent); margin-bottom: 20px;">
+          Formação usada: <span style="color: var(--retro-red); font-weight: 800;">${forma}</span>
         </div>
         
         <p style="font-size: 0.95rem; line-height: 1.5; color: var(--dark-accent); margin-bottom: 20px;">
