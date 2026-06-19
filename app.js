@@ -284,7 +284,7 @@ function getPlayerNamesByNationality(teamId) {
     // Grupo B
     CAN: [
       "Maxime Crépeau", "Alistair Johnston", "Moïse Bombito", "Derek Cornelius", "Luc de Fougerolles",
-      "Stephen Eustaquio", "Ismaël Koné", "Tajon Buchanan", "Tajon Buchanan", "Jonathan David",
+      "Stephen Eustaquio", "Ismaël Koné", "Tajon Buchanan", "Alphonso Davies", "Jonathan David",
       "Cyle Larin", // Reservas
       "Dayne St. Clair", "Owen Goodman", "Alfie Jones", "Joel Waterman", "Niko Sigur",
       "Mathieu Choinière", "Liam Millar", "Jacob Shaffelburg", "Jayden Nelson", "Tani Oluwaseyi",
@@ -320,7 +320,7 @@ function getPlayerNamesByNationality(teamId) {
       "Casemiro", "B. Guimarães", "L. Paquetá", "Raphinha", "Neymar",
       "Vini Júnior", // Reservas
       "Ederson", "Weverton", "Bremer", "Douglas Santos", "Léo Pereira",
-      "Roger Ibañez", "Danilo", "Éderson", "Fabinho", "Endrick",
+      "Roger Ibañez", "Yan Couto", "Éderson", "Fabinho", "Endrick",
       "G. Martinelli", "Igor Thiago", "Luiz Henrique", "Matheus Cunha", "Rayan"
     ],
     MAR: [
@@ -527,14 +527,14 @@ function getPlayerNamesByNationality(teamId) {
       "Sadio Mane", // Reservas
       "Yehvann Diouf", "Mory Diaw", "Mamadou Sarr", "Abdoulaye Seck", "E. Malick Diouf",
       "Idrissa Gueye", "Pathe Ciss", "Habib Diarra", "Bamba Dieng", "Iliman Ndiaye",
-      "Ibrahim Mbaye", "Mory Diaw", "Antoine Mendy", "Bara Sapoko Ndiaye", "Cherif Ndiaye"
+      "Ibrahim Mbaye", "Seny Dieng", "Antoine Mendy", "Bara Sapoko Ndiaye", "Cherif Ndiaye"
     ],
     IRQ: [
       "Jalal Hassan", "Hussein Ali", "Saad Natiq", "Rebin Sulaka", "Merchas Doski",
       "Amir Al-Ammari", "Osama Rashid", "Ibrahim Bayesh", "Ali Jasim", "Youssef Amyn",
       "Aymen Hussein", // Reservas
       "Fahad Talib", "Ahmed Basil", "Ali Adnan", "Frans Putros", "Zaid Tahseen",
-      "Mustafa Saadoun", "Amjad Attwan", "Bashar Resan", "Zidan Iqbal", "Youssef Amyn",
+      "Mustafa Saadoun", "Amjad Attwan", "Bashar Resan", "Zidan Iqbal", "Muntadher Mohammed",
       "Mohanad Ali", "Ali Al-Hamadi", "Montader Madjed", "Danilo Al-Saed"
     ],
     NOR: [
@@ -550,7 +550,7 @@ function getPlayerNamesByNationality(teamId) {
       "E. Martínez", "N. Molina", "C. Romero", "N. Otamendi", "N. Tagliafico",
       "R. De Paul", "Enzo F.", "Mac Allister", "L. Messi", "J. Álvarez",
       "L. Martínez", // Reservas
-      "G. Rulli", "Juan Musso", "L. Martínez", "G. Montiel", "L. Balerdi",
+      "G. Rulli", "Juan Musso", "Lisandro M.", "G. Montiel", "L. Balerdi",
       "Facundo Medina", "L. Paredes", "G. Lo Celso", "E. Palacios", "Valentín Barco",
       "Flaco López", "Nico González", "Thiago Almada", "G. Simeone", "Nico Paz"
     ],
