@@ -46,7 +46,10 @@ window.comparacopaData = {
     HAI: "Sebastien Migne",
     PAN: "Thomas Christiansen",
     CUW: "Dick Advocaat",
-    RSA: "Hugo Broos"
+    RSA: "Hugo Broos",
+    QAT: "Julen Lopetegui",
+    JOR: "Jamal Sellami",
+    COD: "Sébastien Desabre"
   },
 
   // Paleta de Cores de Destaque para times do G8
@@ -198,7 +201,9 @@ window.comparacopaData = {
     MAR: { wins: 54, draws: 24, losses: 22, goalsScored: 155, goalsConceded: 95, cleanSheets: 36, form: ["V", "V", "V", "E", "V"] },
     KSA: { wins: 48, draws: 22, losses: 30, goalsScored: 140, goalsConceded: 110, cleanSheets: 28, form: ["V", "E", "D", "V", "V"] },
     JOR: { wins: 42, draws: 26, losses: 32, goalsScored: 125, goalsConceded: 115, cleanSheets: 25, form: ["E", "V", "V", "D", "V"] },
-    EGY: { wins: 55, draws: 25, losses: 20, goalsScored: 158, goalsConceded: 92, cleanSheets: 37, form: ["V", "E", "V", "V", "D"] }
+    EGY: { wins: 55, draws: 25, losses: 20, goalsScored: 158, goalsConceded: 92, cleanSheets: 37, form: ["V", "E", "V", "V", "D"] },
+    CAN: { wins: 45, draws: 22, losses: 33, goalsScored: 140, goalsConceded: 110, cleanSheets: 28, form: ["V", "V", "D", "E", "V"] },
+    CPV: { wins: 40, draws: 25, losses: 35, goalsScored: 120, goalsConceded: 105, cleanSheets: 26, form: ["D", "E", "V", "V", "V"] }
   },
 
   // Escalações oficiais, posições e dados reais dos convocados de 2026
@@ -1782,6 +1787,71 @@ window.comparacopaData = {
         { name: "Mostafa Fathi", pos: "FW", club: "Pyramids", ovr: 74, pac: 84, sho: 72, pas: 72, dri: 80, def: 40, phy: 60 },
         { name: "Mahmoud Kahraba", pos: "FW", club: "Al Ahly", ovr: 74, pac: 82, sho: 74, pas: 70, dri: 76, def: 45, phy: 68 },
         { name: "Omar Marmoush", pos: "FW", club: "Eintracht F.", ovr: 78, pac: 86, sho: 76, pas: 74, dri: 82, def: 45, phy: 74 }
+      ]
+    },
+    CAN: {
+      formation: "4-3-3",
+      players: [
+        { name: "Maxime Crépeau", pos: "GK", no: 23, club: "Portland", ovr: 74, pac: 70, sho: 25, pas: 65, dri: 70, def: 74, phy: 72, x: 50, y: 12 },
+        { name: "Alistair Johnston", pos: "DF", no: 2, club: "Celtic", ovr: 76, pac: 80, sho: 55, pas: 72, dri: 74, def: 74, phy: 80, x: 85, y: 35 },
+        { name: "Moïse Bombito", pos: "DF", no: 15, club: "Colorado", ovr: 72, pac: 82, sho: 40, pas: 65, dri: 68, def: 70, phy: 76, x: 65, y: 28 },
+        { name: "Derek Cornelius", pos: "DF", no: 13, club: "Malmo", ovr: 72, pac: 70, sho: 45, pas: 60, dri: 62, def: 72, phy: 78, x: 35, y: 28 },
+        { name: "Alphonso Davies", pos: "DF", no: 19, club: "Bayern", ovr: 84, pac: 95, sho: 68, pas: 78, dri: 84, def: 76, phy: 76, x: 15, y: 35 },
+        { name: "Stephen Eustáquio", pos: "MF", no: 7, club: "Porto", ovr: 78, pac: 72, sho: 70, pas: 80, dri: 76, def: 74, phy: 76, x: 50, y: 50 },
+        { name: "Ismaël Koné", pos: "MF", no: 8, club: "Watford", ovr: 74, pac: 76, sho: 68, pas: 74, dri: 78, def: 65, phy: 72, x: 30, y: 55 },
+        { name: "Jonathan Osorio", pos: "MF", no: 21, club: "Toronto FC", ovr: 74, pac: 70, sho: 72, pas: 74, dri: 76, def: 65, phy: 70, x: 70, y: 55 },
+        { name: "Jonathan David", pos: "FW", no: 10, club: "Lille", ovr: 80, pac: 84, sho: 82, pas: 74, dri: 80, def: 40, phy: 74, x: 80, y: 80 },
+        { name: "Cyle Larin", pos: "FW", no: 9, club: "Mallorca", ovr: 76, pac: 78, sho: 78, pas: 68, dri: 72, def: 40, phy: 80, x: 50, y: 85 },
+        { name: "Tajon Buchanan", pos: "FW", no: 16, club: "Inter", ovr: 76, pac: 88, sho: 70, pas: 72, dri: 80, def: 55, phy: 68, x: 20, y: 80 }
+      ],
+      bench: [
+        { name: "Dayne St. Clair", pos: "GK", club: "Minnesota", ovr: 72, pac: 68, sho: 25, pas: 62, dri: 68, def: 72, phy: 70 },
+        { name: "Thomas McGill", pos: "GK", club: "Brighton", ovr: 66, pac: 64, sho: 20, pas: 60, dri: 62, def: 66, phy: 65 },
+        { name: "Luc de Fougerolles", pos: "DF", club: "Fulham", ovr: 68, pac: 74, sho: 40, pas: 62, dri: 65, def: 66, phy: 68 },
+        { name: "Kamal Miller", pos: "DF", club: "Portland", ovr: 72, pac: 68, sho: 45, pas: 64, dri: 65, def: 72, phy: 76 },
+        { name: "Joel Waterman", pos: "DF", club: "Montréal", ovr: 70, pac: 68, sho: 40, pas: 65, dri: 65, def: 70, phy: 74 },
+        { name: "Kyle Hiebert", pos: "DF", club: "St. Louis", ovr: 68, pac: 70, sho: 35, pas: 60, dri: 62, def: 68, phy: 70 },
+        { name: "Samuel Piette", pos: "MF", club: "Montréal", ovr: 72, pac: 65, sho: 55, pas: 70, dri: 68, def: 70, phy: 76 },
+        { name: "Ali Ahmed", pos: "MF", club: "Vancouver", ovr: 68, pac: 76, sho: 60, pas: 68, dri: 72, def: 60, phy: 64 },
+        { name: "Richie Laryea", pos: "DF", club: "Toronto FC", ovr: 72, pac: 84, sho: 60, pas: 68, dri: 72, def: 66, phy: 70 },
+        { name: "Tajon Buchanan", pos: "FW", club: "Inter", ovr: 76, pac: 88, sho: 70, pas: 72, dri: 80, def: 55, phy: 68 },
+        { name: "Jacob Shaffelburg", pos: "FW", club: "Nashville", ovr: 70, pac: 85, sho: 66, pas: 68, dri: 72, def: 45, phy: 65 },
+        { name: "Theo Bair", pos: "FW", club: "Motherwell", ovr: 68, pac: 78, sho: 68, pas: 60, dri: 68, def: 35, phy: 76 },
+        { name: "Jacen Russell-Rowe", pos: "FW", club: "Columbus", ovr: 66, pac: 76, sho: 65, pas: 60, dri: 66, def: 35, phy: 68 },
+        { name: "Tani Oluwaseyi", pos: "FW", club: "Minnesota", ovr: 68, pac: 80, sho: 66, pas: 62, dri: 68, def: 35, phy: 70 }
+      ]
+    },
+    CPV: {
+      formation: "4-3-3",
+      players: [
+        { name: "Vozinha", pos: "GK", no: 1, club: "Trencin", ovr: 72, pac: 70, sho: 25, pas: 60, dri: 65, def: 72, phy: 70, x: 50, y: 12 },
+        { name: "Stopira", pos: "DF", no: 2, club: "Fehervar", ovr: 72, pac: 76, sho: 55, pas: 68, dri: 70, def: 70, phy: 76, x: 85, y: 35 },
+        { name: "Logan Costa", pos: "DF", no: 5, club: "Toulouse", ovr: 74, pac: 72, sho: 40, pas: 64, dri: 65, def: 74, phy: 78, x: 65, y: 28 },
+        { name: "Roberto Lopes", pos: "DF", no: 4, club: "Shamrock", ovr: 70, pac: 68, sho: 45, pas: 60, dri: 62, def: 70, phy: 76, x: 35, y: 28 },
+        { name: "Dylan Tavares", pos: "DF", no: 13, club: "Bastia", ovr: 68, pac: 78, sho: 50, pas: 64, dri: 68, def: 66, phy: 68, x: 15, y: 35 },
+        { name: "Jamiro Monteiro", pos: "MF", no: 10, club: "Gaziantep", ovr: 74, pac: 78, sho: 68, pas: 74, dri: 76, def: 60, phy: 68, x: 50, y: 50 },
+        { name: "Deroy Duarte", pos: "MF", no: 24, club: "Fortuna", ovr: 72, pac: 74, sho: 65, pas: 72, dri: 72, def: 68, phy: 70, x: 30, y: 55 },
+        { name: "Kevin Pina", pos: "MF", no: 20, club: "Krasnodar", ovr: 72, pac: 70, sho: 60, pas: 70, dri: 70, def: 72, phy: 76, x: 70, y: 55 },
+        { name: "Ryan Mendes", pos: "FW", no: 7, club: "Karagümrük", ovr: 74, pac: 80, sho: 72, pas: 70, dri: 76, def: 40, phy: 65, x: 80, y: 80 },
+        { name: "Bebé", pos: "FW", no: 21, club: "Rayo Vallecano", ovr: 74, pac: 82, sho: 76, pas: 70, dri: 74, def: 40, phy: 76, x: 50, y: 85 },
+        { name: "Garry Rodrigues", pos: "FW", no: 11, club: "Ankaragücü", ovr: 74, pac: 84, sho: 72, pas: 70, dri: 76, def: 45, phy: 68, x: 20, y: 80 }
+      ],
+      bench: [
+        { name: "Márcio Rosa", pos: "GK", club: "Cantanhede", ovr: 66, pac: 65, sho: 20, pas: 58, dri: 60, def: 66, phy: 65 },
+        { name: "Dylan Silva", pos: "GK", club: "Sintrense", ovr: 64, pac: 64, sho: 20, pas: 55, dri: 60, def: 64, phy: 64 },
+        { name: "Diney", pos: "DF", club: "Al Bataeh", ovr: 68, pac: 68, sho: 40, pas: 60, dri: 62, def: 68, phy: 72 },
+        { name: "Steven Fortès", pos: "DF", club: "Quevilly", ovr: 70, pac: 65, sho: 40, pas: 62, dri: 64, def: 70, phy: 76 },
+        { name: "Pico", pos: "DF", club: "Shamrock", ovr: 68, pac: 66, sho: 35, pas: 55, dri: 58, def: 68, phy: 72 },
+        { name: "Patrick Andrade", pos: "MF", club: "Qarabağ", ovr: 70, pac: 72, sho: 65, pas: 70, dri: 70, def: 68, phy: 72 },
+        { name: "João Paulo", pos: "MF", club: "Sheriff", ovr: 68, pac: 74, sho: 60, pas: 68, dri: 70, def: 64, phy: 68 },
+        { name: "Laros Duarte", pos: "MF", club: "Groningen", ovr: 72, pac: 72, sho: 65, pas: 72, dri: 74, def: 65, phy: 70 },
+        { name: "Kenny Rocha Santos", pos: "MF", club: "Zakho", ovr: 68, pac: 70, sho: 60, pas: 68, dri: 72, def: 60, phy: 65 },
+        { name: "Rocha Santos", pos: "MF", club: "AEK Larnaca", ovr: 66, pac: 70, sho: 60, pas: 66, dri: 68, def: 55, phy: 64 },
+        { name: "Cuca", pos: "MF", club: "União Leiria", ovr: 68, pac: 68, sho: 55, pas: 66, dri: 68, def: 65, phy: 70 },
+        { name: "Gilson Tavares", pos: "FW", club: "Benfica B", ovr: 68, pac: 78, sho: 66, pas: 60, dri: 70, def: 35, phy: 72 },
+        { name: "Willy Semedo", pos: "FW", club: "Omonia", ovr: 72, pac: 82, sho: 68, pas: 68, dri: 74, def: 40, phy: 68 },
+        { name: "Bryan Teixeira", pos: "FW", club: "Magdeburg", ovr: 70, pac: 80, sho: 68, pas: 66, dri: 72, def: 40, phy: 68 },
+        { name: "Hélio Varela", pos: "FW", club: "Portimonense", ovr: 68, pac: 78, sho: 66, pas: 64, dri: 70, def: 35, phy: 66 }
       ]
     }
   }
