@@ -2271,11 +2271,12 @@ function renderTournamentHighlights(matches) {
       const off = squad.players.filter(p => p.pos === "MF" || p.pos === "FW");
 
       goalsList.forEach(goal => {
+        // Dados reais de gols da API
         const pRecord = getPlayerRecord(teamId, goal.name);
         pRecord.goals += 1;
 
-        // Assistência determinística (70% chance)
-        if (rand() > 0.3) {
+        // Assistência simulada (não vem na API openfootball), cap realista
+        if (rand() > 0.4) {
           const eligible = off.filter(p => p.name !== goal.name);
           if (eligible.length > 0) {
             const assister = eligible[Math.floor(rand() * eligible.length)];
@@ -2290,7 +2291,7 @@ function renderTournamentHighlights(matches) {
       processGoals(match.goals1, id1, true);
       processGoals(match.goals2, id2, false);
 
-      // Faltas e Cartões
+      // Faltas e Cartões simulados (com limites realistas)
       const processDiscipline = (teamId, squad, fCount, yCount, rCount) => {
         const def = squad.players.filter(p => p.pos === "DF" || p.pos === "MF");
         if (def.length === 0) return;
@@ -2301,59 +2302,44 @@ function renderTournamentHighlights(matches) {
         }
         for (let i = 0; i < yCount; i++) {
           const p = def[Math.floor(rand() * def.length)];
-          getPlayerRecord(teamId, p.name).yellow += 1;
+          const record = getPlayerRecord(teamId, p.name);
+          // Limite realista: nenhum jogador toma mais de 2 amarelos no torneio sem ser suspenso
+          if (record.yellow < 2) {
+             record.yellow += 1;
+          }
         }
         for (let i = 0; i < rCount; i++) {
           const p = def[Math.floor(rand() * def.length)];
-          getPlayerRecord(teamId, p.name).red += 1;
+          const record = getPlayerRecord(teamId, p.name);
+          if (record.red < 1) {
+             record.red += 1;
+          }
         }
       };
 
       const sumG = match.score.ft[0] + match.score.ft[1];
-      const f1 = Math.floor(rand() * 6) + 8 + sumG;
-      const f2 = Math.floor(rand() * 6) + 8 + sumG;
-      const y1 = Math.floor(rand() * 3);
-      const y2 = Math.floor(rand() * 3);
-      const r1 = rand() < 0.05 ? 1 : 0;
-      const r2 = rand() < 0.05 ? 1 : 0;
+      // Faltas totais no jogo divididas para o time
+      const f1 = Math.floor(rand() * 4) + 4; // 4 a 7 faltas registradas por time para jogadores específicos
+      const f2 = Math.floor(rand() * 4) + 4;
+      // Amarelos muito mais raros
+      const y1 = rand() < 0.3 ? 1 : 0;
+      const y2 = rand() < 0.3 ? 1 : 0;
+      // Vermelhos raríssimos
+      const r1 = rand() < 0.02 ? 1 : 0;
+      const r2 = rand() < 0.02 ? 1 : 0;
 
       processDiscipline(id1, squad1, f1, y1, r1);
       processDiscipline(id2, squad2, f2, y2, r2);
     }
   });
 
-  // Rankings fixos baseados na realidade (Eliminatórias/Copa 2026)
-  const artilheiros = [
-    { flag: teamFlags["CAN"] || "🇨🇦", name: "Jonathan David", goals: 3 },
-    { flag: teamFlags["ARG"] || "🇦🇷", name: "Lionel Messi", goals: 3 },
-    { flag: teamFlags["CAN"] || "🇨🇦", name: "Cyle Larin", goals: 2 },
-    { flag: teamFlags["NZL"] || "🇳🇿", name: "Elijah Just", goals: 2 },
-    { flag: teamFlags["NOR"] || "🇳🇴", name: "Erling Haaland", goals: 2 }
-  ];
+  const list = Object.values(playersStats);
 
-  const assistencias = [
-    { flag: teamFlags["SUI"] || "🇨🇭", name: "Cedric Itten", assists: 5 },
-    { flag: teamFlags["CAN"] || "🇨🇦", name: "Cyle Larin", assists: 5 },
-    { flag: teamFlags["MEX"] || "🇲🇽", name: "Alexis Vega", assists: 3 },
-    { flag: teamFlags["FRA"] || "🇫🇷", name: "Bradley Barcola", assists: 2 },
-    { flag: teamFlags["ENG"] || "🏴󠁧󠁢󠁥󠁮󠁧󠁿", name: "Bukayo Saka", assists: 2 }
-  ];
-
-  const faltas = [
-    { flag: teamFlags["QAT"] || "🇶🇦", name: "Ali Assadalla", fouls: 34 },
-    { flag: teamFlags["CAN"] || "🇨🇦", name: "Tajon Buchanan", fouls: 34 },
-    { flag: teamFlags["SUI"] || "🇨🇭", name: "Denis Zakaria", fouls: 33 },
-    { flag: teamFlags["BIH"] || "🇧🇦", name: "Ivan Bašić", fouls: 33 },
-    { flag: teamFlags["KOR"] || "🇰🇷", name: "Lee Kang-in", fouls: 30 }
-  ];
-
-  const cartoes = [
-    { flag: teamFlags["QAT"] || "🇶🇦", name: "Ali Assadalla", yellow: 4, red: 0 },
-    { flag: teamFlags["SUI"] || "🇨🇭", name: "Denis Zakaria", yellow: 4, red: 0 },
-    { flag: teamFlags["BIH"] || "🇧🇦", name: "Ivan Bašić", yellow: 4, red: 0 },
-    { flag: teamFlags["KOR"] || "🇰🇷", name: "Lee Kang-in", yellow: 4, red: 0 },
-    { flag: teamFlags["CAN"] || "🇨🇦", name: "Tajon Buchanan", yellow: 4, red: 0 }
-  ];
+  // Rankings reais dinâmicos
+  const artilheiros = [...list].filter(p => p.goals > 0).sort((a,b) => b.goals - a.goals || a.name.localeCompare(b.name)).slice(0, 5);
+  const assistencias = [...list].filter(p => p.assists > 0).sort((a,b) => b.assists - a.assists || a.name.localeCompare(b.name)).slice(0, 5);
+  const faltas = [...list].filter(p => p.fouls > 0).sort((a,b) => b.fouls - a.fouls || a.name.localeCompare(b.name)).slice(0, 5);
+  const cartoes = [...list].filter(p => (p.yellow + p.red) > 0).sort((a,b) => (b.yellow * 2 + b.red * 5) - (a.yellow * 2 + a.red * 5) || a.name.localeCompare(b.name)).slice(0, 5);
 
   const buildBox = (title, icon, arr, valFn, empty) => {
     let li = "";
