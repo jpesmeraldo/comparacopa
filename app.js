@@ -2239,11 +2239,7 @@ function renderTournamentHighlights(matches) {
       playersStats[key] = {
         name: playerName,
         flag: teamFlags[teamId] || "🏳️",
-        goals: 0,
-        assists: 0,
-        fouls: 0,
-        yellow: 0,
-        red: 0
+        goals: 0
       };
     }
     return playersStats[key];
@@ -2258,78 +2254,18 @@ function renderTournamentHighlights(matches) {
     ensureSquadAndStats(id1);
     ensureSquadAndStats(id2);
 
-    const squad1 = window.comparacopaData.squads[id1];
-    const squad2 = window.comparacopaData.squads[id2];
-
-    const matchSeed = match.date + "_" + id1 + "_" + id2;
-    const rand = getDeterministicRandom(matchSeed);
-
-    // Gols e assistências
-    const processGoals = (goalsList, teamId, isTeam1) => {
+    // Gols
+    const processGoals = (goalsList, teamId) => {
       if (!goalsList) return;
-      const squad = isTeam1 ? squad1 : squad2;
-      const off = squad.players.filter(p => p.pos === "MF" || p.pos === "FW");
-
       goalsList.forEach(goal => {
-        // Dados reais de gols da API
         const pRecord = getPlayerRecord(teamId, goal.name);
         pRecord.goals += 1;
-
-        // Assistência simulada (não vem na API openfootball), cap realista
-        if (rand() > 0.4) {
-          const eligible = off.filter(p => p.name !== goal.name);
-          if (eligible.length > 0) {
-            const assister = eligible[Math.floor(rand() * eligible.length)];
-            const aRecord = getPlayerRecord(teamId, assister.name);
-            aRecord.assists += 1;
-          }
-        }
       });
     };
 
     if (match.score && match.score.ft) {
-      processGoals(match.goals1, id1, true);
-      processGoals(match.goals2, id2, false);
-
-      // Faltas e Cartões simulados (com limites realistas)
-      const processDiscipline = (teamId, squad, fCount, yCount, rCount) => {
-        const def = squad.players.filter(p => p.pos === "DF" || p.pos === "MF");
-        if (def.length === 0) return;
-
-        for (let i = 0; i < fCount; i++) {
-          const p = def[Math.floor(rand() * def.length)];
-          getPlayerRecord(teamId, p.name).fouls += 1;
-        }
-        for (let i = 0; i < yCount; i++) {
-          const p = def[Math.floor(rand() * def.length)];
-          const record = getPlayerRecord(teamId, p.name);
-          // Limite realista: nenhum jogador toma mais de 2 amarelos no torneio sem ser suspenso
-          if (record.yellow < 2) {
-             record.yellow += 1;
-          }
-        }
-        for (let i = 0; i < rCount; i++) {
-          const p = def[Math.floor(rand() * def.length)];
-          const record = getPlayerRecord(teamId, p.name);
-          if (record.red < 1) {
-             record.red += 1;
-          }
-        }
-      };
-
-      const sumG = match.score.ft[0] + match.score.ft[1];
-      // Faltas totais no jogo divididas para o time
-      const f1 = Math.floor(rand() * 4) + 4; // 4 a 7 faltas registradas por time para jogadores específicos
-      const f2 = Math.floor(rand() * 4) + 4;
-      // Amarelos muito mais raros
-      const y1 = rand() < 0.3 ? 1 : 0;
-      const y2 = rand() < 0.3 ? 1 : 0;
-      // Vermelhos raríssimos
-      const r1 = rand() < 0.02 ? 1 : 0;
-      const r2 = rand() < 0.02 ? 1 : 0;
-
-      processDiscipline(id1, squad1, f1, y1, r1);
-      processDiscipline(id2, squad2, f2, y2, r2);
+      processGoals(match.goals1, id1);
+      processGoals(match.goals2, id2);
     }
   });
 
