@@ -1866,8 +1866,6 @@ function updateRealTimeResults(isSilent = false) {
       // Re-renderizar as abas e componentes da interface
       renderGroupTable();
       renderBrackets();
-      renderAllGroups();
-      renderKnockoutStage();
       
       // Pass the API-Football data alongside the matches
       renderTournamentHighlights(data.matches, topAssistsData, topYellowsData, topRedsData);
