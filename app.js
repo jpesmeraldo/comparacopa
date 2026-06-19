@@ -1,4 +1,7 @@
 // Comparacopa 2026 - Lógica da Aplicação
+// A integração com a API-Football agora é feita via Serverless Proxy (Vercel)
+// na rota /api/football-proxy para garantir a segurança da chave.
+
 let activeTeamA = "BRA";
 let activeTeamB = "FRA";
 let activeFieldTeam = "A"; // 'A' ou 'B'
@@ -1717,12 +1720,38 @@ function updateRealTimeResults(isSilent = false) {
     btn.disabled = true;
   }
 
-  fetch("https://raw.githubusercontent.com/openfootball/worldcup.json/master/2026/worldcup.json")
-    .then(response => {
-      if (!response.ok) throw new Error("Erro de rede");
-      return response.json();
-    })
-    .then(data => {
+  // 1. Fetch OpenFootball (Resultados, Gols, Grupos)
+  const openFootballPromise = fetch("https://raw.githubusercontent.com/openfootball/worldcup.json/master/2026/worldcup.json")
+    .then(r => r.ok ? r.json() : null);
+
+  // 2. Fetch API-Football via Serverless Proxy
+  // League 15 (FIFA World Cup) - Season 2026
+  let apiFootballPromises = [];
+  
+  // Como estamos num ambiente que pode estar rodando local ou em produção na Vercel:
+  const proxyBaseUrl = window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1') 
+    ? 'http://localhost:3000/api/football-proxy' 
+    : '/api/football-proxy';
+
+  const urlTopAssists = `${proxyBaseUrl}?endpoint=players/topassists&league=15&season=2026`;
+  const urlTopYellows = `${proxyBaseUrl}?endpoint=players/topyellowcards&league=15&season=2026`;
+  const urlTopReds    = `${proxyBaseUrl}?endpoint=players/topredcards&league=15&season=2026`;
+
+  apiFootballPromises = [
+    fetch(urlTopAssists).then(r => r.ok ? r.json() : null).catch(() => null),
+    fetch(urlTopYellows).then(r => r.ok ? r.json() : null).catch(() => null),
+    fetch(urlTopReds).then(r => r.ok ? r.json() : null).catch(() => null)
+  ];
+
+  Promise.all([openFootballPromise, ...apiFootballPromises])
+    .then(results => {
+      const data = results[0]; // OpenFootball data
+      if (!data) throw new Error("Erro de rede OpenFootball");
+
+      const topAssistsData = results[1] ? results[1].response : [];
+      const topYellowsData = results[2] ? results[2].response : [];
+      const topRedsData    = results[3] ? results[3].response : [];
+
       // Mapeamento de nomes de times em inglês para IDs do Comparacopa
       const nameToId = {
         "Mexico": "MEX", "México": "MEX",
@@ -1837,9 +1866,14 @@ function updateRealTimeResults(isSilent = false) {
       // Re-renderizar as abas e componentes da interface
       renderGroupTable();
       renderBrackets();
+      renderAllGroups();
+      renderKnockoutStage();
+      
+      // Pass the API-Football data alongside the matches
+      renderTournamentHighlights(data.matches, topAssistsData, topYellowsData, topRedsData);
+      
       initSelectors();
       loadComparison();
-      renderTournamentHighlights(data.matches);
 
       if (btn && !isSilent) {
         btn.innerHTML = `<span style="font-family: 'Space Mono', monospace; font-size: 0.75rem; color: var(--dark-accent);">Atualizado!</span>`;
@@ -2185,7 +2219,7 @@ function getDeterministicRandom(seed) {
 }
 
 // Renderizar Destaques do Torneio (Artilheiros, Assistências, Faltas, Cartões)
-function renderTournamentHighlights(matches) {
+function renderTournamentHighlights(matches, topAssistsData = [], topYellowsData = [], topRedsData = []) {
   const container = document.getElementById("highlights-container");
   if (!container) return;
 
@@ -2273,9 +2307,25 @@ function renderTournamentHighlights(matches) {
 
   // Rankings reais dinâmicos
   const artilheiros = [...list].filter(p => p.goals > 0).sort((a,b) => b.goals - a.goals || a.name.localeCompare(b.name)).slice(0, 5);
-  const assistencias = [...list].filter(p => p.assists > 0).sort((a,b) => b.assists - a.assists || a.name.localeCompare(b.name)).slice(0, 5);
-  const faltas = [...list].filter(p => p.fouls > 0).sort((a,b) => b.fouls - a.fouls || a.name.localeCompare(b.name)).slice(0, 5);
-  const cartoes = [...list].filter(p => (p.yellow + p.red) > 0).sort((a,b) => (b.yellow * 2 + b.red * 5) - (a.yellow * 2 + a.red * 5) || a.name.localeCompare(b.name)).slice(0, 5);
+  
+  const assistencias = topAssistsData && topAssistsData.length > 0 
+    ? topAssistsData.slice(0, 5).map(p => ({ 
+        flag: "🏳️", 
+        name: escapeHtml(p.player.name), 
+        assists: p.statistics && p.statistics[0] && p.statistics[0].goals ? p.statistics[0].goals.assists || 0 : 0 
+      }))
+    : [];
+
+  const faltas = []; // API-Football free endpoints usually don't rank by fouls
+
+  const cartoes = topYellowsData && topYellowsData.length > 0
+    ? topYellowsData.slice(0, 5).map(p => ({ 
+        flag: "🏳️", 
+        name: escapeHtml(p.player.name), 
+        yellow: p.statistics && p.statistics[0] && p.statistics[0].cards ? p.statistics[0].cards.yellow || 0 : 0, 
+        red: p.statistics && p.statistics[0] && p.statistics[0].cards ? p.statistics[0].cards.red || 0 : 0 
+      }))
+    : [];
 
   const buildBox = (title, icon, arr, valFn, empty) => {
     let li = "";
