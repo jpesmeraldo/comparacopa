@@ -184,7 +184,7 @@ window.comparacopaData = {
       formation: "4-3-3",
       players: [
         { name: "Alisson", pos: "GK", no: 1, club: "Liverpool", ovr: 89, pac: 85, sho: 45, pas: 89, dri: 87, def: 90, phy: 84, x: 50, y: 12 },
-        { name: "Danilo", pos: "DF", no: 2, club: "Flamengo", ovr: 81, pac: 76, sho: 65, pas: 78, dri: 76, def: 82, phy: 80, x: 85, y: 35 },
+        { name: "Danilo Luiz", pos: "DF", no: 2, club: "Juventus", ovr: 81, pac: 76, sho: 65, pas: 78, dri: 76, def: 82, phy: 80, x: 85, y: 35 },
         { name: "Marquinhos", pos: "DF", no: 3, club: "PSG", ovr: 87, pac: 79, sho: 53, pas: 75, dri: 74, def: 89, phy: 80, x: 65, y: 28 },
         { name: "G. Magalhães", pos: "DF", no: 4, club: "Arsenal", ovr: 85, pac: 74, sho: 50, pas: 70, dri: 68, def: 86, phy: 84, x: 35, y: 28 },
         { name: "Alex Sandro", pos: "DF", no: 6, club: "Flamengo", ovr: 80, pac: 75, sho: 60, pas: 74, dri: 76, def: 79, phy: 76, x: 15, y: 35 },
@@ -202,7 +202,7 @@ window.comparacopaData = {
         { name: "Douglas Santos", pos: "DF", club: "Zenit", ovr: 80, pac: 78, sho: 60, pas: 75, dri: 77, def: 77, phy: 76 },
         { name: "Léo Pereira", pos: "DF", club: "Flamengo", ovr: 79, pac: 70, sho: 54, pas: 65, dri: 68, def: 78, phy: 80 },
         { name: "Roger Ibañez", pos: "DF", club: "Al-Ahli", ovr: 81, pac: 78, sho: 48, pas: 62, dri: 65, def: 82, phy: 80 },
-        { name: "Danilo", pos: "MF", club: "Botafogo", ovr: 80, pac: 76, sho: 69, pas: 76, dri: 78, def: 76, phy: 78 },
+        { name: "Danilo", pos: "MF", club: "Nott. Forest", ovr: 80, pac: 76, sho: 69, pas: 76, dri: 78, def: 76, phy: 78 },
         { name: "Éderson", pos: "MF", club: "Atalanta", ovr: 81, pac: 77, sho: 72, pas: 75, dri: 78, def: 79, phy: 81 },
         { name: "Fabinho", pos: "MF", club: "Al-Ittihad", ovr: 81, pac: 62, sho: 69, pas: 76, dri: 74, def: 81, phy: 80 },
         { name: "Endrick", pos: "FW", club: "Real Madrid", ovr: 82, pac: 88, sho: 81, pas: 70, dri: 82, def: 35, phy: 80 },
@@ -226,12 +226,12 @@ window.comparacopaData = {
         { name: "Mac Allister", pos: "MF", no: 20, club: "Liverpool", ovr: 86, pac: 73, sho: 80, pas: 86, dri: 84, def: 78, phy: 79, x: 30, y: 55 },
         { name: "L. Messi", pos: "FW", no: 10, club: "Inter Miami", ovr: 90, pac: 78, sho: 89, pas: 90, dri: 92, def: 33, phy: 62, x: 80, y: 80 },
         { name: "J. Álvarez", pos: "FW", no: 9, club: "Atlético Madrid", ovr: 84, pac: 85, sho: 83, pas: 78, dri: 83, def: 48, phy: 78, x: 50, y: 85 },
-        { name: "L. Martínez", pos: "FW", no: 22, club: "Inter de Milão", ovr: 88, pac: 80, sho: 88, pas: 73, dri: 83, def: 48, phy: 84, x: 20, y: 80 }
+        { name: "Lautaro M.", pos: "FW", no: 22, club: "Inter de Milão", ovr: 88, pac: 80, sho: 88, pas: 73, dri: 83, def: 48, phy: 84, x: 20, y: 80 }
       ],
       bench: [
         { name: "G. Rulli", pos: "GK", club: "Marseille", ovr: 81, pac: 80, sho: 44, pas: 75, dri: 79, def: 81, phy: 78 },
         { name: "Juan Musso", pos: "GK", club: "Atlético de Madrid", ovr: 81, pac: 78, sho: 40, pas: 72, dri: 77, def: 82, phy: 79 },
-        { name: "L. Martínez", pos: "DF", club: "Manchester United", ovr: 83, pac: 78, sho: 45, pas: 80, dri: 78, def: 84, phy: 82 },
+        { name: "Lisandro M.", pos: "DF", club: "Manchester United", ovr: 83, pac: 78, sho: 45, pas: 80, dri: 78, def: 84, phy: 82 },
         { name: "G. Montiel", pos: "DF", club: "River Plate", ovr: 79, pac: 81, sho: 60, pas: 72, dri: 75, def: 77, phy: 78 },
         { name: "L. Balerdi", pos: "DF", club: "Marseille", ovr: 80, pac: 74, sho: 46, pas: 68, dri: 67, def: 81, phy: 80 },
         { name: "Facundo Medina", pos: "DF", club: "Marseille", ovr: 80, pac: 75, sho: 48, pas: 70, dri: 69, def: 80, phy: 81 },
@@ -308,7 +308,8 @@ window.comparacopaData = {
         { name: "Yeremy Pino", pos: "FW", club: "Villarreal", ovr: 80, pac: 82, sho: 76, pas: 74, dri: 82, def: 38, phy: 65 },
         { name: "Ferran Torres", pos: "FW", club: "Barcelona", ovr: 81, pac: 82, sho: 79, pas: 76, dri: 81, def: 35, phy: 74 },
         { name: "Borja Iglesias", pos: "FW", club: "Celta de Vigo", ovr: 79, pac: 60, sho: 80, pas: 66, dri: 71, def: 38, phy: 79 },
-        { name: "Víctor Muñoz", pos: "FW", club: "Lazio", ovr: 75, pac: 78, sho: 72, pas: 70, dri: 76, def: 30, phy: 68 }
+        { name: "Víctor Muñoz", pos: "FW", club: "Lazio", ovr: 75, pac: 78, sho: 72, pas: 70, dri: 76, def: 30, phy: 68 },
+        { name: "Dani Olmo", pos: "MF", club: "Barcelona", ovr: 84, pac: 75, sho: 80, pas: 82, dri: 85, def: 50, phy: 68 }
       ]
     },
     ENG: {
@@ -395,8 +396,7 @@ window.comparacopaData = {
       bench: [
         { name: "José Sá", pos: "GK", club: "Wolverhampton", ovr: 80, pac: 78, sho: 40, pas: 72, dri: 76, def: 81, phy: 79 },
         { name: "Rui Silva", pos: "GK", club: "Real Betis", ovr: 80, pac: 77, sho: 40, pas: 73, dri: 77, def: 81, phy: 78 },
-        { name: "Ricardo Velho", pos: "GK", club: "Farense", ovr: 76, pac: 74, sho: 38, pas: 68, dri: 72, def: 76, phy: 75 },
-        { name: "Matheus Nunes", pos: "DF", club: "Manchester City", ovr: 81, pac: 82, sho: 72, pas: 78, dri: 83, def: 72, phy: 76 },
+        { name: "Matheus Nunes", pos: "MF", club: "Manchester City", ovr: 81, pac: 82, sho: 72, pas: 78, dri: 83, def: 72, phy: 76 },
         { name: "Nélson Semedo", pos: "DF", club: "Wolverhampton", ovr: 78, pac: 83, sho: 56, pas: 70, dri: 76, def: 76, phy: 74 },
         { name: "João Cancelo", pos: "DF", club: "Al-Hilal", ovr: 84, pac: 82, sho: 72, pas: 84, dri: 84, def: 78, phy: 72 },
         { name: "Renato Veiga", pos: "DF", club: "Chelsea", ovr: 77, pac: 74, sho: 55, pas: 70, dri: 72, def: 77, phy: 78 },
@@ -440,7 +440,8 @@ window.comparacopaData = {
         { name: "Facundo Pellistri", pos: "FW", club: "Panathinaikos", ovr: 77, pac: 86, sho: 69, pas: 71, dri: 79, def: 40, phy: 68 },
         { name: "Brian Rodríguez", pos: "FW", club: "América-MEX", ovr: 76, pac: 85, sho: 72, pas: 71, dri: 79, def: 32, phy: 64 },
         { name: "Rodrigo Aguirre", pos: "FW", club: "Tigres", ovr: 76, pac: 78, sho: 75, pas: 68, dri: 74, def: 34, phy: 75 },
-        { name: "Federico Viñas", pos: "FW", club: "Oviedo", ovr: 76, pac: 75, sho: 76, pas: 65, dri: 72, def: 35, phy: 78 }
+        { name: "Federico Viñas", pos: "FW", club: "Oviedo", ovr: 76, pac: 75, sho: 76, pas: 65, dri: 72, def: 35, phy: 78 },
+        { name: "R. Bentancur", pos: "MF", club: "Tottenham", ovr: 83, pac: 72, sho: 70, pas: 81, dri: 83, def: 78, phy: 80 }
       ]
     },
     SEN: {
@@ -469,7 +470,11 @@ window.comparacopaData = {
         { name: "Habib Diarra", pos: "MF", club: "Sunderland", ovr: 77, pac: 79, sho: 70, pas: 74, dri: 78, def: 70, phy: 74 },
         { name: "Bamba Dieng", pos: "FW", club: "Lorient", ovr: 76, pac: 81, sho: 76, pas: 64, dri: 74, def: 32, phy: 73 },
         { name: "Iliman Ndiaye", pos: "FW", club: "Everton", ovr: 79, pac: 80, sho: 74, pas: 75, dri: 82, def: 42, phy: 70 },
-        { name: "Ibrahim Mbaye", pos: "FW", club: "PSG", ovr: 74, pac: 82, sho: 70, pas: 66, dri: 76, def: 28, phy: 65 }
+        { name: "Ibrahim Mbaye", pos: "FW", club: "PSG", ovr: 74, pac: 82, sho: 70, pas: 66, dri: 76, def: 28, phy: 65 },
+        { name: "F. Mendy", pos: "DF", club: "Lorient", ovr: 76, pac: 78, sho: 40, pas: 60, dri: 62, def: 75, phy: 78 },
+        { name: "N. Mendy", pos: "MF", club: "Lens", ovr: 77, pac: 68, sho: 58, pas: 75, dri: 72, def: 76, phy: 74 },
+        { name: "B. Dia", pos: "FW", club: "Lazio", ovr: 80, pac: 84, sho: 81, pas: 70, dri: 79, def: 38, phy: 76 },
+        { name: "H. Diallo", pos: "FW", club: "Damac", ovr: 78, pac: 80, sho: 79, pas: 66, dri: 75, def: 35, phy: 78 }
       ]
     }
   }
