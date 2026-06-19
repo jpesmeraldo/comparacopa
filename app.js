@@ -1886,7 +1886,7 @@ function updateRealTimeResults(isSilent = false) {
     .catch(error => {
       console.error("Erro ao processar dados via API:", error);
       if (!isSilent) {
-        alert("Falha ao se conectar. Carregando dados de backup local...");
+        alert("Falha ao se conectar. Detalhes: " + error.message + " | " + error.name);
       }
       
       // Fallback para script local caso falte internet ou haja CORS
