@@ -2116,17 +2116,17 @@ async function shareSimWhatsApp() {
           });
         } catch (err) {
           console.log("Compartilhamento cancelado ou falhou", err);
+          window.location.href = `https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`;
         }
       } else {
         // Fallback for Desktop/unsupported browsers
-        // Download image and open WhatsApp Web
         const link = document.createElement('a');
         link.download = 'desafio-comparacopa.png';
         link.href = URL.createObjectURL(blob);
         link.click();
         
-        alert("Imagem do desafio baixada! Cole (Ctrl+V) no WhatsApp para enviar com a mensagem.");
-        window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
+        alert("Baixando a imagem do desafio! Redirecionando para o WhatsApp...");
+        window.location.href = `https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`;
       }
       
       // Restore button
