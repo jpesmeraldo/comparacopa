@@ -2144,27 +2144,40 @@ async function shareSimWhatsApp() {
 
 function shareSimTwitter() {
   const resultText = `${lastSimResult.teamAName} ${lastSimResult.scoreA} x ${lastSimResult.scoreB} ${lastSimResult.teamBName}`;
-  const text = encodeURIComponent(`Simulei ${resultText} no Comparacopa! Monte sua tática e compare as seleções você também em: http://comparacopa.com.br`);
+  const formSelect = document.getElementById('formation-select');
+  const formation = formSelect ? formSelect.value : '4-3-3';
+  const origin = window.location.origin + window.location.pathname;
+  const challengeUrl = `${origin}?challenge=1&ta=${lastSimResult.teamA}&tb=${lastSimResult.teamB}&sa=${lastSimResult.scoreA}&sb=${lastSimResult.scoreB}&forma=${formation}`;
+  const text = encodeURIComponent(`Simulei ${resultText} no Comparacopa! Monte sua tática e compare as seleções você também em: ${challengeUrl}`);
   window.open(`https://twitter.com/intent/tweet?text=${text}`, '_blank');
 }
 
 function copySimLink() {
-  navigator.clipboard.writeText("http://comparacopa.com.br").then(() => {
-    alert("Link do Comparacopa copiado para a área de transferência! Compartilhe com seus amigos.");
+  const formSelect = document.getElementById('formation-select');
+  const formation = formSelect ? formSelect.value : '4-3-3';
+  const origin = window.location.origin + window.location.pathname;
+  const challengeUrl = `${origin}?challenge=1&ta=${lastSimResult.teamA}&tb=${lastSimResult.teamB}&sa=${lastSimResult.scoreA}&sb=${lastSimResult.scoreB}&forma=${formation}`;
+
+  navigator.clipboard.writeText(challengeUrl).then(() => {
+    alert("Link do Desafio copiado para a área de transferência! Compartilhe com seus amigos.");
   }).catch(() => {
     const tempInput = document.createElement("input");
-    tempInput.value = "http://comparacopa.com.br";
+    tempInput.value = challengeUrl;
     document.body.appendChild(tempInput);
     tempInput.select();
     document.execCommand("copy");
     document.body.removeChild(tempInput);
-    alert("Link do Comparacopa copiado para a área de transferência! Compartilhe com seus amigos.");
+    alert("Link do Desafio copiado para a área de transferência! Compartilhe com seus amigos.");
   });
 }
 
 function shareSimInstagram(btn) {
   const resultText = `${lastSimResult.teamAName} ${lastSimResult.scoreA} x ${lastSimResult.scoreB} ${lastSimResult.teamBName}`;
-  const text = `Simulei ${resultText} no Comparacopa! Quem tem o melhor elenco e tática? Faça o seu também em: https://jpesmeraldo.github.io/comparacopa/`;
+  const formSelect = document.getElementById('formation-select');
+  const formation = formSelect ? formSelect.value : '4-3-3';
+  const origin = window.location.origin + window.location.pathname;
+  const challengeUrl = `${origin}?challenge=1&ta=${lastSimResult.teamA}&tb=${lastSimResult.teamB}&sa=${lastSimResult.scoreA}&sb=${lastSimResult.scoreB}&forma=${formation}`;
+  const text = `Simulei ${resultText} no Comparacopa! Quem tem o melhor elenco e tática? Tente me bater: ${challengeUrl}`;
   
   const showCopied = () => {
     const originalHtml = btn.innerHTML;

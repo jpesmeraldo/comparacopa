@@ -895,3 +895,26 @@ select.neo-select:focus {
   margin-bottom: 6px;
 }
 
+
+@media (max-width: 600px) {
+  #summary-modal .neo-card {
+    padding: 15px !important;
+  }
+  #summary-modal h2 {
+    font-size: 1.4rem !important;
+  }
+  #summary-modal #sum-score {
+    font-size: 1.8rem !important;
+  }
+  #summary-modal .sum-stat-row strong {
+    font-size: 0.65rem !important;
+  }
+  #summary-modal .sum-stat-row span {
+    font-size: 0.75rem !important;
+  }
+  #summary-modal button {
+    font-size: 0.75rem !important;
+    padding: 10px !important;
+  }
+}
+
