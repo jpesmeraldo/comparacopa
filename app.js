@@ -2014,7 +2014,7 @@ function shareSimWhatsApp() {
   const resultText = `${lastSimResult.teamAName} ${lastSimResult.scoreA} x ${lastSimResult.scoreB} ${lastSimResult.teamBName}`;
   const origin = window.location.origin + window.location.pathname;
   const challengeUrl = `${origin}?challenge=1&ta=${lastSimResult.teamA}&tb=${lastSimResult.teamB}&sa=${lastSimResult.scoreA}&sb=${lastSimResult.scoreB}`;
-  const text = encodeURIComponent(`Eu aposto que ${resultText} no Comparacopa! Duvida que você consegue um resultado diferente? Monte sua tática e tente me bater: ${challengeUrl}`);
+  const text = encodeURIComponent(`Eu aposto no placar ${resultText} no Comparacopa! Bota o teu e bora ver quem ganha! Monte sua tática, ajuste seu elenco tente me vencer: ${challengeUrl}`);
   window.open(`https://api.whatsapp.com/send?text=${text}`, '_blank');
 }
 
