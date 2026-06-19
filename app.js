@@ -1909,24 +1909,36 @@ function shareOnInstagram(btn) {
     const originalHtml = btn.innerHTML;
     btn.innerHTML = `<i data-lucide="check" style="width: 18px; height: 18px;"></i> Copiado!`;
     if (window.lucide) window.lucide.createIcons();
+    
+    window.open("https://instagram.com", "_blank");
+    
     setTimeout(() => {
       btn.innerHTML = originalHtml;
       if (window.lucide) window.lucide.createIcons();
-      window.open("https://instagram.com", "_blank");
     }, 2000);
   };
 
-  navigator.clipboard.writeText(text).then(() => {
+  const fallbackCopy = () => {
+    try {
+      const tempInput = document.createElement("input");
+      tempInput.value = text;
+      document.body.appendChild(tempInput);
+      tempInput.select();
+      document.execCommand("copy");
+      document.body.removeChild(tempInput);
+    } catch(e) {}
     showCopied();
-  }).catch(() => {
-    const tempInput = document.createElement("input");
-    tempInput.value = text;
-    document.body.appendChild(tempInput);
-    tempInput.select();
-    document.execCommand("copy");
-    document.body.removeChild(tempInput);
-    showCopied();
-  });
+  };
+
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(text).then(() => {
+      showCopied();
+    }).catch(() => {
+      fallbackCopy();
+    });
+  } else {
+    fallbackCopy();
+  }
 }
 
 // Estado da última simulação para o Modal de Compartilhamento
@@ -2032,24 +2044,36 @@ function shareSimInstagram(btn) {
     const originalHtml = btn.innerHTML;
     btn.innerHTML = `<i data-lucide="check" style="width: 18px; height: 18px;"></i> Copiado!`;
     if (window.lucide) window.lucide.createIcons();
+    
+    window.open("https://instagram.com", "_blank");
+    
     setTimeout(() => {
       btn.innerHTML = originalHtml;
       if (window.lucide) window.lucide.createIcons();
-      window.open("https://instagram.com", "_blank");
     }, 2000);
   };
 
-  navigator.clipboard.writeText(text).then(() => {
+  const fallbackCopy = () => {
+    try {
+      const tempInput = document.createElement("input");
+      tempInput.value = text;
+      document.body.appendChild(tempInput);
+      tempInput.select();
+      document.execCommand("copy");
+      document.body.removeChild(tempInput);
+    } catch(e) {}
     showCopied();
-  }).catch(() => {
-    const tempInput = document.createElement("input");
-    tempInput.value = text;
-    document.body.appendChild(tempInput);
-    tempInput.select();
-    document.execCommand("copy");
-    document.body.removeChild(tempInput);
-    showCopied();
-  });
+  };
+
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(text).then(() => {
+      showCopied();
+    }).catch(() => {
+      fallbackCopy();
+    });
+  } else {
+    fallbackCopy();
+  }
 }
 
 // Gerador de números determinísticos a partir de uma String seed
