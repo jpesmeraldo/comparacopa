@@ -2012,7 +2012,9 @@ function closeSummaryModal() {
 
 function shareSimWhatsApp() {
   const resultText = `${lastSimResult.teamAName} ${lastSimResult.scoreA} x ${lastSimResult.scoreB} ${lastSimResult.teamBName}`;
-  const text = encodeURIComponent(`Simulei o confronto ${resultText} no Comparacopa! Quem tem o melhor elenco e tática? Faça sua simulação você também em: http://comparacopa.com.br`);
+  const origin = window.location.origin + window.location.pathname;
+  const challengeUrl = `${origin}?challenge=1&ta=${lastSimResult.teamA}&tb=${lastSimResult.teamB}&sa=${lastSimResult.scoreA}&sb=${lastSimResult.scoreB}`;
+  const text = encodeURIComponent(`Eu aposto que ${resultText} no Comparacopa! Duvida que você consegue um resultado diferente? Monte sua tática e tente me bater: ${challengeUrl}`);
   window.open(`https://api.whatsapp.com/send?text=${text}`, '_blank');
 }
 
@@ -2282,3 +2284,84 @@ window.openLogicModal = function() {
 window.closeLogicModal = function() {
   document.getElementById("logic-modal").style.display = "none";
 };
+
+// --- SISTEMA DE DESAFIOS (CHALLENGE) ---
+document.addEventListener("DOMContentLoaded", () => {
+  const urlParams = new URLSearchParams(window.location.search);
+  if(urlParams.get('challenge') === '1') {
+    const ta = urlParams.get('ta');
+    const tb = urlParams.get('tb');
+    const sa = urlParams.get('sa');
+    const sb = urlParams.get('sb');
+    if(ta && tb && sa && sb) {
+      setTimeout(() => {
+        // Pre-select the teams
+        const selectA = document.getElementById('select-team-a');
+        const selectB = document.getElementById('select-team-b');
+        if (selectA && selectB) {
+            selectA.value = ta;
+            selectB.value = tb;
+            // Force change event if needed, but we can just call loadComparison
+            loadComparison();
+        }
+        
+        // Show challenge modal
+        showChallengeModal(ta, tb, sa, sb);
+      }, 500); // slight delay to allow initial setup
+    }
+  }
+});
+
+function showChallengeModal(ta, tb, sa, sb) {
+  // Try to get country names from select options
+  const selectA = document.getElementById('select-team-a');
+  let teamAName = ta;
+  let teamBName = tb;
+  
+  if (selectA) {
+    const optA = Array.from(selectA.options).find(o => o.value === ta);
+    if(optA) teamAName = optA.text.split(' - ')[1] || optA.text;
+    
+    const selectB = document.getElementById('select-team-b');
+    const optB = Array.from(selectB.options).find(o => o.value === tb);
+    if(optB) teamBName = optB.text.split(' - ')[1] || optB.text;
+  }
+  
+  const modalHtml = `
+    <div class="modal-overlay" id="challenge-modal" style="display: flex;" onclick="closeChallengeModal()">
+      <div class="neo-card" style="max-width: 500px; width: 90%; background: var(--off-white); border: 3px solid var(--dark-accent); box-shadow: 8px 8px 0 var(--dark-accent); padding: 30px; text-align: center; position: relative;" onclick="event.stopPropagation()">
+        <button class="neo-btn" style="position: absolute; top: 15px; right: 15px; padding: 4px 10px; font-size: 0.8rem; box-shadow: 2px 2px 0 var(--dark-accent);" onclick="closeChallengeModal()">X</button>
+        
+        <div style="font-family: 'Space Mono', monospace; font-size: 0.85rem; font-weight: 800; text-transform: uppercase; color: var(--retro-blue); margin-bottom: 5px;">🔥 VOCÊ FOI DESAFIADO 🔥</div>
+        <h2 style="font-family: 'Outfit', sans-serif; font-weight: 900; font-size: 1.5rem; text-transform: uppercase; margin-bottom: 20px;">Duvido você bater esse placar!</h2>
+        
+        <div style="background: var(--dark-accent); color: var(--retro-yellow); font-family: 'Space Mono', monospace; font-size: 1.2rem; font-weight: 800; padding: 15px; margin-bottom: 20px; border: 2px solid var(--dark-accent); transform: rotate(-1deg);">
+           ${teamAName} ${sa} x ${sb} ${teamBName}
+        </div>
+        
+        <p style="font-size: 0.95rem; line-height: 1.5; color: var(--dark-accent); margin-bottom: 20px;">
+          Seu amigo simulou esse jogo e conseguiu esse resultado. Prove que você é um técnico melhor: altere a escalação, ajuste a tática e tente um placar diferente!
+        </p>
+        
+        <button class="neo-btn btn-green" style="width: 100%; font-size: 1.1rem; padding: 15px;" onclick="closeChallengeModalAndScroll()">
+          Aceitar o Desafio!
+        </button>
+      </div>
+    </div>
+  `;
+  
+  // Append to body
+  const div = document.createElement('div');
+  div.innerHTML = modalHtml;
+  document.body.appendChild(div);
+}
+
+function closeChallengeModal() {
+  const m = document.getElementById('challenge-modal');
+  if (m) m.remove();
+}
+
+function closeChallengeModalAndScroll() {
+  closeChallengeModal();
+  document.getElementById('section-compare').scrollIntoView({ behavior: 'smooth' });
+}
