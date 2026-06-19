@@ -316,12 +316,12 @@ function getPlayerNamesByNationality(teamId) {
     ],
     // Grupo C
     BRA: [
-      "Alisson", "Danilo da Silva", "Marquinhos", "G. Magalhães", "Alex Sandro",
-      "Casemiro", "B. Guimarães", "L. Paquetá", "Raphinha", "Neymar",
-      "Vini Júnior", // Reservas
-      "Ederson", "Weverton", "Bremer", "Douglas Santos", "Léo Pereira",
-      "Roger Ibañez", "Danilo Oliveira", "Éderson", "Fabinho", "Endrick",
-      "G. Martinelli", "Igor Thiago", "Luiz Henrique", "Matheus Cunha", "Rayan"
+      "Alisson", "Danilo", "Marquinhos", "Gabriel Magalhães", "Douglas Santos",
+      "Casemiro", "Vinicius Júnior", "Bruno Guimarães", "Matheus Cunha", "Lucas Paquetá",
+      "Raphinha", // Reservas
+      "Bento", "Yan Couto", "Bremer", "Léo Pereira", "Fabinho",
+      "Danilo Santos", "Douglas Luiz", "Endrick", "Igor Thiago", "Gabriel Martinelli",
+      "Luiz Henrique", "Ederson", "Roger Ibañez", "Rayan", "Pepê"
     ],
     MAR: [
       "Yassine Bounou", "Achraf Hakimi", "Nayef Aguerd", "Romain Saïss", "Noussair Mazraoui",
