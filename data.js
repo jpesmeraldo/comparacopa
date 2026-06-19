@@ -1169,6 +1169,303 @@ window.comparacopaData = {
         { name: "S. Jaziri", pos: "FW", club: "Zamalek", ovr: 72, pac: 78, sho: 72, pas: 65, dri: 70, def: 35, phy: 74 },
         { name: "Naïm Sliti", pos: "FW", club: "Al-Ahli SC", ovr: 76, pac: 78, sho: 74, pas: 76, dri: 80, def: 40, phy: 65 }
       ]
+    },
+    PAN: {
+      formation: "4-3-3",
+      players: [
+        { name: "Luis Mejía", pos: "GK", no: 1, club: "Nacional", ovr: 72, pac: 68, sho: 25, pas: 65, dri: 68, def: 74, phy: 70, x: 50, y: 12 },
+        { name: "César Blackman", pos: "DF", no: 2, club: "Slovan B.", ovr: 70, pac: 78, sho: 50, pas: 65, dri: 70, def: 68, phy: 74, x: 85, y: 35 },
+        { name: "José Córdoba", pos: "DF", no: 3, club: "Levski Sofia", ovr: 70, pac: 68, sho: 40, pas: 60, dri: 65, def: 70, phy: 75, x: 65, y: 28 },
+        { name: "Eduardo Anderson", pos: "DF", no: 4, club: "Saprissa", ovr: 68, pac: 65, sho: 45, pas: 65, dri: 60, def: 68, phy: 72, x: 35, y: 28 },
+        { name: "Eric Davis", pos: "DF", no: 15, club: "DAC", ovr: 72, pac: 76, sho: 65, pas: 74, dri: 72, def: 70, phy: 72, x: 15, y: 35 },
+        { name: "Aníbal Godoy", pos: "MF", no: 20, club: "Nashville", ovr: 72, pac: 60, sho: 65, pas: 72, dri: 70, def: 72, phy: 75, x: 50, y: 50 },
+        { name: "A. Carrasquilla", pos: "MF", no: 8, club: "Houston D.", ovr: 76, pac: 78, sho: 68, pas: 78, dri: 78, def: 65, phy: 72, x: 30, y: 55 },
+        { name: "Cristian Martínez", pos: "MF", no: 6, club: "Al-Jandal", ovr: 68, pac: 72, sho: 60, pas: 68, dri: 65, def: 68, phy: 70, x: 70, y: 55 },
+        { name: "J. L. Rodríguez", pos: "FW", no: 7, club: "Famalicao", ovr: 72, pac: 80, sho: 68, pas: 70, dri: 74, def: 40, phy: 65, x: 80, y: 80 },
+        { name: "Ismael Díaz", pos: "FW", no: 10, club: "U. Católica", ovr: 72, pac: 78, sho: 72, pas: 68, dri: 74, def: 35, phy: 68, x: 20, y: 80 },
+        { name: "Cecilio Waterman", pos: "FW", no: 11, club: "Alianza L.", ovr: 70, pac: 76, sho: 70, pas: 60, dri: 68, def: 30, phy: 75, x: 50, y: 85 }
+      ],
+      bench: [
+        { name: "Orlando Mosquera", pos: "GK", club: "M. Tel Aviv", ovr: 68, pac: 65, sho: 20, pas: 60, dri: 62, def: 68, phy: 66 },
+        { name: "César Samudio", pos: "GK", club: "Marathón", ovr: 66, pac: 66, sho: 22, pas: 62, dri: 65, def: 66, phy: 68 },
+        { name: "Edgardo Fariña", pos: "DF", club: "Independiente", ovr: 66, pac: 65, sho: 45, pas: 65, dri: 62, def: 66, phy: 70 },
+        { name: "Andrés Andrade", pos: "DF", club: "LASK", ovr: 72, pac: 76, sho: 55, pas: 68, dri: 70, def: 72, phy: 74 },
+        { name: "Iván Anderson", pos: "DF", club: "Fortaleza CEIF", ovr: 68, pac: 80, sho: 50, pas: 65, dri: 70, def: 65, phy: 68 },
+        { name: "M. A. Murillo", pos: "DF", club: "Marseille", ovr: 76, pac: 82, sho: 65, pas: 74, dri: 76, def: 74, phy: 76 },
+        { name: "Carlos Harvey", pos: "DF", club: "Minnesota Utd", ovr: 66, pac: 68, sho: 45, pas: 60, dri: 62, def: 65, phy: 70 },
+        { name: "Abdiel Ayarza", pos: "MF", club: "Cienciano", ovr: 68, pac: 70, sho: 65, pas: 65, dri: 68, def: 65, phy: 74 },
+        { name: "Jovani Welch", pos: "MF", club: "Viseu", ovr: 66, pac: 68, sho: 55, pas: 65, dri: 66, def: 64, phy: 68 },
+        { name: "César Yanis", pos: "MF", club: "San Carlos", ovr: 68, pac: 76, sho: 60, pas: 68, dri: 70, def: 55, phy: 65 },
+        { name: "Martin Morán", pos: "MF", club: "Etar", ovr: 65, pac: 70, sho: 55, pas: 65, dri: 68, def: 60, phy: 66 },
+        { name: "Eduardo Guerrero", pos: "FW", club: "Zorya L.", ovr: 70, pac: 80, sho: 68, pas: 65, dri: 72, def: 40, phy: 70 },
+        { name: "Freddy Góndola", pos: "FW", club: "M. Bnei Reineh", ovr: 68, pac: 78, sho: 65, pas: 60, dri: 70, def: 35, phy: 68 },
+        { name: "José Fajardo", pos: "FW", club: "U. Católica", ovr: 70, pac: 78, sho: 70, pas: 65, dri: 68, def: 35, phy: 72 },
+        { name: "Kahiser Lenis", pos: "FW", club: "Jaguares", ovr: 66, pac: 76, sho: 65, pas: 60, dri: 68, def: 30, phy: 65 }
+      ]
+    },
+    NOR: {
+      formation: "4-3-3",
+      players: [
+        { name: "Ørjan Nyland", pos: "GK", no: 1, club: "Sevilla", ovr: 76, pac: 68, sho: 25, pas: 65, dri: 68, def: 76, phy: 74, x: 50, y: 12 },
+        { name: "Julian Ryerson", pos: "DF", no: 3, club: "Dortmund", ovr: 80, pac: 80, sho: 65, pas: 74, dri: 76, def: 78, phy: 80, x: 85, y: 35 },
+        { name: "Kristoffer Ajer", pos: "DF", no: 4, club: "Brentford", ovr: 77, pac: 72, sho: 50, pas: 70, dri: 68, def: 78, phy: 80, x: 65, y: 28 },
+        { name: "Leo Østigård", pos: "DF", no: 2, club: "Napoli", ovr: 76, pac: 68, sho: 45, pas: 65, dri: 60, def: 76, phy: 82, x: 35, y: 28 },
+        { name: "David Møller Wolfe", pos: "DF", no: 13, club: "AZ Alkmaar", ovr: 72, pac: 78, sho: 55, pas: 68, dri: 70, def: 68, phy: 70, x: 15, y: 35 },
+        { name: "Sander Berge", pos: "MF", no: 8, club: "Burnley", ovr: 78, pac: 65, sho: 70, pas: 78, dri: 76, def: 76, phy: 84, x: 50, y: 50 },
+        { name: "Martin Ødegaard", pos: "MF", no: 10, club: "Arsenal", ovr: 87, pac: 76, sho: 80, pas: 88, dri: 86, def: 60, phy: 68, x: 30, y: 55 },
+        { name: "Patrick Berg", pos: "MF", no: 6, club: "Bodø/Glimt", ovr: 76, pac: 70, sho: 68, pas: 78, dri: 74, def: 72, phy: 75, x: 70, y: 55 },
+        { name: "A. Sørloth", pos: "FW", no: 7, club: "Villarreal", ovr: 82, pac: 80, sho: 84, pas: 72, dri: 78, def: 45, phy: 86, x: 80, y: 80 },
+        { name: "Erling Haaland", pos: "FW", no: 9, club: "Man City", ovr: 91, pac: 89, sho: 93, pas: 66, dri: 80, def: 45, phy: 88, x: 50, y: 85 },
+        { name: "M. Elyounoussi", pos: "FW", no: 11, club: "FC Copenhagen", ovr: 76, pac: 78, sho: 74, pas: 74, dri: 78, def: 45, phy: 68, x: 20, y: 80 }
+      ],
+      bench: [
+        { name: "M. Dyngeland", pos: "GK", club: "Brann", ovr: 70, pac: 65, sho: 20, pas: 60, dri: 62, def: 70, phy: 72 },
+        { name: "Egil Selvik", pos: "GK", club: "Haugesund", ovr: 68, pac: 66, sho: 22, pas: 62, dri: 65, def: 68, phy: 68 },
+        { name: "A. Hanche-Olsen", pos: "DF", club: "Mainz 05", ovr: 75, pac: 70, sho: 40, pas: 65, dri: 62, def: 75, phy: 78 },
+        { name: "M. H. Pedersen", pos: "DF", club: "Sassuolo", ovr: 76, pac: 84, sho: 60, pas: 70, dri: 75, def: 72, phy: 74 },
+        { name: "Fredrik Bjørkan", pos: "DF", club: "Bodø/Glimt", ovr: 74, pac: 82, sho: 55, pas: 72, dri: 74, def: 68, phy: 70 },
+        { name: "Stian Gregersen", pos: "DF", club: "Atlanta Utd", ovr: 72, pac: 68, sho: 45, pas: 60, dri: 62, def: 72, phy: 76 },
+        { name: "Jesper Daland", pos: "DF", club: "Cercle Brugge", ovr: 72, pac: 68, sho: 40, pas: 62, dri: 60, def: 72, phy: 75 },
+        { name: "Hugo Vetlesen", pos: "MF", club: "Club Brugge", ovr: 76, pac: 76, sho: 72, pas: 76, dri: 78, def: 65, phy: 70 },
+        { name: "K. Thorstvedt", pos: "MF", club: "Sassuolo", ovr: 75, pac: 72, sho: 74, pas: 74, dri: 76, def: 68, phy: 78 },
+        { name: "Morten Thorsby", pos: "MF", club: "Genoa", ovr: 75, pac: 68, sho: 65, pas: 72, dri: 70, def: 74, phy: 80 },
+        { name: "J. Strand Larsen", pos: "FW", club: "Celta Vigo", ovr: 78, pac: 78, sho: 78, pas: 68, dri: 76, def: 40, phy: 82 },
+        { name: "Antonio Nusa", pos: "FW", club: "Club Brugge", ovr: 74, pac: 86, sho: 68, pas: 70, dri: 80, def: 35, phy: 60 },
+        { name: "Aron Dønnum", pos: "FW", club: "Toulouse", ovr: 74, pac: 80, sho: 70, pas: 72, dri: 76, def: 45, phy: 70 },
+        { name: "Osame Sahraoui", pos: "FW", club: "Heerenveen", ovr: 74, pac: 82, sho: 68, pas: 70, dri: 80, def: 40, phy: 62 },
+        { name: "Kristoffer Velde", pos: "FW", club: "Lech Poznań", ovr: 75, pac: 80, sho: 75, pas: 70, dri: 78, def: 40, phy: 68 }
+      ]
+    },
+    ECU: {
+      formation: "4-3-3",
+      players: [
+        { name: "Hernán Galíndez", pos: "GK", no: 1, club: "Huracán", ovr: 75, pac: 68, sho: 25, pas: 65, dri: 68, def: 76, phy: 72, x: 50, y: 12 },
+        { name: "Angelo Preciado", pos: "DF", no: 17, club: "Sparta Praha", ovr: 76, pac: 84, sho: 65, pas: 72, dri: 75, def: 72, phy: 74, x: 85, y: 35 },
+        { name: "Félix Torres", pos: "DF", no: 2, club: "Corinthians", ovr: 76, pac: 72, sho: 45, pas: 65, dri: 62, def: 76, phy: 78, x: 65, y: 28 },
+        { name: "Piero Hincapié", pos: "DF", no: 3, club: "Leverkusen", ovr: 80, pac: 78, sho: 50, pas: 72, dri: 70, def: 80, phy: 78, x: 35, y: 28 },
+        { name: "William Pacho", pos: "DF", no: 6, club: "E. Frankfurt", ovr: 78, pac: 75, sho: 40, pas: 68, dri: 65, def: 78, phy: 82, x: 15, y: 35 },
+        { name: "Carlos Gruezo", pos: "MF", no: 8, club: "SJ Earthquakes", ovr: 75, pac: 68, sho: 60, pas: 72, dri: 70, def: 74, phy: 76, x: 50, y: 50 },
+        { name: "Moises Caicedo", pos: "MF", no: 23, club: "Chelsea", ovr: 82, pac: 76, sho: 70, pas: 80, dri: 80, def: 80, phy: 82, x: 30, y: 55 },
+        { name: "Kendry Páez", pos: "MF", no: 10, club: "Ind. del Valle", ovr: 74, pac: 78, sho: 70, pas: 76, dri: 80, def: 45, phy: 60, x: 70, y: 55 },
+        { name: "John Yeboah", pos: "FW", no: 9, club: "Rakow C.", ovr: 74, pac: 84, sho: 70, pas: 68, dri: 78, def: 40, phy: 65, x: 80, y: 80 },
+        { name: "Enner Valencia", pos: "FW", no: 13, club: "Internacional", ovr: 78, pac: 82, sho: 78, pas: 70, dri: 76, def: 45, phy: 78, x: 50, y: 85 },
+        { name: "Jeremy Sarmiento", pos: "FW", no: 16, club: "Ipswich", ovr: 74, pac: 80, sho: 68, pas: 70, dri: 78, def: 40, phy: 65, x: 20, y: 80 }
+      ],
+      bench: [
+        { name: "Moises Ramírez", pos: "GK", club: "Ind. del Valle", ovr: 72, pac: 65, sho: 20, pas: 60, dri: 62, def: 72, phy: 68 },
+        { name: "A. Domínguez", pos: "GK", club: "LDU Quito", ovr: 74, pac: 68, sho: 25, pas: 64, dri: 66, def: 75, phy: 70 },
+        { name: "Joel Ordóñez", pos: "DF", club: "Club Brugge", ovr: 70, pac: 70, sho: 40, pas: 60, dri: 62, def: 70, phy: 74 },
+        { name: "Layan Loor", pos: "DF", club: "U. Católica (ECU)", ovr: 68, pac: 78, sho: 50, pas: 65, dri: 68, def: 65, phy: 68 },
+        { name: "José Hurtado", pos: "DF", club: "Bragantino", ovr: 72, pac: 82, sho: 55, pas: 68, dri: 72, def: 68, phy: 70 },
+        { name: "Jackson Porozo", pos: "DF", club: "Kasımpaşa", ovr: 72, pac: 68, sho: 45, pas: 60, dri: 60, def: 72, phy: 78 },
+        { name: "Andrés Micolta", pos: "DF", club: "Pachuca", ovr: 68, pac: 65, sho: 40, pas: 58, dri: 55, def: 68, phy: 72 },
+        { name: "José Cifuentes", pos: "MF", club: "Cruzeiro", ovr: 74, pac: 72, sho: 68, pas: 72, dri: 74, def: 65, phy: 76 },
+        { name: "Joao Ortiz", pos: "MF", club: "Ind. del Valle", ovr: 72, pac: 70, sho: 65, pas: 72, dri: 70, def: 68, phy: 72 },
+        { name: "Alan Franco", pos: "MF", club: "Atlético Mineiro", ovr: 74, pac: 72, sho: 68, pas: 74, dri: 72, def: 70, phy: 72 },
+        { name: "Kevin Rodríguez", pos: "FW", club: "Union SG", ovr: 72, pac: 84, sho: 68, pas: 65, dri: 72, def: 35, phy: 75 },
+        { name: "Alan Minda", pos: "FW", club: "Cercle Brugge", ovr: 72, pac: 82, sho: 65, pas: 68, dri: 75, def: 40, phy: 62 },
+        { name: "Ángel Mena", pos: "MF", club: "León", ovr: 76, pac: 72, sho: 76, pas: 76, dri: 78, def: 45, phy: 60 },
+        { name: "Jordy Caicedo", pos: "FW", club: "Atlas", ovr: 72, pac: 78, sho: 70, pas: 60, dri: 68, def: 35, phy: 80 },
+        { name: "Janner Corozo", pos: "FW", club: "Barcelona SC", ovr: 72, pac: 82, sho: 68, pas: 65, dri: 74, def: 40, phy: 65 }
+      ]
+    },
+    CRO: {
+      formation: "4-3-3",
+      players: [
+        { name: "Dominik Livaković", pos: "GK", no: 1, club: "Fenerbahçe", ovr: 82, pac: 70, sho: 30, pas: 72, dri: 70, def: 84, phy: 78, x: 50, y: 12 },
+        { name: "Josip Stanišić", pos: "DF", no: 2, club: "Leverkusen", ovr: 78, pac: 76, sho: 55, pas: 74, dri: 72, def: 78, phy: 76, x: 85, y: 35 },
+        { name: "Josip Šutalo", pos: "DF", no: 6, club: "Ajax", ovr: 78, pac: 72, sho: 45, pas: 70, dri: 68, def: 80, phy: 78, x: 65, y: 28 },
+        { name: "Joško Gvardiol", pos: "DF", no: 4, club: "Man City", ovr: 85, pac: 80, sho: 55, pas: 80, dri: 78, def: 85, phy: 84, x: 35, y: 28 },
+        { name: "Borna Sosa", pos: "DF", no: 19, club: "Ajax", ovr: 78, pac: 78, sho: 60, pas: 82, dri: 76, def: 72, phy: 70, x: 15, y: 35 },
+        { name: "Marcelo Brozović", pos: "MF", no: 11, club: "Al Nassr", ovr: 84, pac: 70, sho: 74, pas: 82, dri: 80, def: 82, phy: 82, x: 50, y: 50 },
+        { name: "Mateo Kovačić", pos: "MF", no: 8, club: "Man City", ovr: 84, pac: 76, sho: 70, pas: 85, dri: 88, def: 74, phy: 74, x: 30, y: 55 },
+        { name: "Luka Modrić", pos: "MF", no: 10, club: "Real Madrid", ovr: 86, pac: 70, sho: 76, pas: 88, dri: 86, def: 70, phy: 65, x: 70, y: 55 },
+        { name: "Lovro Majer", pos: "MF", no: 7, club: "Wolfsburg", ovr: 80, pac: 74, sho: 78, pas: 82, dri: 82, def: 60, phy: 68, x: 80, y: 80 },
+        { name: "Andrej Kramarić", pos: "FW", no: 9, club: "Hoffenheim", ovr: 82, pac: 74, sho: 84, pas: 78, dri: 82, def: 40, phy: 72, x: 50, y: 85 },
+        { name: "Ivan Perišić", pos: "FW", no: 14, club: "Hajduk Split", ovr: 80, pac: 78, sho: 78, pas: 80, dri: 80, def: 68, phy: 76, x: 20, y: 80 }
+      ],
+      bench: [
+        { name: "Nediljko Labrović", pos: "GK", club: "Rijeka", ovr: 72, pac: 65, sho: 20, pas: 60, dri: 62, def: 72, phy: 70 },
+        { name: "Ivica Ivušić", pos: "GK", club: "Pafos", ovr: 74, pac: 68, sho: 25, pas: 64, dri: 66, def: 75, phy: 72 },
+        { name: "Marin Pongračić", pos: "DF", club: "Lecce", ovr: 76, pac: 72, sho: 45, pas: 65, dri: 65, def: 76, phy: 78 },
+        { name: "Martin Erlić", pos: "DF", club: "Sassuolo", ovr: 76, pac: 68, sho: 40, pas: 60, dri: 62, def: 76, phy: 80 },
+        { name: "Domagoj Vida", pos: "DF", club: "AEK Athens", ovr: 75, pac: 65, sho: 55, pas: 65, dri: 60, def: 76, phy: 78 },
+        { name: "Josip Juranović", pos: "DF", club: "Union Berlin", ovr: 78, pac: 82, sho: 60, pas: 76, dri: 74, def: 74, phy: 72 },
+        { name: "Nikola Vlašić", pos: "MF", club: "Torino", ovr: 78, pac: 76, sho: 76, pas: 78, dri: 80, def: 55, phy: 76 },
+        { name: "Mario Pašalić", pos: "MF", club: "Atalanta", ovr: 80, pac: 72, sho: 80, pas: 78, dri: 78, def: 70, phy: 76 },
+        { name: "Luka Ivanušec", pos: "MF", club: "Feyenoord", ovr: 78, pac: 80, sho: 75, pas: 76, dri: 82, def: 55, phy: 68 },
+        { name: "Luka Sučić", pos: "MF", club: "Salzburg", ovr: 76, pac: 74, sho: 75, pas: 76, dri: 78, def: 60, phy: 68 },
+        { name: "Martin Baturina", pos: "MF", club: "Dinamo Zagreb", ovr: 75, pac: 78, sho: 72, pas: 76, dri: 80, def: 55, phy: 65 },
+        { name: "Bruno Petković", pos: "FW", club: "Dinamo Zagreb", ovr: 78, pac: 70, sho: 78, pas: 74, dri: 78, def: 45, phy: 84 },
+        { name: "Marko Pjaca", pos: "FW", club: "Rijeka", ovr: 75, pac: 80, sho: 72, pas: 72, dri: 78, def: 40, phy: 70 },
+        { name: "Marco Pašalić", pos: "FW", club: "Rijeka", ovr: 74, pac: 82, sho: 74, pas: 70, dri: 76, def: 45, phy: 68 },
+        { name: "Ivica Ivušić 2", pos: "GK", club: "Pafos", ovr: 74, pac: 68, sho: 25, pas: 64, dri: 66, def: 75, phy: 72 }
+      ]
+    },
+    AUT: {
+      formation: "4-3-3",
+      players: [
+        { name: "Heinz Lindner", pos: "GK", no: 1, club: "Sion", ovr: 75, pac: 68, sho: 25, pas: 65, dri: 68, def: 76, phy: 72, x: 50, y: 12 },
+        { name: "Stefan Posch", pos: "DF", no: 5, club: "Bologna", ovr: 78, pac: 76, sho: 55, pas: 72, dri: 70, def: 78, phy: 80, x: 85, y: 35 },
+        { name: "Kevin Danso", pos: "DF", no: 4, club: "Lens", ovr: 80, pac: 74, sho: 45, pas: 65, dri: 68, def: 80, phy: 84, x: 65, y: 28 },
+        { name: "Maximilian Wöber", pos: "DF", no: 2, club: "M'gladbach", ovr: 76, pac: 68, sho: 50, pas: 68, dri: 65, def: 76, phy: 78, x: 35, y: 28 },
+        { name: "Phillipp Mwene", pos: "DF", no: 16, club: "Mainz 05", ovr: 75, pac: 80, sho: 55, pas: 70, dri: 74, def: 72, phy: 70, x: 15, y: 35 },
+        { name: "Nicolas Seiwald", pos: "MF", no: 6, club: "Leipzig", ovr: 77, pac: 72, sho: 65, pas: 76, dri: 74, def: 74, phy: 76, x: 50, y: 50 },
+        { name: "Marcel Sabitzer", pos: "MF", no: 9, club: "Dortmund", ovr: 82, pac: 76, sho: 82, pas: 82, dri: 80, def: 70, phy: 76, x: 30, y: 55 },
+        { name: "Konrad Laimer", pos: "MF", no: 20, club: "Bayern Munich", ovr: 82, pac: 80, sho: 70, pas: 78, dri: 78, def: 80, phy: 80, x: 70, y: 55 },
+        { name: "C. Baumgartner", pos: "MF", no: 19, club: "Leipzig", ovr: 78, pac: 78, sho: 76, pas: 76, dri: 80, def: 60, phy: 72, x: 80, y: 80 },
+        { name: "Marko Arnautović", pos: "FW", no: 7, club: "Inter", ovr: 80, pac: 70, sho: 82, pas: 76, dri: 80, def: 40, phy: 80, x: 50, y: 85 },
+        { name: "M. Gregoritsch", pos: "FW", no: 11, club: "Freiburg", ovr: 78, pac: 72, sho: 80, pas: 70, dri: 74, def: 45, phy: 80, x: 20, y: 80 }
+      ],
+      bench: [
+        { name: "Niklas Hedl", pos: "GK", club: "Rapid Wien", ovr: 72, pac: 65, sho: 20, pas: 60, dri: 62, def: 72, phy: 70 },
+        { name: "Patrick Pentz", pos: "GK", club: "Brøndby", ovr: 74, pac: 68, sho: 25, pas: 65, dri: 68, def: 74, phy: 72 },
+        { name: "Gernot Trauner", pos: "DF", club: "Feyenoord", ovr: 78, pac: 65, sho: 45, pas: 68, dri: 65, def: 78, phy: 80 },
+        { name: "Alexander Prass", pos: "DF", club: "Sturm Graz", ovr: 74, pac: 80, sho: 65, pas: 72, dri: 75, def: 68, phy: 70 },
+        { name: "Leopold Querfeld", pos: "DF", club: "Rapid Wien", ovr: 72, pac: 68, sho: 40, pas: 60, dri: 58, def: 72, phy: 76 },
+        { name: "Philipp Lienhart", pos: "DF", club: "Freiburg", ovr: 78, pac: 70, sho: 50, pas: 68, dri: 68, def: 80, phy: 76 },
+        { name: "Daniliuc Flavius", pos: "DF", club: "Salzburg", ovr: 74, pac: 72, sho: 45, pas: 65, dri: 65, def: 74, phy: 76 },
+        { name: "Florian Kainz", pos: "MF", club: "Köln", ovr: 76, pac: 74, sho: 74, pas: 78, dri: 76, def: 55, phy: 65 },
+        { name: "Romano Schmid", pos: "MF", club: "Werder Bremen", ovr: 75, pac: 78, sho: 70, pas: 75, dri: 78, def: 55, phy: 65 },
+        { name: "Matthias Seidl", pos: "MF", club: "Rapid Wien", ovr: 72, pac: 74, sho: 68, pas: 72, dri: 74, def: 55, phy: 65 },
+        { name: "Thierno Ballo", pos: "MF", club: "Wolfsberger AC", ovr: 70, pac: 78, sho: 68, pas: 68, dri: 74, def: 45, phy: 60 },
+        { name: "Andreas Weimann", pos: "FW", club: "West Brom", ovr: 74, pac: 78, sho: 74, pas: 70, dri: 74, def: 50, phy: 70 },
+        { name: "Patrick Wimmer", pos: "FW", club: "Wolfsburg", ovr: 76, pac: 82, sho: 72, pas: 74, dri: 78, def: 60, phy: 70 },
+        { name: "Marco Grüll", pos: "FW", club: "Rapid Wien", ovr: 74, pac: 80, sho: 74, pas: 70, dri: 76, def: 45, phy: 70 },
+        { name: "M. Entrup", pos: "FW", club: "Hartberg", ovr: 70, pac: 76, sho: 70, pas: 60, dri: 68, def: 35, phy: 72 }
+      ]
+    },
+    RSA: {
+      formation: "4-3-3",
+      players: [
+        { name: "Ronwen Williams", pos: "GK", no: 1, club: "Mamelodi Sundowns", ovr: 74, pac: 68, sho: 25, pas: 65, dri: 68, def: 74, phy: 70, x: 50, y: 12 },
+        { name: "Khuliso Mudau", pos: "DF", no: 20, club: "Mamelodi Sundowns", ovr: 72, pac: 80, sho: 50, pas: 65, dri: 70, def: 70, phy: 74, x: 85, y: 35 },
+        { name: "Siyanda Xulu", pos: "DF", no: 5, club: "SuperSport Utd", ovr: 70, pac: 68, sho: 40, pas: 60, dri: 65, def: 70, phy: 75, x: 65, y: 28 },
+        { name: "Nkosinathi Sibisi", pos: "DF", no: 19, club: "Orlando Pirates", ovr: 70, pac: 72, sho: 45, pas: 65, dri: 60, def: 70, phy: 72, x: 35, y: 28 },
+        { name: "Aubrey Modiba", pos: "DF", no: 6, club: "Mamelodi Sundowns", ovr: 72, pac: 78, sho: 65, pas: 72, dri: 74, def: 68, phy: 70, x: 15, y: 35 },
+        { name: "Teboho Mokoena", pos: "MF", no: 4, club: "Mamelodi Sundowns", ovr: 74, pac: 75, sho: 72, pas: 76, dri: 74, def: 72, phy: 78, x: 50, y: 50 },
+        { name: "Themba Zwane", pos: "MF", no: 11, club: "Mamelodi Sundowns", ovr: 74, pac: 76, sho: 70, pas: 78, dri: 78, def: 55, phy: 68, x: 30, y: 55 },
+        { name: "Jayden Adams", pos: "MF", no: 8, club: "Stellenbosch", ovr: 68, pac: 74, sho: 60, pas: 68, dri: 70, def: 65, phy: 70, x: 70, y: 55 },
+        { name: "Oswin Appollis", pos: "FW", no: 7, club: "Polokwane City", ovr: 68, pac: 80, sho: 65, pas: 65, dri: 72, def: 40, phy: 60, x: 80, y: 80 },
+        { name: "Evidence Makgopa", pos: "FW", no: 9, club: "Orlando Pirates", ovr: 68, pac: 76, sho: 68, pas: 60, dri: 65, def: 35, phy: 78, x: 50, y: 85 },
+        { name: "Percy Tau", pos: "FW", no: 10, club: "Al Ahly", ovr: 76, pac: 82, sho: 74, pas: 72, dri: 78, def: 45, phy: 68, x: 20, y: 80 }
+      ],
+      bench: [
+        { name: "Veli Mothwa", pos: "GK", club: "AmaZulu", ovr: 68, pac: 65, sho: 20, pas: 60, dri: 62, def: 68, phy: 66 },
+        { name: "Ricardo Goss", pos: "GK", club: "SuperSport Utd", ovr: 66, pac: 66, sho: 22, pas: 62, dri: 65, def: 66, phy: 68 },
+        { name: "Grant Kekana", pos: "DF", club: "Mamelodi Sundowns", ovr: 72, pac: 74, sho: 45, pas: 65, dri: 68, def: 72, phy: 74 },
+        { name: "Mthobi Mvala", pos: "DF", club: "Mamelodi Sundowns", ovr: 72, pac: 68, sho: 55, pas: 65, dri: 62, def: 74, phy: 80 },
+        { name: "Nyiko Mobbie", pos: "DF", club: "Sekhukhune Utd", ovr: 68, pac: 78, sho: 45, pas: 62, dri: 65, def: 68, phy: 70 },
+        { name: "Terrence Mashego", pos: "DF", club: "Mamelodi Sundowns", ovr: 70, pac: 80, sho: 55, pas: 65, dri: 70, def: 66, phy: 72 },
+        { name: "Tapelo Xoki", pos: "DF", club: "Orlando Pirates", ovr: 68, pac: 68, sho: 45, pas: 60, dri: 62, def: 70, phy: 74 },
+        { name: "Thabang Monare", pos: "MF", club: "Orlando Pirates", ovr: 70, pac: 68, sho: 65, pas: 70, dri: 72, def: 68, phy: 72 },
+        { name: "Sphephelo Sithole", pos: "MF", club: "Tondela", ovr: 70, pac: 72, sho: 65, pas: 68, dri: 70, def: 68, phy: 76 },
+        { name: "Thapelo Morena", pos: "DF", club: "Mamelodi Sundowns", ovr: 72, pac: 84, sho: 65, pas: 70, dri: 74, def: 68, phy: 70 },
+        { name: "Zakhele Lepasa", pos: "FW", club: "Orlando Pirates", ovr: 68, pac: 78, sho: 68, pas: 62, dri: 70, def: 35, phy: 70 },
+        { name: "Mihlali Mayambela", pos: "FW", club: "Aris Limassol", ovr: 70, pac: 82, sho: 68, pas: 65, dri: 72, def: 40, phy: 72 },
+        { name: "Thapelo Maseko", pos: "FW", club: "Mamelodi Sundowns", ovr: 68, pac: 84, sho: 65, pas: 62, dri: 74, def: 40, phy: 60 },
+        { name: "Elias Mokwana", pos: "FW", club: "Sekhukhune Utd", ovr: 66, pac: 80, sho: 65, pas: 60, dri: 70, def: 35, phy: 68 },
+        { name: "M. Mayambela 2", pos: "FW", club: "Aris Limassol", ovr: 70, pac: 82, sho: 68, pas: 65, dri: 72, def: 40, phy: 72 }
+      ]
+    },
+    COD: {
+      formation: "4-3-3",
+      players: [
+        { name: "Lionel Mpasi", pos: "GK", no: 1, club: "Rodez", ovr: 72, pac: 68, sho: 25, pas: 65, dri: 68, def: 72, phy: 70, x: 50, y: 12 },
+        { name: "Gédéon Kalulu", pos: "DF", no: 21, club: "Lorient", ovr: 74, pac: 78, sho: 55, pas: 68, dri: 72, def: 72, phy: 74, x: 85, y: 35 },
+        { name: "Chancel Mbemba", pos: "DF", no: 22, club: "Marseille", ovr: 80, pac: 76, sho: 60, pas: 70, dri: 72, def: 80, phy: 82, x: 65, y: 28 },
+        { name: "Henoc Inonga", pos: "DF", no: 2, club: "Simba SC", ovr: 72, pac: 72, sho: 45, pas: 62, dri: 65, def: 74, phy: 78, x: 35, y: 28 },
+        { name: "Arthur Masuaku", pos: "DF", no: 3, club: "Beşiktaş", ovr: 76, pac: 78, sho: 65, pas: 74, dri: 76, def: 72, phy: 72, x: 15, y: 35 },
+        { name: "Charles Pickel", pos: "MF", no: 17, club: "Cremonese", ovr: 74, pac: 74, sho: 65, pas: 72, dri: 70, def: 74, phy: 78, x: 50, y: 50 },
+        { name: "Samuel Moutoussamy", pos: "MF", no: 8, club: "Nantes", ovr: 74, pac: 72, sho: 68, pas: 72, dri: 74, def: 72, phy: 76, x: 30, y: 55 },
+        { name: "Gael Kakuta", pos: "MF", no: 14, club: "Amiens", ovr: 75, pac: 74, sho: 72, pas: 76, dri: 78, def: 55, phy: 68, x: 70, y: 55 },
+        { name: "Meschack Elia", pos: "FW", no: 13, club: "Young Boys", ovr: 76, pac: 86, sho: 72, pas: 70, dri: 78, def: 45, phy: 65, x: 80, y: 80 },
+        { name: "Cedric Bakambu", pos: "FW", no: 9, club: "Galatasaray", ovr: 78, pac: 82, sho: 78, pas: 70, dri: 76, def: 40, phy: 74, x: 50, y: 85 },
+        { name: "Yoane Wissa", pos: "FW", no: 18, club: "Brentford", ovr: 78, pac: 80, sho: 76, pas: 72, dri: 78, def: 45, phy: 70, x: 20, y: 80 }
+      ],
+      bench: [
+        { name: "Dimitry Bertaud", pos: "GK", club: "Montpellier", ovr: 72, pac: 65, sho: 20, pas: 60, dri: 62, def: 72, phy: 70 },
+        { name: "Baggio Siadi", pos: "GK", club: "TP Mazembe", ovr: 68, pac: 66, sho: 22, pas: 62, dri: 65, def: 68, phy: 68 },
+        { name: "Dylan Batubinsika", pos: "DF", club: "Saint-Étienne", ovr: 74, pac: 68, sho: 45, pas: 62, dri: 60, def: 74, phy: 78 },
+        { name: "Rocky Bushiri", pos: "DF", club: "Hibernian", ovr: 70, pac: 65, sho: 40, pas: 60, dri: 58, def: 70, phy: 76 },
+        { name: "Brian Bayeye", pos: "DF", club: "Ascoli", ovr: 68, pac: 78, sho: 50, pas: 62, dri: 68, def: 65, phy: 70 },
+        { name: "Vital N'Simba", pos: "DF", club: "Bordeaux", ovr: 74, pac: 76, sho: 60, pas: 70, dri: 72, def: 70, phy: 70 },
+        { name: "Joris Kayembe", pos: "DF", club: "Genk", ovr: 74, pac: 78, sho: 60, pas: 70, dri: 74, def: 70, phy: 72 },
+        { name: "Aaron Tshibola", pos: "MF", club: "Al-Raed", ovr: 72, pac: 70, sho: 65, pas: 70, dri: 72, def: 68, phy: 76 },
+        { name: "Omenuke Mfulu", pos: "MF", club: "Las Palmas", ovr: 72, pac: 68, sho: 60, pas: 70, dri: 70, def: 70, phy: 74 },
+        { name: "Edo Kayembe", pos: "MF", club: "Watford", ovr: 74, pac: 72, sho: 68, pas: 72, dri: 74, def: 70, phy: 76 },
+        { name: "Theo Bongonda", pos: "FW", club: "Spartak Moscow", ovr: 76, pac: 84, sho: 74, pas: 72, dri: 78, def: 40, phy: 65 },
+        { name: "Grady Diangana", pos: "FW", club: "West Brom", ovr: 74, pac: 80, sho: 70, pas: 70, dri: 76, def: 45, phy: 62 },
+        { name: "Silas K. Mvumpa", pos: "FW", club: "Stuttgart", ovr: 76, pac: 86, sho: 72, pas: 70, dri: 78, def: 40, phy: 74 },
+        { name: "Simon Banza", pos: "FW", club: "Braga", ovr: 78, pac: 80, sho: 78, pas: 68, dri: 75, def: 45, phy: 80 },
+        { name: "Fiston Mayele", pos: "FW", club: "Pyramids", ovr: 72, pac: 78, sho: 72, pas: 65, dri: 70, def: 40, phy: 74 }
+      ]
+    },
+    GHA: {
+      formation: "4-3-3",
+      players: [
+        { name: "Lawrence Ati-Zigi", pos: "GK", no: 12, club: "St. Gallen", ovr: 74, pac: 68, sho: 25, pas: 65, dri: 68, def: 75, phy: 72, x: 50, y: 12 },
+        { name: "Alidu Seidu", pos: "DF", no: 2, club: "Rennes", ovr: 75, pac: 80, sho: 55, pas: 68, dri: 72, def: 74, phy: 76, x: 85, y: 35 },
+        { name: "Alexander Djiku", pos: "DF", no: 22, club: "Fenerbahçe", ovr: 78, pac: 74, sho: 50, pas: 68, dri: 68, def: 80, phy: 80, x: 65, y: 28 },
+        { name: "Mohammed Salisu", pos: "DF", no: 6, club: "Monaco", ovr: 78, pac: 72, sho: 45, pas: 65, dri: 65, def: 80, phy: 82, x: 35, y: 28 },
+        { name: "Gideon Mensah", pos: "DF", no: 14, club: "Auxerre", ovr: 74, pac: 82, sho: 55, pas: 68, dri: 72, def: 70, phy: 70, x: 15, y: 35 },
+        { name: "Salis Abdul Samed", pos: "MF", no: 21, club: "Lens", ovr: 78, pac: 76, sho: 60, pas: 76, dri: 75, def: 76, phy: 80, x: 50, y: 50 },
+        { name: "Majeed Ashimeru", pos: "MF", no: 8, club: "Anderlecht", ovr: 74, pac: 78, sho: 68, pas: 74, dri: 76, def: 65, phy: 68, x: 30, y: 55 },
+        { name: "Mohammed Kudus", pos: "MF", no: 10, club: "West Ham", ovr: 82, pac: 84, sho: 80, pas: 78, dri: 86, def: 55, phy: 78, x: 70, y: 55 },
+        { name: "Iñaki Williams", pos: "FW", no: 19, club: "Athletic Club", ovr: 82, pac: 90, sho: 80, pas: 74, dri: 80, def: 45, phy: 80, x: 80, y: 80 },
+        { name: "Antoine Semenyo", pos: "FW", no: 15, club: "Bournemouth", ovr: 76, pac: 84, sho: 74, pas: 70, dri: 78, def: 40, phy: 76, x: 50, y: 85 },
+        { name: "Jordan Ayew", pos: "FW", no: 9, club: "Crystal Palace", ovr: 76, pac: 76, sho: 74, pas: 74, dri: 78, def: 50, phy: 72, x: 20, y: 80 }
+      ],
+      bench: [
+        { name: "Richard Ofori", pos: "GK", club: "Orlando Pirates", ovr: 72, pac: 65, sho: 20, pas: 60, dri: 62, def: 72, phy: 70 },
+        { name: "Jojo Wollacott", pos: "GK", club: "Hibernian", ovr: 70, pac: 68, sho: 22, pas: 62, dri: 65, def: 70, phy: 68 },
+        { name: "Daniel Amartey", pos: "DF", club: "Beşiktaş", ovr: 76, pac: 68, sho: 55, pas: 68, dri: 65, def: 76, phy: 78 },
+        { name: "Nicholas Opoku", pos: "DF", club: "Amiens", ovr: 72, pac: 66, sho: 40, pas: 60, dri: 58, def: 72, phy: 76 },
+        { name: "Denis Odoi", pos: "DF", club: "Club Brugge", ovr: 74, pac: 76, sho: 55, pas: 68, dri: 70, def: 72, phy: 70 },
+        { name: "Baba Rahman", pos: "DF", club: "PAOK", ovr: 74, pac: 78, sho: 60, pas: 70, dri: 72, def: 70, phy: 72 },
+        { name: "Kingsley Schindler", pos: "DF", club: "Samsunspor", ovr: 72, pac: 80, sho: 65, pas: 68, dri: 72, def: 65, phy: 70 },
+        { name: "Elisha Owusu", pos: "MF", club: "Auxerre", ovr: 74, pac: 72, sho: 60, pas: 72, dri: 72, def: 70, phy: 74 },
+        { name: "Iddrisu Baba", pos: "MF", club: "Almería", ovr: 75, pac: 70, sho: 60, pas: 70, dri: 68, def: 74, phy: 78 },
+        { name: "Joseph Paintsil", pos: "FW", club: "LA Galaxy", ovr: 78, pac: 90, sho: 74, pas: 72, dri: 78, def: 40, phy: 68 },
+        { name: "Osman Bukari", pos: "FW", club: "Crvena zvezda", ovr: 76, pac: 88, sho: 72, pas: 70, dri: 78, def: 40, phy: 65 },
+        { name: "Kamaldeen Sulemana", pos: "FW", club: "Southampton", ovr: 75, pac: 88, sho: 70, pas: 70, dri: 80, def: 40, phy: 62 },
+        { name: "Ernest Nuamah", pos: "FW", club: "Lyon", ovr: 74, pac: 86, sho: 72, pas: 68, dri: 78, def: 40, phy: 60 },
+        { name: "A. Fatawu Issahaku", pos: "FW", club: "Leicester", ovr: 74, pac: 84, sho: 70, pas: 70, dri: 76, def: 45, phy: 65 },
+        { name: "R. Königsdörffer", pos: "FW", club: "HSV", ovr: 72, pac: 82, sho: 70, pas: 65, dri: 74, def: 40, phy: 70 }
+      ]
+    },
+    ALG: {
+      formation: "4-3-3",
+      players: [
+        { name: "Anthony Mandrea", pos: "GK", no: 12, club: "Caen", ovr: 74, pac: 68, sho: 25, pas: 65, dri: 68, def: 75, phy: 72, x: 50, y: 12 },
+        { name: "Youcef Atal", pos: "DF", no: 24, club: "Adana D.", ovr: 78, pac: 88, sho: 68, pas: 74, dri: 82, def: 72, phy: 68, x: 85, y: 35 },
+        { name: "Aïssa Mandi", pos: "DF", no: 2, club: "Villarreal", ovr: 78, pac: 72, sho: 50, pas: 72, dri: 68, def: 80, phy: 76, x: 65, y: 28 },
+        { name: "Ramy Bensebaini", pos: "DF", no: 21, club: "Dortmund", ovr: 80, pac: 76, sho: 68, pas: 74, dri: 74, def: 80, phy: 82, x: 35, y: 28 },
+        { name: "Rayan Aït-Nouri", pos: "DF", no: 15, club: "Wolves", ovr: 80, pac: 82, sho: 65, pas: 76, dri: 82, def: 74, phy: 70, x: 15, y: 35 },
+        { name: "Nabil Bentaleb", pos: "MF", no: 23, club: "Lille", ovr: 78, pac: 70, sho: 72, pas: 78, dri: 76, def: 74, phy: 78, x: 50, y: 50 },
+        { name: "Ismaël Bennacer", pos: "MF", no: 22, club: "Milan", ovr: 84, pac: 78, sho: 74, pas: 82, dri: 86, def: 76, phy: 74, x: 30, y: 55 },
+        { name: "Houssem Aouar", pos: "MF", no: 11, club: "Roma", ovr: 78, pac: 76, sho: 74, pas: 80, dri: 82, def: 60, phy: 65, x: 70, y: 55 },
+        { name: "Riyad Mahrez", pos: "FW", no: 7, club: "Al-Ahli", ovr: 86, pac: 80, sho: 82, pas: 84, dri: 88, def: 40, phy: 65, x: 80, y: 80 },
+        { name: "Baghdad Bounedjah", pos: "FW", no: 9, club: "Al Sadd", ovr: 78, pac: 76, sho: 80, pas: 70, dri: 76, def: 40, phy: 78, x: 50, y: 85 },
+        { name: "Youcef Belaïli", pos: "FW", no: 18, club: "MC Alger", ovr: 76, pac: 78, sho: 74, pas: 76, dri: 80, def: 45, phy: 72, x: 20, y: 80 }
+      ],
+      bench: [
+        { name: "Mustapha Zeghba", pos: "GK", club: "Damac", ovr: 72, pac: 65, sho: 20, pas: 60, dri: 62, def: 72, phy: 70 },
+        { name: "Oussama Benbot", pos: "GK", club: "USM Alger", ovr: 70, pac: 66, sho: 22, pas: 62, dri: 65, def: 70, phy: 68 },
+        { name: "Mohamed A. Tougai", pos: "DF", club: "ES Tunis", ovr: 74, pac: 68, sho: 45, pas: 60, dri: 62, def: 74, phy: 76 },
+        { name: "Ahmed Touba", pos: "DF", club: "Lecce", ovr: 74, pac: 70, sho: 50, pas: 65, dri: 65, def: 72, phy: 76 },
+        { name: "Zineddine Belaïd", pos: "DF", club: "USM Alger", ovr: 72, pac: 68, sho: 45, pas: 60, dri: 60, def: 72, phy: 76 },
+        { name: "K. Van Den Kerkhof", pos: "DF", club: "Metz", ovr: 74, pac: 84, sho: 65, pas: 70, dri: 74, def: 68, phy: 72 },
+        { name: "Yasser Larouci", pos: "DF", club: "Sheff Utd", ovr: 72, pac: 80, sho: 55, pas: 68, dri: 72, def: 66, phy: 68 },
+        { name: "Ramiz Zerrouki", pos: "MF", club: "Feyenoord", ovr: 76, pac: 72, sho: 68, pas: 76, dri: 74, def: 74, phy: 76 },
+        { name: "Hicham Boudaoui", pos: "MF", club: "Nice", ovr: 76, pac: 76, sho: 70, pas: 76, dri: 78, def: 70, phy: 72 },
+        { name: "Farès Chaïbi", pos: "MF", club: "E. Frankfurt", ovr: 76, pac: 78, sho: 74, pas: 76, dri: 78, def: 55, phy: 68 },
+        { name: "Sofiane Feghouli", pos: "MF", club: "Fatih K.", ovr: 75, pac: 74, sho: 72, pas: 76, dri: 78, def: 55, phy: 65 },
+        { name: "Amine Gouiri", pos: "FW", club: "Rennes", ovr: 80, pac: 82, sho: 80, pas: 76, dri: 82, def: 40, phy: 72 },
+        { name: "Adam Ounas", pos: "FW", club: "Lille", ovr: 76, pac: 84, sho: 74, pas: 74, dri: 82, def: 40, phy: 60 },
+        { name: "Islam Slimani", pos: "FW", club: "KV Mechelen", ovr: 75, pac: 68, sho: 78, pas: 68, dri: 72, def: 45, phy: 80 },
+        { name: "B. Bounedjah 2", pos: "FW", club: "Al Sadd", ovr: 78, pac: 76, sho: 80, pas: 70, dri: 76, def: 40, phy: 78 }
+      ]
     }
   }
 };
