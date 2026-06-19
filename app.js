@@ -316,11 +316,11 @@ function getPlayerNamesByNationality(teamId) {
     ],
     // Grupo C
     BRA: [
-      "Alisson", "Danilo", "Marquinhos", "G. Magalhães", "Alex Sandro",
+      "Alisson", "Danilo da Silva", "Marquinhos", "G. Magalhães", "Alex Sandro",
       "Casemiro", "B. Guimarães", "L. Paquetá", "Raphinha", "Neymar",
       "Vini Júnior", // Reservas
       "Ederson", "Weverton", "Bremer", "Douglas Santos", "Léo Pereira",
-      "Roger Ibañez", "Yan Couto", "Éderson", "Fabinho", "Endrick",
+      "Roger Ibañez", "Danilo Oliveira", "Éderson", "Fabinho", "Endrick",
       "G. Martinelli", "Igor Thiago", "Luiz Henrique", "Matheus Cunha", "Rayan"
     ],
     MAR: [
@@ -2312,28 +2312,41 @@ function renderTournamentHighlights(matches, topAssistsData = [], topYellowsData
         name: escapeHtml(p.player.name), 
         assists: p.statistics && p.statistics[0] && p.statistics[0].goals ? p.statistics[0].goals.assists || 0 : 0 
       }))
-    : [...list].map(p => {
-        const rand = getDeterministicRandom(p.name + "assists")();
-        return { flag: p.flag, name: p.name, assists: Math.floor(rand * (p.goals > 0 ? 3 : 2)) + (p.goals > 1 ? 1 : 0) };
-      }).filter(p => p.assists > 0).sort((a,b) => b.assists - a.assists || a.name.localeCompare(b.name)).slice(0, 5);
+    : [
+        { flag: "🇸🇪", name: "Alexander Isak", assists: 2 },
+        { flag: "🇳🇿", name: "Chris Wood", assists: 2 },
+        { flag: "🇩🇪", name: "Deniz Undav", assists: 2 },
+        { flag: "🇩🇪", name: "Joshua Kimmich", assists: 2 },
+        { flag: "🇳🇱", name: "Ryan Gravenberch", assists: 2 }
+      ];
 
-  const faltas = [...list].map(p => {
-        const rand = getDeterministicRandom(p.name + "fouls")();
-        return { flag: p.flag, name: p.name, fouls: Math.floor(rand * 6) + 1 };
-      }).sort((a,b) => b.fouls - a.fouls || a.name.localeCompare(b.name)).slice(0, 5);
-
-  const cartoes = topYellowsData && topYellowsData.length > 0
+  const cartoesAmarelos = topYellowsData && topYellowsData.length > 0
     ? topYellowsData.slice(0, 5).map(p => ({ 
         flag: "🏳️", 
         name: escapeHtml(p.player.name), 
-        yellow: p.statistics && p.statistics[0] && p.statistics[0].cards ? p.statistics[0].cards.yellow || 0 : 0, 
+        yellow: p.statistics && p.statistics[0] && p.statistics[0].cards ? p.statistics[0].cards.yellow || 0 : 0
+      }))
+    : [
+        { flag: "🇿🇦", name: "Teboho Mokoena", yellow: 2 },
+        { flag: "🏴󠁧󠁢󠁳󠁣󠁴󠁿", name: "Aaron Hickey", yellow: 1 },
+        { flag: "🇺🇸", name: "Antonee Robinson", yellow: 1 },
+        { flag: "🇧🇷", name: "Casemiro", yellow: 1 },
+        { flag: "🇨🇦", name: "Derek Cornelius", yellow: 1 }
+      ];
+
+  const cartoesVermelhos = topRedsData && topRedsData.length > 0
+    ? topRedsData.slice(0, 5).map(p => ({ 
+        flag: "🏳️", 
+        name: escapeHtml(p.player.name), 
         red: p.statistics && p.statistics[0] && p.statistics[0].cards ? p.statistics[0].cards.red || 0 : 0 
       }))
-    : [...list].map(p => {
-        const randY = getDeterministicRandom(p.name + "yellow")();
-        const randR = getDeterministicRandom(p.name + "red")();
-        return { flag: p.flag, name: p.name, yellow: Math.floor(randY * 3), red: Math.floor(randR * 1.1) };
-      }).filter(p => p.yellow > 0 || p.red > 0).sort((a,b) => (b.yellow + b.red*3) - (a.yellow + a.red*3) || a.name.localeCompare(b.name)).slice(0, 5);
+    : [
+        { flag: "🇶🇦", name: "Assim Madibo", red: 1 },
+        { flag: "🇲🇽", name: "César Montes", red: 1 },
+        { flag: "🇶🇦", name: "Homam Ahmed", red: 1 },
+        { flag: "🇿🇦", name: "Sphephelo Sithole", red: 1 },
+        { flag: "🇧🇦", name: "Tarik Muharemović", red: 1 }
+      ];
 
   const buildBox = (title, icon, arr, valFn, empty) => {
     let li = "";
@@ -2365,8 +2378,8 @@ function renderTournamentHighlights(matches, topAssistsData = [], topYellowsData
   container.innerHTML = `
     ${buildBox("Artilheiros", "zap", artilheiros, p => `${p.goals} G`, "Nenhum gol.")}
     ${buildBox("Assistências", "award", assistencias, p => `${p.assists} A`, "Nenhuma assistência.")}
-    ${buildBox("Mais Faltas", "shield-alert", faltas, p => `${p.fouls} F`, "Nenhuma falta.")}
-    ${buildBox("Cartões", "layers", cartoes, p => `🟨 ${p.yellow} | 🟥 ${p.red}`, "Nenhum cartão.")}
+    ${buildBox("Cartões Amarelos", "alert-triangle", cartoesAmarelos, p => `${p.yellow} 🟨`, "Nenhum cartão amarelo.")}
+    ${buildBox("Cartões Vermelhos", "x-octagon", cartoesVermelhos, p => `${p.red} 🟥`, "Nenhum cartão vermelho.")}
     
     <div style="grid-column: 1 / -1; margin-top: 10px; padding: 10px; background: var(--off-white); border: 1px dashed var(--dark-accent); font-family: 'Space Mono', monospace; font-size: 0.75rem; color: #666; text-align: center;">
       <i data-lucide="info" style="width: 14px; height: 14px; vertical-align: middle; margin-right: 4px;"></i>
