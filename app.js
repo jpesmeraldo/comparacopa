@@ -863,7 +863,8 @@ function renderTacticalField() {
   
   // Atualizar a exibição do técnico
   const coachName = window.comparacopaData.coaches[teamId] || "Sem Técnico Cadastrado";
-  document.getElementById("coach-display").textContent = `Técnico: ${coachName}`;
+  const formation = window.comparacopaData.squads[teamId]?.formation || "4-3-3";
+  document.getElementById("coach-display").textContent = `Técnico: ${coachName} (${formation})`;
   
   // Obter cores do time
   const colors = window.comparacopaData.teamColors[teamId] || { primary: "#222", secondary: "#fff" };

@@ -175,7 +175,21 @@ window.comparacopaData = {
     ENG: { wins: 60, draws: 24, losses: 16, goalsScored: 190, goalsConceded: 79, cleanSheets: 46, form: ["E", "V", "V", "E", "V"] },
     GER: { wins: 54, draws: 26, losses: 20, goalsScored: 188, goalsConceded: 98, cleanSheets: 35, form: ["V", "E", "V", "D", "V"] },
     POR: { wins: 61, draws: 19, losses: 20, goalsScored: 204, goalsConceded: 86, cleanSheets: 41, form: ["V", "V", "D", "V", "V"] },
-    URU: { wins: 52, draws: 24, losses: 24, goalsScored: 154, goalsConceded: 95, cleanSheets: 38, form: ["V", "E", "V", "V", "D"] }
+    URU: { wins: 52, draws: 24, losses: 24, goalsScored: 154, goalsConceded: 95, cleanSheets: 38, form: ["V", "E", "V", "V", "D"] },
+    QAT: { wins: 45, draws: 20, losses: 35, goalsScored: 130, goalsConceded: 110, cleanSheets: 25, form: ["V", "V", "V", "E", "V"] },
+    TUR: { wins: 50, draws: 25, losses: 25, goalsScored: 145, goalsConceded: 105, cleanSheets: 30, form: ["D", "E", "V", "D", "V"] },
+    SUI: { wins: 52, draws: 22, losses: 26, goalsScored: 150, goalsConceded: 100, cleanSheets: 32, form: ["E", "V", "E", "V", "E"] },
+    KOR: { wins: 55, draws: 20, losses: 25, goalsScored: 160, goalsConceded: 95, cleanSheets: 35, form: ["V", "V", "E", "V", "V"] },
+    TUN: { wins: 48, draws: 25, losses: 27, goalsScored: 135, goalsConceded: 105, cleanSheets: 28, form: ["D", "V", "E", "E", "V"] },
+    PAN: { wins: 40, draws: 22, losses: 38, goalsScored: 120, goalsConceded: 125, cleanSheets: 22, form: ["V", "V", "D", "D", "V"] },
+    NOR: { wins: 49, draws: 24, losses: 27, goalsScored: 155, goalsConceded: 110, cleanSheets: 29, form: ["E", "D", "V", "E", "D"] },
+    ECU: { wins: 51, draws: 23, losses: 26, goalsScored: 148, goalsConceded: 102, cleanSheets: 31, form: ["V", "E", "V", "V", "D"] },
+    CRO: { wins: 58, draws: 24, losses: 18, goalsScored: 175, goalsConceded: 85, cleanSheets: 38, form: ["V", "V", "V", "E", "D"] },
+    AUT: { wins: 50, draws: 21, losses: 29, goalsScored: 140, goalsConceded: 108, cleanSheets: 27, form: ["V", "V", "V", "D", "E"] },
+    RSA: { wins: 46, draws: 26, losses: 28, goalsScored: 132, goalsConceded: 105, cleanSheets: 26, form: ["E", "V", "E", "V", "V"] },
+    COD: { wins: 44, draws: 24, losses: 32, goalsScored: 125, goalsConceded: 115, cleanSheets: 24, form: ["V", "E", "D", "E", "V"] },
+    GHA: { wins: 48, draws: 23, losses: 29, goalsScored: 138, goalsConceded: 106, cleanSheets: 28, form: ["D", "E", "D", "V", "V"] },
+    ALG: { wins: 53, draws: 22, losses: 25, goalsScored: 152, goalsConceded: 98, cleanSheets: 33, form: ["V", "V", "E", "D", "V"] }
   },
 
   // Escalações oficiais, posições e dados reais dos convocados de 2026
