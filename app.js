@@ -1902,11 +1902,22 @@ function copyLink() {
   });
 }
 
-function shareOnInstagram() {
+function shareOnInstagram(btn) {
   const text = "https://jpesmeraldo.github.io/comparacopa/";
+  
+  const showCopied = () => {
+    const originalHtml = btn.innerHTML;
+    btn.innerHTML = `<i data-lucide="check" style="width: 18px; height: 18px;"></i> Copiado!`;
+    if (window.lucide) window.lucide.createIcons();
+    setTimeout(() => {
+      btn.innerHTML = originalHtml;
+      if (window.lucide) window.lucide.createIcons();
+      window.open("https://instagram.com", "_blank");
+    }, 2000);
+  };
+
   navigator.clipboard.writeText(text).then(() => {
-    alert("Link copiado! Cole no seu Story ou Bio do Instagram.");
-    window.open("https://instagram.com", "_blank");
+    showCopied();
   }).catch(() => {
     const tempInput = document.createElement("input");
     tempInput.value = text;
@@ -1914,8 +1925,7 @@ function shareOnInstagram() {
     tempInput.select();
     document.execCommand("copy");
     document.body.removeChild(tempInput);
-    alert("Link copiado! Cole no seu Story ou Bio do Instagram.");
-    window.open("https://instagram.com", "_blank");
+    showCopied();
   });
 }
 
@@ -2014,12 +2024,23 @@ function copySimLink() {
   });
 }
 
-function shareSimInstagram() {
+function shareSimInstagram(btn) {
   const resultText = `${lastSimResult.teamAName} ${lastSimResult.scoreA} x ${lastSimResult.scoreB} ${lastSimResult.teamBName}`;
   const text = `Simulei ${resultText} no Comparacopa! Quem tem o melhor elenco e tática? Faça o seu também em: https://jpesmeraldo.github.io/comparacopa/`;
+  
+  const showCopied = () => {
+    const originalHtml = btn.innerHTML;
+    btn.innerHTML = `<i data-lucide="check" style="width: 18px; height: 18px;"></i> Copiado!`;
+    if (window.lucide) window.lucide.createIcons();
+    setTimeout(() => {
+      btn.innerHTML = originalHtml;
+      if (window.lucide) window.lucide.createIcons();
+      window.open("https://instagram.com", "_blank");
+    }, 2000);
+  };
+
   navigator.clipboard.writeText(text).then(() => {
-    alert("Resultado copiado! Cole no seu Story do Instagram.");
-    window.open("https://instagram.com", "_blank");
+    showCopied();
   }).catch(() => {
     const tempInput = document.createElement("input");
     tempInput.value = text;
@@ -2027,8 +2048,7 @@ function shareSimInstagram() {
     tempInput.select();
     document.execCommand("copy");
     document.body.removeChild(tempInput);
-    alert("Resultado copiado! Cole no seu Story do Instagram.");
-    window.open("https://instagram.com", "_blank");
+    showCopied();
   });
 }
 
