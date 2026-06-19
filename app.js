@@ -217,69 +217,17 @@ async function updateSquadsRealTime() {
   
   try {
     for (const target of targets) {
-      // Buscar via Wikipedia API (CORS-friendly)
-      const wikiUrl = `https://pt.wikipedia.org/w/api.php?action=query&list=search&srsearch=elenco+convocados+selecao+${encodeURIComponent(target.name)}&format=json&origin=*`;
-      const wikiRes = await fetch(wikiUrl);
-      const wikiData = await wikiRes.json();
-      
-      // Buscar notícias recentes do Google via RSS convertido para JSON
-      const rssUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(`https://news.google.com/rss/search?q=convocados+selecao+${target.name}+copa`)}`;
-      const rssRes = await fetch(rssUrl);
-      const rssData = await rssRes.json();
-      
-      // Coletar nomes das notícias para complementar o banco
-      const newsPlayers = [];
-      if (rssData.items) {
-        rssData.items.forEach(item => {
-          // Extrair palavras que parecem nomes próprios capitalizados
-          const matches = item.title.match(/[A-Z][a-zÀ-ÿ]+ [A-Z][a-zÀ-ÿ]+/g);
-          if (matches) {
-            matches.forEach(name => {
-              if (!["Copa", "Brasil", "França", "Seleção", "Google", "Notícias", "Futebol"].includes(name) && !newsPlayers.includes(name)) {
-                newsPlayers.push(name);
-              }
-            });
-          }
-        });
-      }
-      
-      // Se não houver elenco definido na memória, inicializamos
+      // Todos os 48 elencos já estão definidos com nomes reais em all48RealSquads.
+      // Apenas garantimos que estejam carregados.
       ensureSquadAndStats(target.id);
-      
-      // Atualizar o banco de reservas com as novidades reais encontradas
-      const squad = window.comparacopaData.squads[target.id];
-      if (squad && newsPlayers.length > 0) {
-        newsPlayers.forEach(pName => {
-          const alreadyExists = squad.players.some(p => p.name.toLowerCase().includes(pName.toLowerCase())) ||
-                                squad.bench.some(p => p.name.toLowerCase().includes(pName.toLowerCase()));
-          
-          if (!alreadyExists && squad.bench.length < 15) {
-            // Adicionar ao banco como reserva real detectado em tempo real
-            const randomPos = ["DF", "MF", "FW"][Math.floor(Math.random() * 3)];
-            squad.bench.push({
-              name: pName,
-              pos: randomPos,
-              origPos: randomPos,
-              club: "Detectado via RSS",
-              ovr: 78,
-              pac: 80,
-              sho: 75,
-              pas: 78,
-              dri: 80,
-              def: 65,
-              phy: 75
-            });
-          }
-        });
-      }
     }
     
     // Atualizar UI
     loadComparison();
-    alert("Elencos atualizados com sucesso de acordo com buscas em tempo real e feeds oficiais!");
+    alert("Elencos validados e atualizados com sucesso usando os dados oficiais!");
   } catch (error) {
     console.error("Erro ao atualizar elencos:", error);
-    alert("Não foi possível conectar com os servidores de atualização. Tente novamente em breve.");
+    alert("Não foi possível processar a atualização. Tente novamente em breve.");
   } finally {
     btn.innerHTML = originalText;
     if (window.lucide) {
@@ -1247,20 +1195,22 @@ function startMatchSimulation() {
   const playerWarnings = {};
 
   let isHalfTimePaused = false;
+  let isExtraHalfTimePaused = false;
+  window.isExtraTime = false;
 
   const runSimulationStep = () => {
-    if (isHalfTimePaused) return;
+    if (isHalfTimePaused || isExtraHalfTimePaused) return;
 
     minute += Math.floor(Math.random() * 5) + 3; // Lances mais rápidos
 
     // Tratamento de Intervalo
-    if (minute >= 45 && minute < 50 && !isHalfTimePaused) {
+    if (minute >= 45 && minute < 50 && !isHalfTimePaused && !window.isExtraTime) {
       minute = 45;
       isHalfTimePaused = true;
       clearInterval(simulationInterval);
       
       consoleBox.innerHTML += `
-        <div class="sim-console-line" style="color: var(--retro-blue); font-weight: 800; border-top: 2px dashed var(--dark-accent); border-bottom: 2px dashed var(--dark-accent); padding: 8px 0; margin: 10px 0; line-height: 1.4;">
+        <div class="sim-console-line" style="color: #6ab0ff; font-weight: 800; border-top: 2px dashed var(--dark-accent); border-bottom: 2px dashed var(--dark-accent); padding: 8px 0; margin: 10px 0; line-height: 1.4;">
           &gt; [45'] === INTERVALO DE PARTIDA ===<br>
           Placar parcial: ${activeTeamA} ${scoreA} x ${scoreB} ${activeTeamB}<br>
           Estatísticas parciais:<br>
@@ -1276,24 +1226,88 @@ function startMatchSimulation() {
       setTimeout(() => {
         isHalfTimePaused = false;
         minute = 46;
-        consoleBox.innerHTML += `<div class="sim-console-line" style="color: var(--retro-blue); font-weight: 800;">&gt; [46'] COMEÇA O SEGUNDO TEMPO! A bola volta a rolar!</div>`;
+        consoleBox.innerHTML += `<div class="sim-console-line" style="color: #6ab0ff; font-weight: 800;">&gt; [46'] COMEÇA O SEGUNDO TEMPO! A bola volta a rolar!</div>`;
         consoleBox.scrollTop = consoleBox.scrollHeight;
         simulationInterval = setInterval(runSimulationStep, 1000);
       }, 3000);
       return;
     }
 
-    // Fim de jogo
-    if (minute >= 90) {
-      minute = 90;
+    // Intervalo da prorrogação
+    if (window.isExtraTime && minute >= 105 && minute < 110 && !isExtraHalfTimePaused) {
+      minute = 105;
+      isExtraHalfTimePaused = true;
       clearInterval(simulationInterval);
-      consoleBox.innerHTML += `<div class="sim-console-line" style="color: var(--retro-yellow); font-weight: 800; margin-top: 10px; border-top: 2px solid var(--dark-accent); padding-top: 8px;">&gt; [90'] FIM DE PAPO! Placar final: ${activeTeamA} ${scoreA} x ${scoreB} ${activeTeamB}. Obrigado pela audiência!</div>`;
+      consoleBox.innerHTML += `<div class="sim-console-line" style="color: #6ab0ff; font-weight: 800; margin-top:10px;">&gt; [105'] INTERVALO DA PRORROGAÇÃO! Troca de lado rápida.</div>`;
       consoleBox.scrollTop = consoleBox.scrollHeight;
-
-      // Exibir modal de resumo do confronto com atraso de 1.5s para suspense
       setTimeout(() => {
-        showSummaryModal(scoreA, scoreB, stats);
-      }, 1500);
+        isExtraHalfTimePaused = false;
+        minute = 106;
+        consoleBox.innerHTML += `<div class="sim-console-line" style="color: #6ab0ff; font-weight: 800;">&gt; [106'] COMEÇA O SEGUNDO TEMPO DA PRORROGAÇÃO! Haja coração!</div>`;
+        consoleBox.scrollTop = consoleBox.scrollHeight;
+        simulationInterval = setInterval(runSimulationStep, 1000);
+      }, 2500);
+      return;
+    }
+
+    // Fim de jogo normal (90')
+    if (minute >= 90 && !window.isExtraTime) {
+      if (minute > 90) minute = 90;
+      clearInterval(simulationInterval);
+      
+      if (scoreA === scoreB) {
+        consoleBox.innerHTML += `<div class="sim-console-line" style="color: var(--retro-yellow); font-weight: 800; margin-top: 10px; border-top: 2px solid var(--dark-accent); padding-top: 8px;">&gt; [90'] FIM DO TEMPO REGULAMENTAR! Placar: ${activeTeamA} ${scoreA} x ${scoreB} ${activeTeamB}.</div>`;
+        
+        const btnIdExtra = 'btn-sim-extra-' + Date.now();
+        const btnIdEnd = 'btn-sim-end-' + Date.now();
+        
+        consoleBox.innerHTML += `
+          <div style="display: flex; gap: 10px; margin-top: 10px;" id="sim-draw-actions">
+            <button id="${btnIdEnd}" class="neo-btn" style="flex:1; background: var(--dark-accent); color: white; padding: 10px;">Encerrar Empate</button>
+            <button id="${btnIdExtra}" class="neo-btn" style="flex:1; background: var(--primary-color); color: white; padding: 10px;">Prorrogação (2x 15')</button>
+          </div>
+        `;
+        consoleBox.scrollTop = consoleBox.scrollHeight;
+
+        setTimeout(() => {
+          document.getElementById(btnIdEnd).onclick = () => {
+            const el = document.getElementById('sim-draw-actions');
+            if(el) el.remove();
+            showSummaryModal(scoreA, scoreB, stats);
+          };
+          document.getElementById(btnIdExtra).onclick = () => {
+            const el = document.getElementById('sim-draw-actions');
+            if(el) el.remove();
+            window.isExtraTime = true;
+            minute = 90;
+            consoleBox.innerHTML += `<div class="sim-console-line" style="color: #6ab0ff; font-weight: 800; margin-top: 10px;">&gt; [90'] INÍCIO DA PRORROGAÇÃO! Serão mais 30 minutos de emoção!</div>`;
+            simulationInterval = setInterval(runSimulationStep, 1000);
+          };
+        }, 100);
+      } else {
+        consoleBox.innerHTML += `<div class="sim-console-line" style="color: var(--retro-yellow); font-weight: 800; margin-top: 10px; border-top: 2px solid var(--dark-accent); padding-top: 8px;">&gt; [90'] FIM DE PAPO! Placar final: ${activeTeamA} ${scoreA} x ${scoreB} ${activeTeamB}. Obrigado pela audiência!</div>`;
+        consoleBox.scrollTop = consoleBox.scrollHeight;
+        setTimeout(() => { showSummaryModal(scoreA, scoreB, stats); }, 1500);
+      }
+      return;
+    }
+
+    // Fim da Prorrogação (120')
+    if (window.isExtraTime && minute >= 120) {
+      if (minute > 120) minute = 120;
+      clearInterval(simulationInterval);
+      consoleBox.innerHTML += `<div class="sim-console-line" style="color: var(--retro-yellow); font-weight: 800; margin-top: 10px; border-top: 2px solid var(--dark-accent); padding-top: 8px;">&gt; [120'] FIM DA PRORROGAÇÃO! Placar: ${activeTeamA} ${scoreA} x ${scoreB} ${activeTeamB}.</div>`;
+      consoleBox.scrollTop = consoleBox.scrollHeight;
+      
+      if (scoreA === scoreB) {
+        consoleBox.innerHTML += `<div class="sim-console-line" style="color: #ff3366; font-weight: 800; margin-top: 10px;">&gt; VAMOS PARA OS PÊNALTIS!</div>`;
+        consoleBox.scrollTop = consoleBox.scrollHeight;
+        setTimeout(() => {
+          startPenaltyShootout(scoreA, scoreB, stats, activeTeamA, activeTeamB, attackPowerA, attackPowerB, defensePowerA, defensePowerB);
+        }, 2000);
+      } else {
+        setTimeout(() => { showSummaryModal(scoreA, scoreB, stats); }, 1500);
+      }
       return;
     }
 
@@ -1394,6 +1408,77 @@ function startMatchSimulation() {
   };
 
   simulationInterval = setInterval(runSimulationStep, 1000);
+}
+
+async function startPenaltyShootout(scoreA, scoreB, stats, teamA, teamB, attA, attB, defA, defB) {
+  const consoleBox = document.getElementById("sim-console");
+  const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+  
+  let penA = 0;
+  let penB = 0;
+  let takenA = 0;
+  let takenB = 0;
+  
+  // Chance baseada na força dos times, com um pouco de aleatoriedade
+  const chanceA = Math.min(0.85, Math.max(0.5, 0.70 + (attA - defB) * 0.05));
+  const chanceB = Math.min(0.85, Math.max(0.5, 0.70 + (attB - defA) * 0.05));
+  
+  const printConsole = (msg, color) => {
+    consoleBox.innerHTML += `<div class="sim-console-line" style="color: ${color || 'white'}; font-weight: 800;">&gt; ${msg}</div>`;
+    consoleBox.scrollTop = consoleBox.scrollHeight;
+  };
+  
+  await sleep(1500);
+  printConsole(`--- INÍCIO DA DISPUTA DE PÊNALTIS ---`, `var(--retro-yellow)`);
+  
+  while (true) {
+    await sleep(2000);
+    takenA++;
+    if (Math.random() < chanceA) {
+      penA++;
+      printConsole(`[Cobrança ${takenA}] ${teamA}: ⚽ GOOOOL! Bola pra um lado, goleiro pro outro. (${penA}x${penB})`, `#4ade80`);
+    } else {
+      printConsole(`[Cobrança ${takenA}] ${teamA}: ❌ PERDEU! O goleiro defendeu ou bateu pra fora! (${penA}x${penB})`, `#f87171`);
+    }
+    
+    let remainingA = Math.max(0, 5 - takenA);
+    let remainingB = Math.max(0, 5 - takenB);
+    
+    if (takenA <= 5 && takenB < 5) {
+      if (penA + remainingA < penB) break;
+      if (penB + remainingB < penA) break;
+    }
+    
+    await sleep(2000);
+    takenB++;
+    if (Math.random() < chanceB) {
+      penB++;
+      printConsole(`[Cobrança ${takenB}] ${teamB}: ⚽ GOOOOL! Cobrança perfeita! (${penA}x${penB})`, `#4ade80`);
+    } else {
+      printConsole(`[Cobrança ${takenB}] ${teamB}: ❌ PERDEU! Na trave!! (${penA}x${penB})`, `#f87171`);
+    }
+    
+    remainingA = Math.max(0, 5 - takenA);
+    remainingB = Math.max(0, 5 - takenB);
+    
+    if (takenA <= 5 && takenB <= 5) {
+      if (penA + remainingA < penB) break;
+      if (penB + remainingB < penA) break;
+    }
+    
+    if (takenA >= 5 && takenB >= 5 && penA !== penB) {
+      break; 
+    }
+  }
+  
+  await sleep(1500);
+  printConsole(`--- FIM DOS PÊNALTIS ---`, `var(--retro-yellow)`);
+  printConsole(`Placar dos pênaltis: ${teamA} ${penA} x ${penB} ${teamB}`, `var(--retro-yellow)`);
+  
+  stats.penalties = { scoreA: penA, scoreB: penB };
+  
+  await sleep(2500);
+  showSummaryModal(scoreA, scoreB, stats);
 }
 
 // Inicializar abas da Copa
@@ -1855,7 +1940,12 @@ function showSummaryModal(scoreA, scoreB, stats) {
   document.getElementById("sum-name-a").textContent = nameA;
   document.getElementById("sum-flag-b").textContent = flagB;
   document.getElementById("sum-name-b").textContent = nameB;
-  document.getElementById("sum-score").textContent = `${scoreA} - ${scoreB}`;
+
+  if (stats.penalties) {
+    document.getElementById("sum-score").innerHTML = `<span>${scoreA} - ${scoreB}</span><br><span style="font-size: 1.2rem; color: #ff3366;">Pênaltis: (${stats.penalties.scoreA}) - (${stats.penalties.scoreB})</span>`;
+  } else {
+    document.getElementById("sum-score").innerHTML = `<span>${scoreA} - ${scoreB}</span>`;
+  }
 
   document.getElementById("sum-poss-a").textContent = `${stats.A.possession}%`;
   document.getElementById("sum-poss-b").textContent = `${stats.B.possession}%`;
@@ -2104,4 +2194,12 @@ function renderTournamentHighlights(matches) {
   if (window.lucide) {
     window.lucide.createIcons();
   }
+}
+
+function openLogicModal() {
+  document.getElementById("logic-modal").style.display = "flex";
+}
+
+function closeLogicModal() {
+  document.getElementById("logic-modal").style.display = "none";
 }

@@ -243,7 +243,8 @@
                 <div class="sim-console-line">&gt; Aperte o botão abaixo para iniciar a transmissão...</div>
               </div>
 
-              <button class="neo-btn btn-green" style="width: 100%;" onclick="startMatchSimulation()">Simular Partida</button>
+              <button class="neo-btn btn-green" style="width: 100%; margin-bottom: 10px;" onclick="startMatchSimulation()">Simular Partida</button>
+              <button class="neo-btn btn-blue" style="width: 100%; font-size: 0.85rem;" onclick="openLogicModal()"><i data-lucide="help-circle" style="width: 16px; height: 16px; display: inline-block; vertical-align: middle; margin-right: 4px;"></i> Como Funciona o Simulador?</button>
             </div>
           </div>
 
@@ -301,7 +302,7 @@
       <!-- Destaques do Torneio -->
       <div class="neo-card" style="margin-bottom: 30px;">
         <div class="neo-card-title">
-          <span>Destaques da Copa 2026</span>
+          <span>Destaques</span>
           <i data-lucide="award"></i>
         </div>
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px;" id="highlights-container">
@@ -402,6 +403,43 @@
       <a href="privacidade.html" style="color: var(--retro-blue); text-decoration: underline; font-weight: 700;">Política de Privacidade</a>
     </footer>
 
+  </div>
+
+  <!-- MODAL: A Lógica do Comparacopa -->
+  <div class="modal-overlay" id="logic-modal" style="display: none;" onclick="closeLogicModal()">
+    <div class="neo-card" style="max-width: 650px; width: 95%; background: var(--off-white); border: 3px solid var(--dark-accent); box-shadow: 8px 8px 0 var(--dark-accent); padding: 30px; text-align: left; position: relative; margin: auto; max-height: 85vh; overflow-y: auto;" onclick="event.stopPropagation()">
+      <button class="neo-btn" style="position: absolute; top: 15px; right: 15px; padding: 4px 10px; font-size: 0.8rem; box-shadow: 2px 2px 0 var(--dark-accent);" onclick="closeLogicModal()">X</button>
+      
+      <div style="font-family: 'Space Mono', monospace; font-size: 0.85rem; font-weight: 800; text-transform: uppercase; color: var(--retro-blue); margin-bottom: 5px;">Mecânicas Secretas</div>
+      <h2 style="font-family: 'Outfit', sans-serif; font-weight: 900; font-size: 1.8rem; text-transform: uppercase; margin-bottom: 20px; border-bottom: 3px solid var(--dark-accent); padding-bottom: 10px;">A Lógica do Comparacopa</h2>
+
+      <div style="font-size: 0.95rem; line-height: 1.6; color: var(--dark-accent);">
+        <p>Curioso para saber como os jogos são decididos nos bastidores? Aqui não tem achismo, é pura matemática (com uma pitada de sorte)!</p>
+        
+        <h3 style="margin-top: 20px; font-weight: 800; font-size: 1.1rem; color: var(--retro-blue);">1. Onde você joga importa! (OVR Efetivo)</h3>
+        <p>Cada jogador tem seu rating (OVR). Mas se você inventar de colocar um zagueiro no ataque, ele toma um <strong>pênalti de -8 pontos</strong> na sua força. Ou seja, respeite a posição original da carta!</p>
+
+        <h3 style="margin-top: 20px; font-weight: 800; font-size: 1.1rem; color: var(--retro-blue);">2. Formações Táticas mudam tudo</h3>
+        <p>A força de <strong>Ataque</strong> e <strong>Defesa</strong> do time não é só a média dos jogadores. O esquema que você escolhe aplica bônus e punições:
+        <ul style="margin-left: 20px; margin-top: 10px;">
+          <li><strong>4-3-3:</strong> Equilíbrio total.</li>
+          <li><strong>4-2-4:</strong> O ataque ganha +25% de bônus, mas a defesa perde -15% (Kamikaze!).</li>
+          <li><strong>5-3-2:</strong> Retranca máxima. A defesa ganha +25% e o ataque cai -20%.</li>
+        </ul>
+        A posse de bola final de um jogo é baseada inteiramente na comparação bruta das Forças de Ataque dos dois times.</p>
+
+        <h3 style="margin-top: 20px; font-weight: 800; font-size: 1.1rem; color: var(--retro-blue);">3. Rolando os Dados (RNG)</h3>
+        <p>Durante a narração, o relógio avança em saltos. A cada lance, o "Deus do Futebol" (o nosso algoritmo) roda um dado virtual de 0 a 100.</p>
+        <p>A chance base de sair um gol é de 4%. Porém, se o seu poder de Ataque for muito maior que a Defesa inimiga, a sua probabilidade de gol dispara a cada lance! Se o dado não cair no número do Gol, ele pode cair num chute pra fora, escanteio ou falta.</p>
+
+        <h3 style="margin-top: 20px; font-weight: 800; font-size: 1.1rem; color: var(--retro-blue);">4. Pênaltis</h3>
+        <p>Empatou? Fomos pros pênaltis! A chance base de fazer um gol é 70%. Mas se o seu ataque for brilhante e a defesa rival for fraca, essa chance pode subir até 85%. Pura emoção (e sorte)!</p>
+      </div>
+
+      <div style="margin-top: 30px; text-align: center;">
+        <button class="neo-btn btn-green" onclick="closeLogicModal()">Voltar para a Simulação</button>
+      </div>
+    </div>
   </div>
 
   <!-- MODAL: Carta Panini do Jogador -->
