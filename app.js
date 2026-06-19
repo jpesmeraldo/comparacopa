@@ -1902,6 +1902,23 @@ function copyLink() {
   });
 }
 
+function shareOnInstagram() {
+  const text = "https://jpesmeraldo.github.io/comparacopa/";
+  navigator.clipboard.writeText(text).then(() => {
+    alert("Link copiado! Cole no seu Story ou Bio do Instagram.");
+    window.open("https://instagram.com", "_blank");
+  }).catch(() => {
+    const tempInput = document.createElement("input");
+    tempInput.value = text;
+    document.body.appendChild(tempInput);
+    tempInput.select();
+    document.execCommand("copy");
+    document.body.removeChild(tempInput);
+    alert("Link copiado! Cole no seu Story ou Bio do Instagram.");
+    window.open("https://instagram.com", "_blank");
+  });
+}
+
 // Estado da última simulação para o Modal de Compartilhamento
 let lastSimResult = {
   teamAName: "",
@@ -1994,6 +2011,24 @@ function copySimLink() {
     document.execCommand("copy");
     document.body.removeChild(tempInput);
     alert("Link do Comparacopa copiado para a área de transferência! Compartilhe com seus amigos.");
+  });
+}
+
+function shareSimInstagram() {
+  const resultText = `${lastSimResult.teamAName} ${lastSimResult.scoreA} x ${lastSimResult.scoreB} ${lastSimResult.teamBName}`;
+  const text = `Simulei ${resultText} no Comparacopa! Quem tem o melhor elenco e tática? Faça o seu também em: https://jpesmeraldo.github.io/comparacopa/`;
+  navigator.clipboard.writeText(text).then(() => {
+    alert("Resultado copiado! Cole no seu Story do Instagram.");
+    window.open("https://instagram.com", "_blank");
+  }).catch(() => {
+    const tempInput = document.createElement("input");
+    tempInput.value = text;
+    document.body.appendChild(tempInput);
+    tempInput.select();
+    document.execCommand("copy");
+    document.body.removeChild(tempInput);
+    alert("Resultado copiado! Cole no seu Story do Instagram.");
+    window.open("https://instagram.com", "_blank");
   });
 }
 
