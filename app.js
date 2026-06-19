@@ -2370,7 +2370,7 @@ function renderTournamentHighlights(matches, topAssistsData = [], topYellowsData
     
     <div style="grid-column: 1 / -1; margin-top: 10px; padding: 10px; background: var(--off-white); border: 1px dashed var(--dark-accent); font-family: 'Space Mono', monospace; font-size: 0.75rem; color: #666; text-align: center;">
       <i data-lucide="info" style="width: 14px; height: 14px; vertical-align: middle; margin-right: 4px;"></i>
-      As estatísticas de assistências, faltas e cartões podem estar sendo simuladas pelo mecanismo de fallback determinístico quando indisponíveis na API oficial devido ao bloqueio do plano gratuito.
+      As estatísticas de assistências, faltas e cartões podem ser estimativas geradas pelo nosso algoritmo determinístico caso os dados ao vivo estejam indisponíveis nas fontes oficiais.
     </div>
   `;
 
