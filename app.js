@@ -1968,6 +1968,8 @@ function showSummaryModal(scoreA, scoreB, stats) {
 
   // Guardar estado para os links de compartilhamento
   lastSimResult = {
+    teamA: activeTeamA,
+    teamB: activeTeamB,
     teamAName: nameA,
     teamBName: nameB,
     scoreA: scoreA,
@@ -2293,16 +2295,23 @@ document.addEventListener("DOMContentLoaded", () => {
     const tb = urlParams.get('tb');
     const sa = urlParams.get('sa');
     const sb = urlParams.get('sb');
-    if(ta && tb && sa && sb) {
+    if(ta && tb && sa && sb && ta !== 'undefined' && tb !== 'undefined') {
       setTimeout(() => {
         // Pre-select the teams
         const selectA = document.getElementById('select-team-a');
         const selectB = document.getElementById('select-team-b');
-        if (selectA && selectB) {
+        
+        // Verify if options exist
+        const hasA = Array.from(selectA?.options || []).some(o => o.value === ta);
+        const hasB = Array.from(selectB?.options || []).some(o => o.value === tb);
+
+        if (selectA && selectB && hasA && hasB) {
             selectA.value = ta;
             selectB.value = tb;
             // Force change event if needed, but we can just call loadComparison
             loadComparison();
+        } else {
+            return; // Invalid teams, abort challenge logic
         }
         
         // Show challenge modal
