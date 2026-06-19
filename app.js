@@ -2196,10 +2196,10 @@ function renderTournamentHighlights(matches) {
   }
 }
 
-function openLogicModal() {
+window.openLogicModal = function() {
   document.getElementById("logic-modal").style.display = "flex";
-}
+};
 
-function closeLogicModal() {
+window.closeLogicModal = function() {
   document.getElementById("logic-modal").style.display = "none";
-}
+};
