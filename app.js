@@ -324,12 +324,12 @@ function getPlayerNamesByNationality(teamId) {
       "G. Martinelli", "Igor Thiago", "Luiz Henrique", "Matheus Cunha", "Rayan"
     ],
     MAR: [
-      "Yassine Bounou", "Achraf Hakimi", "Nayef Aguerd", "Romain Saïss", "Yahia Attiyat Allah",
+      "Yassine Bounou", "Achraf Hakimi", "Nayef Aguerd", "Romain Saïss", "Noussair Mazraoui",
       "Sofyan Amrabat", "Azzedine Ounahi", "Selim Amallah", "Hakim Ziyech", "Youssef En-Nesyri",
       "Sofiane Boufal", // Reservas
-      "Munir Mohamedi", "El Mehdi Benabid", "Achraf Dari", "Abdel Abqar", "Chadi Riad",
-      "Noussair Mazraoui", "Bilal El Khannouss", "Amir Richardson", "Oussama El Azzouzi", "Ismael Saibari",
-      "Amine Harit", "Abde Ezzalzouli", "Tarik Tissoudali", "Ayoub El Kaabi"
+      "Munir Mohamedi", "El Mehdi Benabid", "Abdel Abqar", "Chadi Riad", "Younès Abdelhamid",
+      "Mohamed Chibi", "Yahia Attiyat Allah", "Oussama El Azzouzi", "Ismael Saibari", "Bilal El Khannouss",
+      "Amine Harit", "Amine Adli", "Tariq Tissoudali", "Ayoub El Kaabi", "Abde Ezzalzouli"
     ],
     SCO: [
       "Angus Gunn", "Anthony Ralston", "Jack Hendry", "Scott McKenna", "Andrew Robertson",
