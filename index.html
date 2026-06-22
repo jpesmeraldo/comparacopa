@@ -142,17 +142,7 @@
                 </div>
               </div>
 
-              <!-- Formas Recentes -->
-              <div class="form-row">
-                <div>
-                  <div style="font-weight: 800; font-size: 0.8rem; text-transform: uppercase; margin-bottom: 4px;">Histórico A</div>
-                  <div id="form-badges-a" class="form-badges"></div>
-                </div>
-                <div>
-                  <div style="font-weight: 800; font-size: 0.8rem; text-transform: uppercase; margin-bottom: 4px; text-align: right;">Histórico B</div>
-                  <div id="form-badges-b" class="form-badges"></div>
-                </div>
-              </div>
+
 
             </div>
           </div>
@@ -347,16 +337,20 @@
           </div>
         </div>
 
-        <!-- Campo Animado (Futebol de Botão) -->
-        <div id="arena-pitch-container" style="display: none; margin-top: 30px;">
-          <!-- Texto da narração sobreposto -->
-          <div id="arena-narrator" style="background: rgba(0,0,0,0.8); color: #0f0; font-family: 'Space Mono', monospace; padding: 15px; border: 3px solid #000; margin-bottom: -15px; position: relative; z-index: 10; font-size: 0.9rem; min-height: 60px; display: flex; align-items: center; justify-content: center; text-align: center;">
-            Preparando simulação...
-          </div>
-          
-          <div id="arena-pitch" class="arena-pitch">
-            <!-- Linhas do campo -->
-            <div class="pitch-lines"></div>
+          <!-- Campo Animado (Futebol de Botão) -->
+          <div id="arena-pitch-container" style="display: none; margin-top: 30px; position: relative;">
+            
+            <!-- Efeitos de Fogos de Artifício (Gol) -->
+            <div id="arena-fireworks" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 50; display: none;"></div>
+            
+            <!-- Texto da narração sobreposto -->
+            <div id="arena-narrator" style="background: rgba(0,0,0,0.8); color: #0f0; font-family: 'Space Mono', monospace; padding: 15px; border: 3px solid #000; margin-bottom: -15px; position: relative; z-index: 10; font-size: 0.9rem; min-height: 60px; display: flex; align-items: center; justify-content: center; text-align: center;">
+              Preparando simulação...
+            </div>
+            
+            <div id="arena-pitch" class="arena-pitch">
+              <!-- Linhas do campo -->
+              <div class="pitch-lines"></div>
             <div class="pitch-center-circle"></div>
             <div class="pitch-center-line"></div>
             <div class="pitch-penalty-area left"></div>
@@ -563,6 +557,18 @@
         </div>
       </div>
     </section>
+
+    <!-- Bloco AdSense Meio (Acima do Compartilhamento) -->
+    <div class="ad-banner-middle" style="text-align: center; margin-top: 35px; margin-bottom: -10px;">
+      <span class="ad-label" style="font-size: 0.7rem; color: #999; display: block; margin-bottom: 5px;">Publicidade</span>
+      <ins class="adsbygoogle"
+           style="display:inline-block;width:728px;height:90px;max-width:100%;background:#eee;"
+           data-ad-client="ca-pub-3265573685840385"
+           data-ad-slot="0000000000"></ins>
+      <script>
+           (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+    </div>
 
     <!-- CARD DE COMPARTILHAMENTO / VIRALIZAÇÃO -->
     <div class="neo-card" style="margin-top: 35px; background: var(--retro-yellow); border-color: var(--dark-accent); text-align: center;">

@@ -340,9 +340,18 @@ function runAnimation(simData) {
     if (!narrator) return;
     narrator.textContent = ev.text;
     
+    let prevScoreA = parseInt(document.getElementById("sim-score-a").textContent) || 0;
+    let prevScoreB = parseInt(document.getElementById("sim-score-b").textContent) || 0;
+
     // Atualizar placares na tela se houver alteração
-    if (ev.scoreA !== undefined) document.getElementById("sim-score-a").textContent = ev.scoreA;
-    if (ev.scoreB !== undefined) document.getElementById("sim-score-b").textContent = ev.scoreB;
+    if (ev.scoreA !== undefined) {
+      if (ev.scoreA > prevScoreA) triggerArenaFireworks("left");
+      document.getElementById("sim-score-a").textContent = ev.scoreA;
+    }
+    if (ev.scoreB !== undefined) {
+      if (ev.scoreB > prevScoreB) triggerArenaFireworks("right");
+      document.getElementById("sim-score-b").textContent = ev.scoreB;
+    }
 
     // CSS Anim for the event
     const p1Pieces = document.querySelectorAll('.p1-piece');
@@ -390,6 +399,47 @@ function runAnimation(simData) {
   };
   
   playNext();
+}
+
+function triggerArenaFireworks(side) {
+  const container = document.getElementById("arena-fireworks");
+  if (!container) return;
+  container.style.display = "block";
+  container.innerHTML = "";
+  
+  for(let i = 0; i < 20; i++) {
+    const particle = document.createElement("div");
+    particle.style.position = "absolute";
+    particle.style.left = side === 'left' ? (15 + Math.random() * 20) + "%" : (65 + Math.random() * 20) + "%";
+    particle.style.top = (20 + Math.random() * 60) + "%";
+    particle.style.width = "8px";
+    particle.style.height = "8px";
+    particle.style.backgroundColor = ['#ff0', '#f00', '#0f0', '#0ff', '#f0f'][Math.floor(Math.random() * 5)];
+    particle.style.borderRadius = "50%";
+    particle.style.boxShadow = "0 0 10px " + particle.style.backgroundColor;
+    
+    const animName = "explode" + Math.floor(Math.random() * 100000);
+    const style = document.createElement("style");
+    const tx = (Math.random() - 0.5) * 150;
+    const ty = (Math.random() - 0.5) * 150;
+    style.innerHTML = `
+      @keyframes ${animName} {
+        0% { transform: translate(0,0) scale(1); opacity: 1; }
+        100% { transform: translate(${tx}px, ${ty}px) scale(0); opacity: 0; }
+      }
+    `;
+    document.head.appendChild(style);
+    
+    particle.style.animation = `${animName} 1s ease-out forwards`;
+    container.appendChild(particle);
+    
+    setTimeout(() => style.remove(), 1000);
+  }
+  
+  setTimeout(() => {
+    container.innerHTML = "";
+    container.style.display = "none";
+  }, 1000);
 }
 
 // === ARENA SIMULATION ENGINE ===
