@@ -235,10 +235,14 @@
 }
 
 .tactical-pitch .player-name-tag {
-  font-size: 0.55rem !important;
-  bottom: -15px !important;
-  padding: 1px 3px !important;
-  width: 65px !important;
+  font-size: 0.52rem !important;
+  bottom: -16px !important;
+  padding: 2px 4px !important;
+  width: auto !important;
+  max-width: 60px !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
   border-width: 1px !important;
   background: var(--dark-accent) !important;
   color: var(--off-white) !important;

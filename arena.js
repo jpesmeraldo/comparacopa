@@ -883,10 +883,10 @@ function updateArenaUI(data) {
       const confirmReadyBtn = document.getElementById("btn-arena-confirm-ready");
       if (confirmReadyBtn) {
         if (myData.ready) {
-          confirmReadyBtn.textContent = "CANCELAR PRONTO";
+          confirmReadyBtn.textContent = "CANCELAR CONFIRMAÇÃO";
           confirmReadyBtn.className = "neo-btn btn-red";
         } else {
-          confirmReadyBtn.textContent = "CONFIRMAR PRONTO";
+          confirmReadyBtn.textContent = "CONFIRMAR";
           confirmReadyBtn.className = "neo-btn btn-green";
         }
       }
