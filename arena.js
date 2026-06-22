@@ -26,14 +26,16 @@ function initArenaTeams() {
 
 // Criar Sala (Player 1)
 async function arenaCreateRoom() {
+  const btn = document.querySelector('button[onclick="arenaCreateRoom()"]');
+  if (btn) btn.innerHTML = '<i data-lucide="loader" style="width: 18px; margin-right: 5px; vertical-align: middle;"></i> Criando...';
+
   if (!window.firebaseDB) {
-    alert("Firebase não configurado ou carregando.");
+    alert("Firebase não configurado ou bloqueado no seu navegador.");
+    if (btn) btn.innerHTML = '<i data-lucide="plus-circle" style="width: 18px; margin-right: 5px; vertical-align: middle;"></i> Criar Sala';
     return;
   }
   
-  // Generate random 4-character code
   const code = Math.random().toString(36).substring(2, 6).toUpperCase();
-  
   const roomData = {
     id: code,
     status: "waiting",
@@ -45,7 +47,10 @@ async function arenaCreateRoom() {
   
   try {
     const { doc, setDoc } = window.firebaseAPI;
-    await setDoc(doc(window.firebaseDB, "rooms", code), roomData);
+    
+    // Timeout promise to prevent indefinite hanging if Firebase connection fails
+    const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout")), 8000));
+    await Promise.race([setDoc(doc(window.firebaseDB, "rooms", code), roomData), timeout]);
     
     arenaRoomId = code;
     arenaPlayerRole = "p1";
@@ -58,8 +63,11 @@ async function arenaCreateRoom() {
     listenToRoom(code);
     
   } catch (err) {
-    console.error(err);
-    alert("Erro ao criar sala: " + err.message);
+    console.error("Erro ao criar sala:", err);
+    alert("Erro ao conectar no banco de dados. Verifique a internet ou se o banco bloqueou o acesso.");
+  } finally {
+    if (btn) btn.innerHTML = '<i data-lucide="plus-circle" style="width: 18px; margin-right: 5px; vertical-align: middle;"></i> Criar Sala';
+    if (window.lucide) window.lucide.createIcons();
   }
 }
 
@@ -68,15 +76,21 @@ async function arenaJoinRoom() {
   const codeInput = document.getElementById("arena-room-input").value.trim().toUpperCase();
   if (!codeInput) return alert("Digite o código da sala.");
   
+  const btn = document.querySelector('button[onclick="arenaJoinRoom()"]');
+  if (btn) btn.innerHTML = '<i data-lucide="loader" style="width: 18px; margin-right: 5px; vertical-align: middle;"></i> Entrando...';
+
   if (!window.firebaseDB) {
-    alert("Firebase não configurado.");
+    alert("Firebase não configurado ou bloqueado no seu navegador.");
+    if (btn) btn.innerHTML = '<i data-lucide="log-in" style="width: 18px; margin-right: 5px; vertical-align: middle;"></i> Entrar';
     return;
   }
 
   try {
     const { doc, getDoc, updateDoc } = window.firebaseAPI;
     const roomRef = doc(window.firebaseDB, "rooms", codeInput);
-    const snap = await getDoc(roomRef);
+    
+    const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout")), 8000));
+    const snap = await Promise.race([getDoc(roomRef), timeout]);
     
     if (!snap.exists()) {
       alert("Sala não encontrada.");
@@ -92,7 +106,7 @@ async function arenaJoinRoom() {
       return;
     }
     
-    await updateDoc(roomRef, { status: "connected" });
+    await Promise.race([updateDoc(roomRef, { status: "connected" }), new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout")), 8000))]);
     
     arenaRoomId = codeInput;
     arenaPlayerRole = "p2";
@@ -113,7 +127,10 @@ async function arenaJoinRoom() {
     
   } catch (err) {
     console.error(err);
-    alert("Erro ao entrar na sala: " + err.message);
+    alert("Erro ao entrar na sala. Verifique a internet ou se o banco bloqueou o acesso.");
+  } finally {
+    if (btn) btn.innerHTML = '<i data-lucide="log-in" style="width: 18px; margin-right: 5px; vertical-align: middle;"></i> Entrar';
+    if (window.lucide) window.lucide.createIcons();
   }
 }
 
