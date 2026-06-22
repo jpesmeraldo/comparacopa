@@ -254,11 +254,19 @@ async function triggerSimulation(data) {
   });
   
   if (arenaPlayerRole === "p1") {
-    // Inicializa placares e status no banco
+    // Inicializa placares, status, e limites de subs/táticas no banco
     await updateDoc(roomRef, {
       scoreA: 0,
       scoreB: 0,
       injuryTime: 0,
+      "p1.subsLeft": 4,
+      "p1.tacsLeft": 2,
+      "p2.subsLeft": 4,
+      "p2.tacsLeft": 2,
+      "p1.squad": window.comparacopaData.squads[data.p1.team].players,
+      "p1.bench": window.comparacopaData.squads[data.p1.team].bench,
+      "p2.squad": window.comparacopaData.squads[data.p2.team].players,
+      "p2.bench": window.comparacopaData.squads[data.p2.team].bench,
       stats: {
         A: { shots: 0, corners: 0, fouls: 0, yellow: 0, red: 0, possession: 50 },
         B: { shots: 0, corners: 0, fouls: 0, yellow: 0, red: 0, possession: 50 }
@@ -519,23 +527,110 @@ function showArenaPausePanel(isPause) {
 }
 
 function arenaOpenSubModal() {
-  // Populate select boxes with current team players
+  if (!arenaState || !arenaState[arenaPlayerRole]) return;
+  const pState = arenaState[arenaPlayerRole];
+  
+  if (pState.subsLeft <= 0) {
+    alert("Você já usou todas as 4 substituições permitidas!");
+    return;
+  }
+  
   document.getElementById("arena-modal-sub").style.display = "block";
+  const selectOut = document.getElementById("arena-sub-out");
+  const selectIn = document.getElementById("arena-sub-in");
+  
+  selectOut.innerHTML = "";
+  selectIn.innerHTML = "";
+  
+  pState.squad.forEach((p, idx) => {
+    selectOut.innerHTML += `<option value="${idx}">${p.pos} - ${p.name} (${p.ovr})</option>`;
+  });
+  
+  pState.bench.forEach((p, idx) => {
+    selectIn.innerHTML += `<option value="${idx}">${p.pos} - ${p.name} (${p.ovr})</option>`;
+  });
 }
 
-function arenaConfirmSub() {
-  // Save sub logic here
-  alert("Substituição computada! (mockup)");
+async function arenaConfirmSub() {
+  const pState = arenaState[arenaPlayerRole];
+  if (pState.subsLeft <= 0) return;
+
+  const idxOut = document.getElementById("arena-sub-out").value;
+  const idxIn = document.getElementById("arena-sub-in").value;
+  
+  if (idxOut === "" || idxIn === "") return;
+  
+  const squad = [...pState.squad];
+  const bench = [...pState.bench];
+  
+  const playerOut = squad[idxOut];
+  const playerIn = bench[idxIn];
+  
+  // O jogador que entra herda a posição original, o x e y do jogador que sai
+  const newPlayerIn = {
+    ...playerIn,
+    pos: playerOut.pos,
+    x: playerOut.x,
+    y: playerOut.y
+  };
+  
+  squad[idxOut] = newPlayerIn;
+  bench.splice(idxIn, 1); // remove o que entrou do banco
+  bench.push(playerOut);  // opcionalmente pode colocar o cara que saiu no banco
+  
+  const { doc, updateDoc } = window.firebaseAPI;
+  const roomRef = doc(window.firebaseDB, "rooms", arenaRoomId);
+  
+  const updates = {};
+  updates[`${arenaPlayerRole}.squad`] = squad;
+  updates[`${arenaPlayerRole}.bench`] = bench;
+  updates[`${arenaPlayerRole}.subsLeft`] = pState.subsLeft - 1;
+  // Aumenta o tempo de acréscimo global
+  updates["injuryTime"] = (arenaState.injuryTime || 0) + 1;
+  
+  await updateDoc(roomRef, updates);
+  
+  alert(`Substituição feita! ${playerIn.name} entrou no lugar de ${playerOut.name}. (+1 min de acréscimo)`);
   document.getElementById("arena-modal-sub").style.display = "none";
 }
 
 function arenaOpenTacModal() {
+  if (!arenaState || !arenaState[arenaPlayerRole]) return;
+  const pState = arenaState[arenaPlayerRole];
+  
+  if (pState.tacsLeft <= 0) {
+    alert("Você já usou todas as 2 alterações táticas permitidas!");
+    return;
+  }
+  
   document.getElementById("arena-modal-tac").style.display = "block";
+  
+  // Se ainda não existir a dropdown na UI, crio aqui via código ou assumo que existe em index.html
+  const selectForm = document.getElementById("arena-tac-select");
+  if (selectForm) {
+    selectForm.value = pState.formation;
+  }
 }
 
-function arenaConfirmTac() {
-  // Save tac logic here
-  alert("Tática alterada! (mockup)");
+async function arenaConfirmTac() {
+  const pState = arenaState[arenaPlayerRole];
+  if (pState.tacsLeft <= 0) return;
+  
+  const selectForm = document.getElementById("arena-tac-select");
+  if (!selectForm) return;
+  
+  const newFormation = selectForm.value;
+  
+  const { doc, updateDoc } = window.firebaseAPI;
+  const roomRef = doc(window.firebaseDB, "rooms", arenaRoomId);
+  
+  const updates = {};
+  updates[`${arenaPlayerRole}.formation`] = newFormation;
+  updates[`${arenaPlayerRole}.tacsLeft`] = pState.tacsLeft - 1;
+  
+  await updateDoc(roomRef, updates);
+  
+  alert(`Tática alterada para ${newFormation}!`);
   document.getElementById("arena-modal-tac").style.display = "none";
 }
 
