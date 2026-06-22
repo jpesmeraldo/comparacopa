@@ -2319,47 +2319,35 @@ function renderTournamentHighlights(matches, topAssistsData = [], topYellowsData
   // Rankings reais atualizados conforme dados mais recentes
   const artilheiros = [
     { flag: "🇩🇪", name: "Deniz Undav", goals: 3 },
-    { flag: "🇦🇷", name: "Lionel Messi", goals: 3 },
     { flag: "🇨🇦", name: "Jonathan David", goals: 3 },
-    { flag: "🇳🇱", name: "Crysencio Summerville", goals: 2 },
-    { flag: "🇪🇸", name: "Mikel Oyarzabal", goals: 2 }
+    { flag: "🇦🇷", name: "Lionel Messi", goals: 3 },
+    { flag: "🇯🇵", name: "Ayase Ueda", goals: 2 },
+    { flag: "🇳🇱", name: "Cody Gakpo", goals: 2 }
   ];
   
   const assistencias = [
     { flag: "🇸🇪", name: "Alexander Isak", assists: 3 },
+    { flag: "🇲🇦", name: "Brahim Díaz", assists: 2 },
     { flag: "🇳🇿", name: "Chris Wood", assists: 2 },
-    { flag: "🇲🇦", name: "Brahim Diaz", assists: 2 },
-    { flag: "🇪🇬", name: "Mohamed Salah", assists: 2 },
-    { flag: "🇳🇱", name: "Ryan Gravenberch", assists: 2 }
+    { flag: "🇩🇪", name: "Deniz Undav", assists: 2 },
+    { flag: "🇳🇱", name: "Denzel Dumfries", assists: 2 }
   ];
 
-  const cartoesAmarelos = topYellowsData && topYellowsData.length > 0
-    ? topYellowsData.slice(0, 5).map(p => ({ 
-        flag: "🏳️", 
-        name: escapeHtml(p.player.name), 
-        yellow: p.statistics && p.statistics[0] && p.statistics[0].cards ? p.statistics[0].cards.yellow || 0 : 0
-      }))
-    : [
-        { flag: "🇿🇦", name: "Teboho Mokoena", yellow: 2 },
-        { flag: "🏴󠁧󠁢󠁳󠁣󠁴󠁿", name: "Aaron Hickey", yellow: 1 },
-        { flag: "🇺🇸", name: "Antonee Robinson", yellow: 1 },
-        { flag: "🇧🇷", name: "Casemiro", yellow: 1 },
-        { flag: "🇨🇦", name: "Derek Cornelius", yellow: 1 }
-      ];
+  const cartoesAmarelos = [
+    { flag: "🇨🇻", name: "Sidny Lopes Cabral", yellow: 2 },
+    { flag: "🇿🇦", name: "Teboho Mokoena", yellow: 2 },
+    { flag: "🇺🇸", name: "Antonee Robinson", yellow: 1 },
+    { flag: "🇧🇷", name: "Carlos Henrique Casemiro", yellow: 1 },
+    { flag: "🇨🇦", name: "Derek Cornelius", yellow: 1 }
+  ];
 
-  const cartoesVermelhos = topRedsData && topRedsData.length > 0
-    ? topRedsData.slice(0, 5).map(p => ({ 
-        flag: "🏳️", 
-        name: escapeHtml(p.player.name), 
-        red: p.statistics && p.statistics[0] && p.statistics[0].cards ? p.statistics[0].cards.red || 0 : 0 
-      }))
-    : [
-        { flag: "🇶🇦", name: "Assim Madibo", red: 1 },
-        { flag: "🇲🇽", name: "César Montes", red: 1 },
-        { flag: "🇶🇦", name: "Homam Ahmed", red: 1 },
-        { flag: "🇿🇦", name: "Sphephelo Sithole", red: 1 },
-        { flag: "🇧🇦", name: "Tarik Muharemović", red: 1 }
-      ];
+  const cartoesVermelhos = [
+    { flag: "🇶🇦", name: "Assim Madibo", red: 1 },
+    { flag: "🇲🇽", name: "César Montes", red: 1 },
+    { flag: "🇶🇦", name: "Homam Ahmed", red: 1 },
+    { flag: "🇵🇾", name: "Miguel Almirón", red: 1 },
+    { flag: "🇧🇪", name: "Nathan Ngoy", red: 1 }
+  ];
 
   const buildBox = (title, icon, arr, valFn, empty) => {
     let li = "";
