@@ -292,27 +292,27 @@
     =========================================== -->
     <section id="section-arena" class="content-section">
       <div class="arena-lobby-container" id="arena-lobby">
-        <h2 style="font-family: 'Bebas Neue', cursive; font-size: 2rem; color: var(--dark-accent); text-align: center; margin-bottom: 20px;">Lobby da Arena</h2>
+        <h2 style="font-family: 'Bebas Neue', cursive; font-size: 2.5rem; color: var(--retro-yellow); text-shadow: 2px 2px 0 var(--dark-accent); text-align: center; margin-bottom: 30px;">Lobby da Arena</h2>
         
         <div style="display: flex; gap: 20px; justify-content: center; align-items: center; flex-wrap: wrap; margin-bottom: 20px;">
           <!-- Criar Sala -->
-          <div class="highlight-box" style="flex: 1; min-width: 280px; text-align: center; padding: 20px;">
-            <h3 style="margin-bottom: 10px; font-family: 'Space Mono', monospace;">Criar Nova Sala</h3>
-            <p style="font-size: 0.85rem; color: #666; margin-bottom: 15px;">Crie um código único e envie para o seu desafiante.</p>
-            <button class="neo-btn btn-red" onclick="arenaCreateRoom()" style="font-size: 1.1rem; padding: 10px 20px; width: 100%;">
-              <i data-lucide="plus-circle" style="width: 18px; margin-right: 5px;"></i> Criar Sala
+          <div class="neo-card" style="flex: 1; min-width: 280px; text-align: center; padding: 30px 20px;">
+            <h3 style="margin-bottom: 15px; font-family: 'Space Mono', monospace; font-size: 1.3rem; color: var(--dark-accent);">Criar Nova Sala</h3>
+            <p style="font-size: 0.9rem; color: #555; margin-bottom: 25px;">Crie um código único e envie para o seu desafiante.</p>
+            <button class="neo-btn btn-red" onclick="arenaCreateRoom()" style="font-size: 1.1rem; padding: 15px 20px; width: 100%;">
+              <i data-lucide="plus-circle" style="width: 18px; margin-right: 5px; vertical-align: middle;"></i> Criar Sala
             </button>
           </div>
           
           <div style="font-family: 'Bebas Neue', cursive; font-size: 1.5rem; color: #999;">OU</div>
 
           <!-- Entrar na Sala -->
-          <div class="highlight-box" style="flex: 1; min-width: 280px; text-align: center; padding: 20px;">
-            <h3 style="margin-bottom: 10px; font-family: 'Space Mono', monospace;">Entrar em Sala</h3>
-            <p style="font-size: 0.85rem; color: #666; margin-bottom: 15px;">Digite o código da sala criada pelo seu adversário.</p>
-            <input type="text" id="arena-room-input" class="neo-input" placeholder="Ex: A7B9" style="text-align: center; font-size: 1.2rem; text-transform: uppercase; margin-bottom: 10px; letter-spacing: 2px;">
-            <button class="neo-btn btn-green" onclick="arenaJoinRoom()" style="font-size: 1.1rem; padding: 10px 20px; width: 100%;">
-              <i data-lucide="log-in" style="width: 18px; margin-right: 5px;"></i> Entrar
+          <div class="neo-card" style="flex: 1; min-width: 280px; text-align: center; padding: 30px 20px;">
+            <h3 style="margin-bottom: 15px; font-family: 'Space Mono', monospace; font-size: 1.3rem; color: var(--dark-accent);">Entrar em Sala</h3>
+            <p style="font-size: 0.9rem; color: #555; margin-bottom: 20px;">Digite o código da sala criada pelo seu adversário.</p>
+            <input type="text" id="arena-room-input" placeholder="EX: A7B9" style="width: 100%; box-sizing: border-box; text-align: center; font-size: 1.2rem; text-transform: uppercase; margin-bottom: 15px; letter-spacing: 2px; padding: 10px; border: var(--border-size) solid var(--dark-accent); box-shadow: inset 2px 2px 0 rgba(0,0,0,0.1); font-family: 'Space Mono', monospace; outline: none; background: #fff;">
+            <button class="neo-btn btn-green" onclick="arenaJoinRoom()" style="font-size: 1.1rem; padding: 15px 20px; width: 100%;">
+              <i data-lucide="log-in" style="width: 18px; margin-right: 5px; vertical-align: middle;"></i> Entrar
             </button>
           </div>
         </div>
