@@ -863,6 +863,19 @@ function renderTacticalField() {
 
   const teamId = activeFieldTeam === "A" ? activeTeamA : activeTeamB;
   const squad = window.comparacopaData.squads[teamId];
+
+  // Atualizar botões visuais
+  const btnA = document.getElementById("btn-tactical-a");
+  const btnB = document.getElementById("btn-tactical-b");
+  if (btnA && btnB) {
+    if (activeFieldTeam === "A") {
+      btnA.className = "neo-btn active";
+      btnB.className = "neo-btn btn-secondary";
+    } else {
+      btnA.className = "neo-btn btn-secondary";
+      btnB.className = "neo-btn btn-blue active";
+    }
+  }
   
   // Atualizar a exibição do técnico
   const coachName = window.comparacopaData.coaches[teamId] || "Sem Técnico Cadastrado";
@@ -878,10 +891,16 @@ function renderTacticalField() {
   const coords = formationsCoordinates[squad.formation || "4-3-3"];
 
   squad.players.forEach((player, index) => {
+    // Garantir posições iniciais se não estiverem definidas
+    if (player.x === undefined && coords[index]) {
+      player.x = coords[index].x;
+      player.y = coords[index].y;
+    }
+
     const node = document.createElement("div");
     node.className = "player-node";
-    node.style.left = `${player.y}%`; // y vira o progresso da esquerda para a direita (GK na esquerda, FW na direita)
-    node.style.top = `${player.x}%`;  // x vira a distribuição vertical de largura
+    node.style.left = `${player.y !== undefined ? player.y : 50}%`; 
+    node.style.top = `${player.x !== undefined ? player.x : 50}%`;  
     node.style.backgroundColor = colors.primary;
     node.style.color = colors.text || "#ffffff";
     node.style.borderColor = colors.secondary;
