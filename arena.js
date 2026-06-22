@@ -1,9 +1,30 @@
+/* ==========================================================================
+   COMPARACOPA - ARENA MULTIPLAYER LOGIC
+   Supports: Amistoso Local, Amistoso On-line, Torneio On-line (up to 8 teams)
+   ========================================================================== */
+
+let arenaMode = null; // 'local', 'online_friendly', 'online_tournament'
 let arenaRoomId = null;
-let arenaPlayerRole = null; // 'p1' or 'p2'
+let arenaPlayerRole = null; // 'p1', 'p2', or 'host', 'guest'
 let arenaUnsubscribe = null;
 let arenaState = null;
 
-// Helpers to safely get Team Name and Flag
+// Local Mode State
+let localState = {
+  step: 1, // 1: P1 Escolha/Escalação, 2: P2 Escolha/Escalação, 3: Simulação
+  p1: { team: null, squad: null, bench: null, formation: "4-3-3", ready: false },
+  p2: { team: null, squad: null, bench: null, formation: "4-3-3", ready: false },
+  scoreA: 0,
+  scoreB: 0,
+  injuryTime: 0,
+  status: "playing",
+  state: "starting"
+};
+
+// Speed control
+let arenaAnimSpeed = 1.0;
+
+// Helper to safely get Team Name and Flag
 function getTeamName(teamId) {
   if (!teamId) return "Time";
   const t = window.comparacopaData.teams.find(x => x.id === teamId);
@@ -16,7 +37,551 @@ function getTeamFlag(teamId) {
   return t ? t.flag : "🏳️";
 }
 
-// Initialize Teams Dropdown for Arena
+// Select Arena Mode from Lobby
+function arenaSelectMode(mode) {
+  arenaMode = mode;
+  document.getElementById("arena-lobby").style.display = "none";
+  
+  if (mode === "local") {
+    document.getElementById("arena-local-setup").style.display = "block";
+    localState = {
+      step: 1,
+      p1: { team: null, squad: null, bench: null, formation: "4-3-3", ready: false },
+      p2: { team: null, squad: null, bench: null, formation: "4-3-3", ready: false },
+      scoreA: 0,
+      scoreB: 0,
+      injuryTime: 0,
+      status: "playing",
+      state: "starting"
+    };
+    initLocalSetup();
+  } else if (mode === "online_friendly") {
+    arenaCreateRoom("online_friendly");
+  } else if (mode === "online_tournament") {
+    arenaCreateRoom("online_tournament");
+  }
+}
+
+function arenaReturnToLobby() {
+  if (arenaUnsubscribe) {
+    arenaUnsubscribe();
+    arenaUnsubscribe = null;
+  }
+  arenaRoomId = null;
+  arenaPlayerRole = null;
+  arenaMode = null;
+  
+  // Hide all panels
+  document.getElementById("arena-local-setup").style.display = "none";
+  document.getElementById("arena-tournament-lobby").style.display = "none";
+  document.getElementById("arena-tournament-bracket-screen").style.display = "none";
+  document.getElementById("arena-active").style.display = "none";
+  document.getElementById("arena-pitch-container").style.display = "none";
+  document.getElementById("arena-pause-panel").style.display = "none";
+  
+  // Show lobby
+  document.getElementById("arena-lobby").style.display = "block";
+}
+
+/* ==========================================================================
+   AMISTOSO LOCAL (1x1 Same Device)
+   ========================================================================== */
+
+function initLocalSetup() {
+  const select = document.getElementById("arena-local-team-select");
+  if (!select) return;
+  select.innerHTML = '<option value="">Selecione...</option>';
+  
+  if (window.comparacopaData && window.comparacopaData.groups) {
+    for (const group in window.comparacopaData.groups) {
+      const optgroup = document.createElement("optgroup");
+      optgroup.label = `Grupo ${group}`;
+      window.comparacopaData.groups[group].forEach(team => {
+        const option = document.createElement("option");
+        option.value = team.id;
+        option.textContent = `${team.flag} ${team.name}`;
+        optgroup.appendChild(option);
+      });
+      select.appendChild(optgroup);
+    }
+  }
+  
+  document.getElementById("local-setup-title").textContent = "ESCALAÇÃO JOGADOR 1";
+  document.getElementById("arena-local-tactical-editor").style.display = "none";
+  document.getElementById("btn-arena-local-next").textContent = "Confirmar Jogador 1";
+  select.value = "";
+}
+
+function arenaLocalTeamChanged() {
+  const val = document.getElementById("arena-local-team-select").value;
+  if (!val) {
+    document.getElementById("arena-local-tactical-editor").style.display = "none";
+    return;
+  }
+  
+  if (typeof ensureSquadAndStats === "function") {
+    ensureSquadAndStats(val);
+  }
+  
+  const squadData = window.comparacopaData.squads[val];
+  const activePlayer = localState.step === 1 ? localState.p1 : localState.p2;
+  
+  activePlayer.team = val;
+  activePlayer.squad = JSON.parse(JSON.stringify(squadData.players));
+  activePlayer.bench = JSON.parse(JSON.stringify(squadData.bench)).map((p, idx) => ({ ...p, no: p.no || (12 + idx) }));
+  activePlayer.formation = squadData.formation || "4-3-3";
+  
+  document.getElementById("arena-local-tactical-editor").style.display = "block";
+  renderLocalSetupField();
+}
+
+function renderLocalSetupField() {
+  const container = document.getElementById("arena-local-setup-player-nodes");
+  if (!container) return;
+  container.innerHTML = "";
+  
+  const activePlayer = localState.step === 1 ? localState.p1 : localState.p2;
+  const teamId = activePlayer.team;
+  const colors = window.comparacopaData.teamColors[teamId] || { primary: "#222", secondary: "#fff" };
+  
+  // Render formation buttons
+  const grid = document.getElementById("arena-local-formation-btn-grid");
+  if (grid) {
+    grid.innerHTML = "";
+    const formations = ["4-3-3", "4-4-2", "4-2-3-1", "4-2-4", "3-5-2", "5-3-2", "4-5-1", "3-4-3"];
+    formations.forEach(f => {
+      const btn = document.createElement("button");
+      btn.className = `formation-btn ${f === activePlayer.formation ? 'active' : ''}`;
+      btn.style.fontSize = "0.75rem";
+      btn.style.padding = "5px";
+      btn.textContent = f;
+      btn.onclick = () => {
+        activePlayer.formation = f;
+        const coords = formationsCoordinates[f];
+        activePlayer.squad.forEach((player, idx) => {
+          if (coords[idx]) {
+            player.x = coords[idx].x;
+            player.y = coords[idx].y;
+          }
+        });
+        renderLocalSetupField();
+      };
+      grid.appendChild(btn);
+    });
+  }
+  
+  const coords = formationsCoordinates[activePlayer.formation || "4-3-3"];
+  activePlayer.squad.forEach((player, index) => {
+    if (player.y === undefined && coords[index]) {
+      player.y = coords[index].y;
+      player.x = coords[index].x;
+    }
+    
+    const finalY = player.y !== undefined ? player.y : (coords[index] ? coords[index].y : 50);
+    const finalX = player.x !== undefined ? player.x : (coords[index] ? coords[index].x : 50);
+    
+    const node = document.createElement("div");
+    node.className = "player-node";
+    node.style.left = `${finalY}%`; 
+    node.style.top = `${finalX}%`;  
+    node.style.backgroundColor = colors.primary;
+    node.style.color = colors.text || "#ffffff";
+    node.style.borderColor = colors.secondary;
+    node.style.transform = "translate(-50%, -50%) scale(0.7)";
+    
+    const slotPos = coords[index] ? coords[index].pos : player.pos;
+    const effectiveOvr = getEffectivePlayerOvr(player, slotPos);
+    
+    node.innerHTML = `
+      <span class="player-number" style="font-size:0.8rem; line-height:1.2;">${player.no}</span>
+      <div class="player-ovr-tag" style="font-size: 0.55rem; padding: 1px 3px;">${effectiveOvr}</div>
+      <div class="player-name-tag" style="font-size: 0.55rem; padding: 2px 4px; bottom:-12px; width:70px;">${escapeHtml(player.name)}</div>
+    `;
+    
+    node.onclick = () => showLocalPlayerSubModal(player, activePlayer);
+    container.appendChild(node);
+  });
+}
+
+function showLocalPlayerSubModal(player, activePlayer) {
+  const modal = document.getElementById("player-modal");
+  const teamId = activePlayer.team;
+  const flag = getTeamFlag(teamId);
+
+  document.getElementById("sticker-flag").textContent = flag;
+  document.getElementById("sticker-name").textContent = player.name;
+  document.getElementById("sticker-club").textContent = `${player.pos || 'MF'} | ${player.club || "Seleção"}`;
+  document.getElementById("sticker-ovr").textContent = player.ovr;
+  
+  document.getElementById("sticker-pac").textContent = player.pac || 50;
+  document.getElementById("sticker-sho").textContent = player.sho || 50;
+  document.getElementById("sticker-pas").textContent = player.pas || 50;
+  document.getElementById("sticker-dri").textContent = player.dri || 50;
+  document.getElementById("sticker-def").textContent = player.def || 50;
+  document.getElementById("sticker-phy").textContent = player.phy || 50;
+
+  const selectSub = document.getElementById("select-substitute");
+  selectSub.innerHTML = "";
+  const bench = activePlayer.bench || [];
+
+  if (bench.length === 0) {
+    document.getElementById("substitute-section").style.display = "none";
+  } else {
+    document.getElementById("substitute-section").style.display = "block";
+    bench.forEach((benchPlayer, index) => {
+      const opt = document.createElement("option");
+      opt.value = index;
+      opt.textContent = `${benchPlayer.name} (${benchPlayer.pos || 'MF'} - OVR ${benchPlayer.ovr})`;
+      selectSub.appendChild(opt);
+    });
+  }
+
+  modal.style.display = "flex";
+
+  const btnSub = document.getElementById("btn-confirm-sub");
+  btnSub.onclick = () => {
+    const selectedSubIndex = selectSub.value;
+    if (selectedSubIndex === "") return;
+
+    const benchPlayer = bench[selectedSubIndex];
+    const squadPlayers = JSON.parse(JSON.stringify(activePlayer.squad));
+    const benchPlayers = JSON.parse(JSON.stringify(activePlayer.bench));
+
+    const titularIndex = squadPlayers.findIndex(p => p.name === player.name);
+    if (titularIndex === -1) return;
+
+    const targetY = player.y;
+    const targetX = player.x;
+
+    delete player.y;
+    delete player.x;
+
+    benchPlayer.y = targetY;
+    benchPlayer.x = targetX;
+
+    squadPlayers[titularIndex] = benchPlayer;
+    benchPlayers[selectedSubIndex] = player;
+
+    activePlayer.squad = squadPlayers;
+    activePlayer.bench = benchPlayers;
+
+    modal.style.display = "none";
+    renderLocalSetupField();
+  };
+}
+
+function arenaLocalNextStep() {
+  if (localState.step === 1) {
+    if (!localState.p1.team) return alert("Selecione o time do Jogador 1!");
+    localState.step = 2;
+    document.getElementById("local-setup-title").textContent = "ESCALAÇÃO JOGADOR 2";
+    document.getElementById("arena-local-team-select").value = "";
+    document.getElementById("arena-local-tactical-editor").style.display = "none";
+    document.getElementById("btn-arena-local-next").textContent = "Iniciar Simulação";
+  } else if (localState.step === 2) {
+    if (!localState.p2.team) return alert("Selecione o time do Jogador 2!");
+    
+    // Start local simulation
+    document.getElementById("arena-local-setup").style.display = "none";
+    document.getElementById("arena-active").style.display = "block";
+    
+    // Mimic Firebase structures for local state
+    arenaState = localState;
+    arenaRoomId = "LOCAL";
+    arenaPlayerRole = "p1"; // We control both, default P1 acts as engine coordinator
+    
+    document.getElementById("arena-current-room").textContent = "AMISTOSO LOCAL";
+    document.getElementById("arena-status").textContent = "Modo Local";
+    
+    // Prepare pitch headers
+    document.getElementById("arena-score-a").textContent = "0";
+    document.getElementById("arena-score-b").textContent = "0";
+    document.getElementById("arena-team-a-name").textContent = getTeamName(localState.p1.team);
+    document.getElementById("arena-team-b-name").textContent = getTeamName(localState.p2.team);
+    
+    triggerLocalSimulation();
+  }
+}
+
+function triggerLocalSimulation() {
+  localState.scoreA = 0;
+  localState.scoreB = 0;
+  localState.injuryTime = 0;
+  localState.p1.subsLeft = 4;
+  localState.p1.tacsLeft = 2;
+  localState.p2.subsLeft = 4;
+  localState.p2.tacsLeft = 2;
+  
+  localState.state = "first_half_1";
+  arenaStartLocalPhase("first_half_1");
+}
+
+function arenaStartLocalPhase(phaseName) {
+  localState.state = phaseName;
+  const phases = {
+    "first_half_1": { start: 0, end: 22 },
+    "first_half_2": { start: 22, end: 45 },
+    "second_half_1": { start: 45, end: 67 },
+    "second_half_2": { start: 67, end: 90 },
+    "extra_time_1": { start: 90, end: 105 },
+    "extra_time_2": { start: 105, end: 120 }
+  };
+  
+  let simData;
+  if (phaseName === "penalties") {
+    simData = generateArenaPenalties(localState);
+  } else {
+    const phaseDef = phases[phaseName];
+    if (!phaseDef) return;
+    simData = generateArenaPhase(phaseDef.start, phaseDef.end, localState);
+  }
+  
+  localState.scoreA = simData.scoreA !== undefined ? simData.scoreA : localState.scoreA;
+  localState.scoreB = simData.scoreB !== undefined ? simData.scoreB : localState.scoreB;
+  localState.simulation = simData;
+  
+  runAnimation(simData);
+}
+
+/* ==========================================================================
+   ONLINE MODES (1x1 and Tournament)
+   ========================================================================== */
+
+async function arenaCreateRoom(mode) {
+  if (!window.firebaseDB) {
+    alert("Firebase não configurado ou bloqueado no seu navegador.");
+    arenaReturnToLobby();
+    return;
+  }
+  
+  const code = Math.random().toString(36).substring(2, 6).toUpperCase();
+  const { doc, setDoc } = window.firebaseAPI;
+  
+  let roomData = {};
+  if (mode === "online_friendly") {
+    roomData = {
+      id: code,
+      mode: "friendly",
+      status: "waiting",
+      createdAt: new Date().toISOString(),
+      p1: { team: null, ready: false },
+      p2: { team: null, ready: false },
+      simulation: null
+    };
+    arenaPlayerRole = "p1";
+  } else if (mode === "online_tournament") {
+    roomData = {
+      id: code,
+      mode: "tournament",
+      status: "lobby",
+      createdAt: new Date().toISOString(),
+      host: "p1",
+      slots: [
+        { team: null, type: "human", name: "Host", ready: false, role: "p1" },
+        { team: null, type: "cpu", name: "CPU 1", ready: true },
+        { team: null, type: "cpu", name: "CPU 2", ready: true },
+        { team: null, type: "cpu", name: "CPU 3", ready: true },
+        { team: null, type: "cpu", name: "CPU 4", ready: true },
+        { team: null, type: "cpu", name: "CPU 5", ready: true },
+        { team: null, type: "cpu", name: "CPU 6", ready: true },
+        { team: null, type: "cpu", name: "CPU 7", ready: true }
+      ],
+      bracket: null,
+      activeMatchIdx: 0,
+      simulation: null
+    };
+    arenaPlayerRole = "p1";
+  }
+  
+  try {
+    const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout")), 8000));
+    await Promise.race([setDoc(doc(window.firebaseDB, "rooms", code), roomData), timeout]);
+    
+    arenaRoomId = code;
+    
+    if (mode === "online_friendly") {
+      document.getElementById("arena-lobby").style.display = "none";
+      document.getElementById("arena-active").style.display = "block";
+      document.getElementById("arena-current-room").textContent = code;
+      initArenaTeams();
+      listenToRoom(code);
+    } else {
+      document.getElementById("arena-lobby").style.display = "none";
+      document.getElementById("arena-tournament-lobby").style.display = "block";
+      document.getElementById("tournament-room-code").textContent = code;
+      listenToRoom(code);
+    }
+  } catch (err) {
+    console.error("Erro ao criar sala:", err);
+    alert("Erro ao conectar ao Firebase. Verifique sua conexão.");
+    arenaReturnToLobby();
+  }
+}
+
+async function arenaJoinRoomByCode() {
+  const code = document.getElementById("arena-room-input").value.trim().toUpperCase();
+  if (!code) return alert("Digite o código da sala.");
+  
+  if (!window.firebaseDB) {
+    return alert("Firebase não configurado ou bloqueado.");
+  }
+  
+  try {
+    const { doc, getDoc, updateDoc } = window.firebaseAPI;
+    const roomRef = doc(window.firebaseDB, "rooms", code);
+    
+    const snap = await getDoc(roomRef);
+    if (!snap.exists()) {
+      return alert("Sala não encontrada.");
+    }
+    
+    const data = snap.data();
+    arenaRoomId = code;
+    arenaMode = data.mode === "tournament" ? "online_tournament" : "online_friendly";
+    
+    if (data.mode === "friendly") {
+      if (data.status !== "waiting") {
+        return alert("Esta sala já está cheia ou em andamento.");
+      }
+      arenaPlayerRole = "p2";
+      await updateDoc(roomRef, { status: "connected" });
+      
+      document.getElementById("arena-lobby").style.display = "none";
+      document.getElementById("arena-active").style.display = "block";
+      document.getElementById("arena-current-room").textContent = code;
+      
+      // Adapt labels for P2
+      document.querySelector("#arena-p1-selects").innerHTML = `
+        <label class="neo-label">Selecione seu Time:</label>
+        <select id="arena-team1" class="neo-select" onchange="arenaUpdateTeamSelect(2)"></select>
+      `;
+      document.getElementById("btn-arena-ready-p1").setAttribute("onclick", "arenaToggleReady(2)");
+      
+      initArenaTeams();
+      listenToRoom(code);
+    } else if (data.mode === "tournament") {
+      if (data.status !== "lobby") {
+        return alert("Este torneio já iniciou ou está fechado.");
+      }
+      // Encontrar slot humano livre
+      let freeSlotIdx = -1;
+      for (let i = 0; i < data.slots.length; i++) {
+        if (data.slots[i].type === "human" && !data.slots[i].role && i > 0) {
+          freeSlotIdx = i;
+          break;
+        }
+      }
+      
+      if (freeSlotIdx === -1) {
+        // Se não houver humanos abertos, tentar converter o primeiro slot CPU aberto para humano
+        for (let i = 0; i < data.slots.length; i++) {
+          if (data.slots[i].type === "cpu" && i > 0) {
+            freeSlotIdx = i;
+            break;
+          }
+        }
+      }
+      
+      if (freeSlotIdx === -1) {
+        return alert("Torneio sem vagas livres.");
+      }
+      
+      arenaPlayerRole = `p${freeSlotIdx + 1}`;
+      
+      const newSlots = [...data.slots];
+      newSlots[freeSlotIdx] = {
+        team: null,
+        type: "human",
+        name: `Jogador ${freeSlotIdx + 1}`,
+        ready: false,
+        role: arenaPlayerRole
+      };
+      
+      await updateDoc(roomRef, { slots: newSlots });
+      
+      document.getElementById("arena-lobby").style.display = "none";
+      document.getElementById("arena-tournament-lobby").style.display = "block";
+      document.getElementById("tournament-room-code").textContent = code;
+      
+      listenToRoom(code);
+    }
+  } catch (err) {
+    console.error(err);
+    alert("Erro ao conectar à sala.");
+  }
+}
+
+// Sincronização em tempo real (Firebase Listener)
+function listenToRoom(code) {
+  const { doc, onSnapshot } = window.firebaseAPI;
+  
+  arenaUnsubscribe = onSnapshot(doc(window.firebaseDB, "rooms", code), (snap) => {
+    if (!snap.exists()) return;
+    const data = snap.data();
+    arenaState = data;
+    
+    if (data.mode === "friendly") {
+      updateArenaUI(data);
+      
+      if (data.status === "connected" && data.p1.ready && data.p2.ready) {
+        if (arenaPlayerRole === "p1" && data.state !== "starting") {
+          triggerSimulation(data);
+        }
+      }
+      
+      if (data.status === "playing" && data.p1.readyToResume && data.p2.readyToResume && arenaPlayerRole === "p1") {
+        advanceOnlinePhase(data);
+      }
+      
+      if (data.status === "playing" && data.simulation) {
+        if (!window.currentArenaPhaseRun || window.currentArenaPhaseRun !== data.state) {
+          window.currentArenaPhaseRun = data.state;
+          runAnimation(data.simulation);
+        }
+      }
+    } else if (data.mode === "tournament") {
+      updateTournamentUI(data);
+      
+      if (data.status === "match_playing" && data.simulation) {
+        if (!window.currentArenaPhaseRun || window.currentArenaPhaseRun !== data.state) {
+          window.currentArenaPhaseRun = data.state;
+          runAnimation(data.simulation);
+        }
+      }
+    }
+  });
+}
+
+function updateArenaUI(data) {
+  const statusEl = document.getElementById("arena-status");
+  statusEl.textContent = data.status === "waiting" ? "Aguardando P2..." : (data.status === "connected" ? "Escolhendo times" : "Simulando!");
+  
+  const p2Container = document.getElementById("arena-p2-status");
+  if (data.status === "waiting") {
+    p2Container.innerHTML = "Aguardando conexão...";
+  } else {
+    const enemyData = arenaPlayerRole === "p1" ? data.p2 : data.p1;
+    if (enemyData.ready) {
+      p2Container.innerHTML = `<span style="color: #4CAF50; font-weight: bold;">✔ ADVERSÁRIO PRONTO</span><br><small>Time escolhido e escalado.</small>`;
+    } else if (enemyData.team) {
+      p2Container.innerHTML = `<span style="color: var(--dark-accent);">Adversário selecionou um time (${getTeamName(enemyData.team)}) e está escalando...</span>`;
+    } else {
+      p2Container.innerHTML = "Adversário está escolhendo o time...";
+    }
+  }
+
+  const myData = arenaPlayerRole === "p1" ? data.p1 : data.p2;
+  const editorEl = document.getElementById("arena-tactical-editor");
+  
+  if (data.status === "connected" && myData && myData.team && myData.squad) {
+    if (editorEl) editorEl.style.display = "block";
+    arenaRenderSetupField(myData);
+  } else {
+    if (editorEl) editorEl.style.display = "none";
+  }
+}
+
+// Dropdowns de times
 function initArenaTeams() {
   const select = document.getElementById("arena-team1");
   if (!select) return;
@@ -37,217 +602,10 @@ function initArenaTeams() {
   }
 }
 
-// Criar Sala (Player 1)
-async function arenaCreateRoom() {
-  const btn = document.querySelector('button[onclick="arenaCreateRoom()"]');
-  if (btn) btn.innerHTML = '<i data-lucide="loader" style="width: 18px; margin-right: 5px; vertical-align: middle;"></i> Criando...';
-
-  if (!window.firebaseDB) {
-    alert("Firebase não configurado ou bloqueado no seu navegador.");
-    if (btn) btn.innerHTML = '<i data-lucide="plus-circle" style="width: 18px; margin-right: 5px; vertical-align: middle;"></i> Criar Sala';
-    return;
-  }
-  
-  const code = Math.random().toString(36).substring(2, 6).toUpperCase();
-  const roomData = {
-    id: code,
-    status: "waiting",
-    createdAt: new Date().toISOString(),
-    p1: { team: null, ready: false },
-    p2: { team: null, ready: false },
-    simulation: null
-  };
-  
-  try {
-    const { doc, setDoc } = window.firebaseAPI;
-    
-    // Timeout promise to prevent indefinite hanging if Firebase connection fails
-    const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout")), 8000));
-    await Promise.race([setDoc(doc(window.firebaseDB, "rooms", code), roomData), timeout]);
-    
-    arenaRoomId = code;
-    arenaPlayerRole = "p1";
-    
-    document.getElementById("arena-lobby").style.display = "none";
-    document.getElementById("arena-active").style.display = "block";
-    document.getElementById("arena-current-room").textContent = code;
-    
-    initArenaTeams();
-    listenToRoom(code);
-    
-  } catch (err) {
-    console.error("Erro ao criar sala:", err);
-    alert("Erro ao conectar no banco de dados. Verifique a internet ou se o banco bloqueou o acesso.");
-  } finally {
-    if (btn) btn.innerHTML = '<i data-lucide="plus-circle" style="width: 18px; margin-right: 5px; vertical-align: middle;"></i> Criar Sala';
-    if (window.lucide) window.lucide.createIcons();
-  }
-}
-
-// Entrar em Sala (Player 2)
-async function arenaJoinRoom() {
-  const codeInput = document.getElementById("arena-room-input").value.trim().toUpperCase();
-  if (!codeInput) return alert("Digite o código da sala.");
-  
-  const btn = document.querySelector('button[onclick="arenaJoinRoom()"]');
-  if (btn) btn.innerHTML = '<i data-lucide="loader" style="width: 18px; margin-right: 5px; vertical-align: middle;"></i> Entrando...';
-
-  if (!window.firebaseDB) {
-    alert("Firebase não configurado ou bloqueado no seu navegador.");
-    if (btn) btn.innerHTML = '<i data-lucide="log-in" style="width: 18px; margin-right: 5px; vertical-align: middle;"></i> Entrar';
-    return;
-  }
-
-  try {
-    const { doc, getDoc, updateDoc } = window.firebaseAPI;
-    const roomRef = doc(window.firebaseDB, "rooms", codeInput);
-    
-    const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout")), 8000));
-    const snap = await Promise.race([getDoc(roomRef), timeout]);
-    
-    if (!snap.exists()) {
-      alert("Sala não encontrada.");
-      return;
-    }
-    
-    // Atualiza campo visual
-    arenaRenderPitch(snap.data());
-    
-    const data = snap.data();
-    if (data.status !== "waiting") {
-      alert("Esta sala já está em andamento ou fechada.");
-      return;
-    }
-    
-    await Promise.race([updateDoc(roomRef, { status: "connected" }), new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout")), 8000))]);
-    
-    arenaRoomId = codeInput;
-    arenaPlayerRole = "p2";
-    
-    document.getElementById("arena-lobby").style.display = "none";
-    document.getElementById("arena-active").style.display = "block";
-    document.getElementById("arena-current-room").textContent = codeInput;
-    
-    // Altera interface visual para P2 (Ajusta os quadros)
-    document.querySelector("#arena-p1-selects").innerHTML = `
-      <label class="neo-label">Selecione seu Time:</label>
-      <select id="arena-team1" class="neo-select" onchange="arenaUpdateTeamSelect(2)"></select>
-    `;
-    document.getElementById("btn-arena-ready-p1").setAttribute("onclick", "arenaToggleReady(2)");
-    
-    initArenaTeams();
-    listenToRoom(codeInput);
-    
-  } catch (err) {
-    console.error(err);
-    alert("Erro ao entrar na sala. Verifique a internet ou se o banco bloqueou o acesso.");
-  } finally {
-    if (btn) btn.innerHTML = '<i data-lucide="log-in" style="width: 18px; margin-right: 5px; vertical-align: middle;"></i> Entrar';
-    if (window.lucide) window.lucide.createIcons();
-  }
-}
-
-// Realtime Listener
-function listenToRoom(code) {
-  const { doc, onSnapshot } = window.firebaseAPI;
-  
-  arenaUnsubscribe = onSnapshot(doc(window.firebaseDB, "rooms", code), (snap) => {
-    if (!snap.exists()) return;
-    const data = snap.data();
-    arenaState = data;
-    
-    updateArenaUI(data);
-    
-    // Check if both are ready to simulate
-    if (data.status === "connected" && data.p1.ready && data.p2.ready) {
-      if (arenaPlayerRole === "p1" && data.state !== "starting") {
-        triggerSimulation(data);
-      }
-    }
-    
-    // Avançar de fase quando ambos clicam em "Estou Pronto / Pular" na pausa
-    if (data.status === "playing" && data.p1.readyToResume && data.p2.readyToResume && arenaPlayerRole === "p1") {
-      const currentState = data.state;
-      const phases = {
-        "first_half_1": "first_half_2",
-        "first_half_2": "second_half_1",
-        "second_half_1": "second_half_2",
-        "second_half_2": "extra_time_1",
-        "extra_time_1": "extra_time_2",
-        "extra_time_2": "penalties"
-      };
-      
-      let nextPhase = phases[currentState];
-      
-      // Só vai para a prorrogação se estiver empatado aos 90'
-      if (currentState === "second_half_2" && data.scoreA !== data.scoreB) {
-        nextPhase = "finished";
-      }
-      // Só vai para pênaltis se estiver empatado após a prorrogação
-      if (currentState === "extra_time_2" && data.scoreA !== data.scoreB) {
-        nextPhase = "finished";
-      }
-      
-      if (nextPhase === "finished") {
-        const { doc, updateDoc } = window.firebaseAPI;
-        updateDoc(doc(window.firebaseDB, "rooms", arenaRoomId), { state: "finished" });
-        arenaState.p1.readyToResume = false;
-        arenaState.p2.readyToResume = false;
-      } else if (nextPhase) {
-        // We will prevent loop by updating state immediately
-        arenaStartPhase(nextPhase);
-      }
-    }
-    
-    // Se a simulação já estiver rolando
-    // Evita resetar se os states forem iguais e a animação já estiver ocorrendo.
-    if (data.status === "playing" && data.simulation) {
-      // Para não re-engatilhar a mesma fase
-      if (!window.currentArenaPhaseRun || window.currentArenaPhaseRun !== data.state) {
-        window.currentArenaPhaseRun = data.state;
-        runAnimation(data.simulation);
-      }
-    }
-  });
-}
-
-function updateArenaUI(data) {
-  const statusEl = document.getElementById("arena-status");
-  statusEl.textContent = data.status === "waiting" ? "Aguardando P2..." : (data.status === "connected" ? "Escolhendo times" : "Simulando!");
-  
-  const p2Container = document.getElementById("arena-p2-status");
-  if (data.status === "waiting") {
-    p2Container.innerHTML = "Aguardando conexão...";
-  } else {
-    // If you are P1, read P2 data. If you are P2, read P1 data.
-    const enemyData = arenaPlayerRole === "p1" ? data.p2 : data.p1;
-    
-    if (enemyData.ready) {
-      p2Container.innerHTML = `<span style="color: #4CAF50; font-weight: bold;">✔ ADVERSÁRIO PRONTO</span><br><small>Time escolhido e escalado.</small>`;
-    } else if (enemyData.team) {
-      p2Container.innerHTML = `<span style="color: var(--dark-accent);">Adversário selecionou um time e está escalando...</span>`;
-    } else {
-      p2Container.innerHTML = "Adversário está escolhendo o time...";
-    }
-  }
-
-  // Desenha o campo tático na fase de escolha de times (setup/connected)
-  const myData = arenaPlayerRole === "p1" ? data.p1 : data.p2;
-  const editorEl = document.getElementById("arena-tactical-editor");
-  
-  if (data.status === "connected" && myData && myData.team && myData.squad) {
-    if (editorEl) editorEl.style.display = "block";
-    arenaRenderSetupField(myData);
-  } else {
-    if (editorEl) editorEl.style.display = "none";
-  }
-}
-
 async function arenaUpdateTeamSelect(playerNum) {
   const val = document.getElementById("arena-team1").value;
   if (!val) return;
   
-  // Garante a geração do elenco caso seja um time fora do G8
   if (typeof ensureSquadAndStats === "function") {
     ensureSquadAndStats(val);
   }
@@ -296,13 +654,11 @@ async function arenaToggleReady(playerNum) {
   }
 }
 
-// Renderiza o mini-campo tático do lobby de pré-jogo
 function arenaRenderSetupField(myData) {
   const container = document.getElementById("arena-setup-player-nodes");
   if (!container) return;
   container.innerHTML = "";
   
-  // Renderiza botões de formação
   const grid = document.getElementById("arena-formation-btn-grid");
   if (grid) {
     grid.innerHTML = "";
@@ -320,13 +676,9 @@ function arenaRenderSetupField(myData) {
   
   const teamId = myData.team;
   const colors = window.comparacopaData.teamColors[teamId] || { primary: "#222", secondary: "#fff" };
-  
-  // Coordenadas da formação atual
   const coords = formationsCoordinates[myData.formation || "4-3-3"];
-  if (!coords) return;
   
   myData.squad.forEach((player, index) => {
-    // Garantir posições iniciais se não estiverem no Firestore
     if (player.y === undefined && coords[index]) {
       player.y = coords[index].y;
       player.x = coords[index].x;
@@ -342,7 +694,7 @@ function arenaRenderSetupField(myData) {
     node.style.backgroundColor = colors.primary;
     node.style.color = colors.text || "#ffffff";
     node.style.borderColor = colors.secondary;
-    node.style.transform = "translate(-50%, -50%) scale(0.7)"; // mini layout
+    node.style.transform = "translate(-50%, -50%) scale(0.7)";
     
     const slotPos = coords[index] ? coords[index].pos : player.pos;
     const effectiveOvr = getEffectivePlayerOvr(player, slotPos);
@@ -358,16 +710,13 @@ function arenaRenderSetupField(myData) {
   });
 }
 
-// Altera o esquema tático da sua equipe no lobby
 async function arenaChangeFormation(newFormation) {
   if (!arenaState || !arenaRoomId) return;
   const role = arenaPlayerRole;
   const myData = arenaState[role];
-  
   const coords = formationsCoordinates[newFormation];
   if (!coords) return;
   
-  // Atualiza coordenadas dos titulares
   const updatedSquad = myData.squad.map((player, index) => {
     if (coords[index]) {
       return {
@@ -381,7 +730,6 @@ async function arenaChangeFormation(newFormation) {
   
   const { doc, updateDoc } = window.firebaseAPI;
   const roomRef = doc(window.firebaseDB, "rooms", arenaRoomId);
-  
   const updateObj = {};
   updateObj[`${role}.formation`] = newFormation;
   updateObj[`${role}.squad`] = updatedSquad;
@@ -389,92 +737,411 @@ async function arenaChangeFormation(newFormation) {
   await updateDoc(roomRef, updateObj);
 }
 
-// Modal de substituição adaptado para a Arena Multiplayer
-async function arenaShowPlayerModal(player, role) {
-  const modal = document.getElementById("player-modal");
-  const teamId = role === "p1" ? arenaState.p1.team : arenaState.p2.team;
-  
-  // Resolve nome/bandeira
-  let flag = "🏳️";
-  if (window.comparacopaData.teamColors[teamId]) {
-    const t = window.comparacopaData.teams.find(x => x.id === teamId);
-    if (t) flag = t.flag;
-  }
+/* ==========================================================================
+   TOURNAMENT SLOTS AND BRACKET MANAGEMENT
+   ========================================================================== */
 
-  document.getElementById("sticker-flag").textContent = flag;
-  document.getElementById("sticker-name").textContent = player.name;
-  document.getElementById("sticker-club").textContent = `${player.pos} | ${player.club || "Seleção"}`;
-  document.getElementById("sticker-ovr").textContent = player.ovr;
-  
-  document.getElementById("sticker-pac").textContent = player.pac || 50;
-  document.getElementById("sticker-sho").textContent = player.sho || 50;
-  document.getElementById("sticker-pas").textContent = player.pas || 50;
-  document.getElementById("sticker-dri").textContent = player.dri || 50;
-  document.getElementById("sticker-def").textContent = player.def || 50;
-  document.getElementById("sticker-phy").textContent = player.phy || 50;
-
-  // Carregar banco de reservas
-  const selectSub = document.getElementById("select-substitute");
-  selectSub.innerHTML = "";
-
-  const roleData = role === "p1" ? arenaState.p1 : arenaState.p2;
-  const bench = roleData.bench || [];
-
-  if (bench.length === 0) {
-    document.getElementById("substitute-section").style.display = "none";
-  } else {
-    document.getElementById("substitute-section").style.display = "block";
-    bench.forEach((benchPlayer, index) => {
-      const opt = document.createElement("option");
-      opt.value = index;
-      opt.textContent = `${benchPlayer.name} (${benchPlayer.pos} - OVR ${benchPlayer.ovr})`;
-      selectSub.appendChild(opt);
+function updateTournamentUI(data) {
+  if (data.status === "lobby") {
+    document.getElementById("arena-tournament-lobby").style.display = "block";
+    document.getElementById("arena-tournament-bracket-screen").style.display = "none";
+    document.getElementById("arena-active").style.display = "none";
+    
+    const grid = document.getElementById("tournament-slots-grid");
+    grid.innerHTML = "";
+    
+    const isHost = arenaPlayerRole === "p1";
+    
+    // Load teams for slot selection
+    let optionsHtml = '<option value="">Escolher Time...</option>';
+    if (window.comparacopaData && window.comparacopaData.teams) {
+      window.comparacopaData.teams.forEach(t => {
+        optionsHtml += `<option value="${t.id}">${t.flag} ${t.name}</option>`;
+      });
+    }
+    
+    data.slots.forEach((slot, idx) => {
+      const isMySlot = slot.role === arenaPlayerRole;
+      const card = document.createElement("div");
+      card.className = "neo-card";
+      card.style.padding = "15px";
+      
+      let slotTypeSelector = "";
+      if (isHost && idx > 0) {
+        slotTypeSelector = `
+          <select class="neo-select" style="font-size:0.8rem; padding:4px; margin-bottom:8px;" onchange="tournamentChangeSlotType(${idx}, this.value)">
+            <option value="cpu" ${slot.type === "cpu" ? 'selected' : ''}>CPU</option>
+            <option value="human" ${slot.type === "human" ? 'selected' : ''}>Humano (Aberto)</option>
+          </select>
+        `;
+      } else {
+        slotTypeSelector = `<span class="badge" style="background:#ddd; color:#333; font-size:0.75rem; padding:2px 6px; border-radius:4px;">${slot.type.toUpperCase()}</span>`;
+      }
+      
+      let teamSelector = "";
+      if (isMySlot) {
+        teamSelector = `
+          <select class="neo-select" style="margin-top:10px;" onchange="tournamentSelectTeam(${idx}, this.value)">
+            ${optionsHtml}
+          </select>
+        `;
+      } else if (slot.team) {
+        teamSelector = `<div style="font-size:1.1rem; font-weight:bold; margin-top:10px;">${getTeamFlag(slot.team)} ${getTeamName(slot.team)}</div>`;
+      } else {
+        teamSelector = `<div style="color:#aaa; font-style:italic; margin-top:10px;">Sem time selecionado</div>`;
+      }
+      
+      let readyButton = "";
+      if (isMySlot && slot.team) {
+        readyButton = `
+          <button class="neo-btn ${slot.ready ? 'btn-green' : 'btn-red'}" style="width:100%; margin-top:10px;" onclick="tournamentToggleReady(${idx})">
+            ${slot.ready ? 'PRONTO ✔' : 'MARCAR PRONTO'}
+          </button>
+        `;
+      } else if (slot.ready) {
+        readyButton = `<div style="color:green; font-weight:bold; margin-top:10px;">✔ PRONTO</div>`;
+      } else {
+        readyButton = `<div style="color:#e74c3c; font-weight:bold; margin-top:10px;">Aguardando...</div>`;
+      }
+      
+      card.innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #ddd; padding-bottom:5px;">
+          <strong style="font-family:'Space Mono', monospace;">#${idx+1} ${slot.name}</strong>
+          ${slotTypeSelector}
+        </div>
+        ${teamSelector}
+        ${readyButton}
+      `;
+      
+      grid.appendChild(card);
+      
+      // Auto select value in selector if my slot
+      if (isMySlot) {
+        const sel = card.querySelector("select.neo-select");
+        if (sel) sel.value = slot.team || "";
+      }
     });
+    
+    // Check if Host can start tournament
+    const btnStart = document.getElementById("btn-start-tournament");
+    if (btnStart) {
+      const allReady = data.slots.every(s => s.team && s.ready);
+      btnStart.style.display = (isHost && allReady) ? "inline-block" : "none";
+    }
+    
+  } else if (data.status === "bracket" || data.status === "match_playing" || data.status === "finished") {
+    document.getElementById("arena-tournament-lobby").style.display = "none";
+    document.getElementById("arena-tournament-bracket-screen").style.display = "block";
+    
+    // Render brackets
+    renderBrackets(data.bracket);
+    
+    const activeMatchPanel = document.getElementById("tournament-active-match-panel");
+    const labelTeamA = document.getElementById("active-match-team-a");
+    const labelTeamB = document.getElementById("active-match-team-b");
+    const controls = document.getElementById("active-match-controls");
+    
+    if (data.status === "bracket" && data.bracket) {
+      const nextMatch = findNextActiveMatch(data.bracket);
+      if (nextMatch) {
+        activeMatchPanel.style.display = "block";
+        labelTeamA.textContent = `${getTeamFlag(nextMatch.teamA)} ${getTeamName(nextMatch.teamA)}`;
+        labelTeamB.textContent = `${getTeamFlag(nextMatch.teamB)} ${getTeamName(nextMatch.teamB)}`;
+        
+        // Determine role permission
+        const isMyTurn = (nextMatch.roleA === arenaPlayerRole || nextMatch.roleB === arenaPlayerRole || (arenaPlayerRole === "p1" && nextMatch.type === "cpu-cpu"));
+        
+        controls.innerHTML = "";
+        if (isMyTurn) {
+          const btnText = nextMatch.type === "cpu-cpu" ? "Simular CPU vs CPU" : "Iniciar Minha Partida";
+          controls.innerHTML = `
+            <button class="neo-btn btn-green" onclick="tournamentStartMatch(${nextMatch.roundIdx}, ${nextMatch.matchIdx})">${btnText}</button>
+          `;
+        } else {
+          controls.innerHTML = `<p style="color:#666; font-style:italic;">Aguardando jogadores iniciarem a partida...</p>`;
+        }
+      } else {
+        activeMatchPanel.style.display = "none";
+        // Torneio concluído
+        alert(`O Torneio foi finalizado! Campeão: ${getTeamName(data.bracket.winner)}`);
+      }
+    } else {
+      activeMatchPanel.style.display = "none";
+    }
   }
+}
 
-  modal.style.display = "flex";
+async function tournamentChangeSlotType(idx, val) {
+  const { doc, updateDoc } = window.firebaseAPI;
+  const roomRef = doc(window.firebaseDB, "rooms", arenaRoomId);
+  const newSlots = [...arenaState.slots];
+  
+  if (val === "cpu") {
+    newSlots[idx] = {
+      team: null,
+      type: "cpu",
+      name: `CPU ${idx}`,
+      ready: true
+    };
+  } else {
+    newSlots[idx] = {
+      team: null,
+      type: "human",
+      name: `Jogador ${idx + 1}`,
+      ready: false,
+      role: null
+    };
+  }
+  
+  await updateDoc(roomRef, { slots: newSlots });
+}
 
-  // Configurar ação de substituição
-  const btnSub = document.getElementById("btn-confirm-sub");
-  btnSub.onclick = async () => {
-    const selectedSubIndex = selectSub.value;
-    if (selectedSubIndex === "") return;
+async function tournamentSelectTeam(idx, val) {
+  const { doc, updateDoc } = window.firebaseAPI;
+  const roomRef = doc(window.firebaseDB, "rooms", arenaRoomId);
+  const newSlots = [...arenaState.slots];
+  
+  newSlots[idx].team = val;
+  newSlots[idx].ready = false;
+  
+  await updateDoc(roomRef, { slots: newSlots });
+}
 
-    const benchPlayer = bench[selectedSubIndex];
-    const squadPlayers = JSON.parse(JSON.stringify(roleData.squad));
-    const benchPlayers = JSON.parse(JSON.stringify(roleData.bench));
+async function tournamentToggleReady(idx) {
+  const { doc, updateDoc } = window.firebaseAPI;
+  const roomRef = doc(window.firebaseDB, "rooms", arenaRoomId);
+  const newSlots = [...arenaState.slots];
+  
+  newSlots[idx].ready = !newSlots[idx].ready;
+  
+  await updateDoc(roomRef, { slots: newSlots });
+}
 
-    const titularIndex = squadPlayers.findIndex(p => p.name === player.name);
-    if (titularIndex === -1) return;
-
-    // Guardar coordenadas do slot
-    const targetY = player.y;
-    const targetX = player.x;
-
-    delete player.y;
-    delete player.x;
-
-    benchPlayer.y = targetY;
-    benchPlayer.x = targetX;
-
-    // Trocar objetos
-    squadPlayers[titularIndex] = benchPlayer;
-    benchPlayers[selectedSubIndex] = player;
-
-    const { doc, updateDoc } = window.firebaseAPI;
-    const roomRef = doc(window.firebaseDB, "rooms", arenaRoomId);
-
-    const updateObj = {};
-    updateObj[`${role}.squad`] = squadPlayers;
-    updateObj[`${role}.bench`] = benchPlayers;
-
-    await updateDoc(roomRef, updateObj);
-    modal.style.display = "none";
+async function arenaStartTournamentMatchmaking() {
+  const { doc, updateDoc } = window.firebaseAPI;
+  const roomRef = doc(window.firebaseDB, "rooms", arenaRoomId);
+  
+  const slots = arenaState.slots;
+  
+  // Create round of 8
+  const bracket = {
+    winner: null,
+    rounds: [
+      {
+        name: "Quartas de Final",
+        matches: [
+          { teamA: slots[0].team, teamB: slots[1].team, scoreA: null, scoreB: null, winner: null, roleA: slots[0].role || null, roleB: slots[1].role || null, type: getMatchType(slots[0], slots[1]) },
+          { teamA: slots[2].team, teamB: slots[3].team, scoreA: null, scoreB: null, winner: null, roleA: slots[2].role || null, roleB: slots[3].role || null, type: getMatchType(slots[2], slots[3]) },
+          { teamA: slots[4].team, teamB: slots[5].team, scoreA: null, scoreB: null, winner: null, roleA: slots[4].role || null, roleB: slots[5].role || null, type: getMatchType(slots[4], slots[5]) },
+          { teamA: slots[6].team, teamB: slots[7].team, scoreA: null, scoreB: null, winner: null, roleA: slots[6].role || null, roleB: slots[7].role || null, type: getMatchType(slots[6], slots[7]) }
+        ]
+      },
+      {
+        name: "Semifinal",
+        matches: [
+          { teamA: null, teamB: null, scoreA: null, scoreB: null, winner: null, roleA: null, roleB: null },
+          { teamA: null, teamB: null, scoreA: null, scoreB: null, winner: null, roleA: null, roleB: null }
+        ]
+      },
+      {
+        name: "Final",
+        matches: [
+          { teamA: null, teamB: null, scoreA: null, scoreB: null, winner: null, roleA: null, roleB: null }
+        ]
+      }
+    ]
   };
+  
+  await updateDoc(roomRef, {
+    status: "bracket",
+    bracket: bracket
+  });
+}
+
+function getMatchType(s1, s2) {
+  if (s1.type === "human" && s2.type === "human") return "human-human";
+  if (s1.type === "cpu" && s2.type === "cpu") return "cpu-cpu";
+  return "human-cpu";
+}
+
+function renderBrackets(bracket) {
+  if (!bracket) return;
+  
+  const qfDiv = document.getElementById("bracket-qf");
+  const sfDiv = document.getElementById("bracket-sf");
+  const fDiv = document.getElementById("bracket-f");
+  
+  qfDiv.innerHTML = "";
+  sfDiv.innerHTML = "";
+  fDiv.innerHTML = "";
+  
+  const renderMatchBox = (m) => {
+    const el = document.createElement("div");
+    el.className = "neo-card";
+    el.style.padding = "8px 12px";
+    el.style.fontSize = "0.85rem";
+    el.style.minWidth = "180px";
+    
+    const nameA = m.teamA ? getTeamName(m.teamA) : "A definir";
+    const nameB = m.teamB ? getTeamName(m.teamB) : "A definir";
+    const flagA = m.teamA ? getTeamFlag(m.teamA) : "🏳️";
+    const flagB = m.teamB ? getTeamFlag(m.teamB) : "🏳️";
+    const scA = m.scoreA !== null ? m.scoreA : "-";
+    const scB = m.scoreB !== null ? m.scoreB : "-";
+    
+    el.innerHTML = `
+      <div style="display:flex; justify-content:space-between; margin-bottom:4px; font-weight:${m.winner === m.teamA ? 'bold' : 'normal'}">
+        <span>${flagA} ${nameA}</span>
+        <span>${scA}</span>
+      </div>
+      <div style="display:flex; justify-content:space-between; font-weight:${m.winner === m.teamB ? 'bold' : 'normal'}">
+        <span>${flagB} ${nameB}</span>
+        <span>${scB}</span>
+      </div>
+    `;
+    return el;
+  };
+  
+  bracket.rounds[0].matches.forEach(m => qfDiv.appendChild(renderMatchBox(m)));
+  bracket.rounds[1].matches.forEach(m => sfDiv.appendChild(renderMatchBox(m)));
+  bracket.rounds[2].matches.forEach(m => fDiv.appendChild(renderMatchBox(m)));
+}
+
+function findNextActiveMatch(bracket) {
+  if (!bracket) return null;
+  // Quartas
+  for (let idx = 0; idx < bracket.rounds[0].matches.length; idx++) {
+    const m = bracket.rounds[0].matches[idx];
+    if (m.winner === null) {
+      return { ...m, roundIdx: 0, matchIdx: idx };
+    }
+  }
+  // Semis
+  for (let idx = 0; idx < bracket.rounds[1].matches.length; idx++) {
+    const m = bracket.rounds[1].matches[idx];
+    if (m.winner === null) {
+      return { ...m, roundIdx: 1, matchIdx: idx };
+    }
+  }
+  // Final
+  const fm = bracket.rounds[2].matches[0];
+  if (fm.winner === null) {
+    return { ...fm, roundIdx: 2, matchIdx: 0 };
+  }
+  return null;
+}
+
+async function tournamentStartMatch(roundIdx, matchIdx) {
+  const match = arenaState.bracket.rounds[roundIdx].matches[matchIdx];
+  const { doc, updateDoc } = window.firebaseAPI;
+  const roomRef = doc(window.firebaseDB, "rooms", arenaRoomId);
+  
+  // Carrega elencos
+  if (typeof ensureSquadAndStats === "function") {
+    ensureSquadAndStats(match.teamA);
+    ensureSquadAndStats(match.teamB);
+  }
+  
+  const squadA = window.comparacopaData.squads[match.teamA].players;
+  const squadB = window.comparacopaData.squads[match.teamB].players;
+  const benchA = window.comparacopaData.squads[match.teamA].bench.map((p, idx) => ({ ...p, no: p.no || (12 + idx) }));
+  const benchB = window.comparacopaData.squads[match.teamB].bench.map((p, idx) => ({ ...p, no: p.no || (12 + idx) }));
+  
+  // Set up active room match states
+  await updateDoc(roomRef, {
+    status: "match_playing",
+    state: "starting",
+    p1: { team: match.teamA, squad: squadA, bench: benchA, formation: "4-3-3", ready: true, readyToResume: false },
+    p2: { team: match.teamB, squad: squadB, bench: benchB, formation: "4-3-3", ready: true, readyToResume: false },
+    scoreA: 0,
+    scoreB: 0,
+    injuryTime: 0
+  });
+  
+  // Se for simulador automático CPU vs CPU ou CPU vs player humano mas coordenado pelo host
+  if (arenaPlayerRole === "p1") {
+    setTimeout(() => arenaStartPhase("first_half_1"), 2000);
+  }
+}
+
+/* ==========================================================================
+   SIMULATION ENGINE (Shared Offline & Online friendly/tournament logic)
+   ========================================================================== */
+
+async function advanceOnlinePhase(data) {
+  const currentState = data.state;
+  const phases = {
+    "first_half_1": "first_half_2",
+    "first_half_2": "second_half_1",
+    "second_half_1": "second_half_2",
+    "second_half_2": "extra_time_1",
+    "extra_time_1": "extra_time_2",
+    "extra_time_2": "penalties"
+  };
+  
+  let nextPhase = phases[currentState];
+  if (currentState === "second_half_2" && data.scoreA !== data.scoreB) {
+    nextPhase = "finished";
+  }
+  if (currentState === "extra_time_2" && data.scoreA !== data.scoreB) {
+    nextPhase = "finished";
+  }
+  
+  const { doc, updateDoc } = window.firebaseAPI;
+  const roomRef = doc(window.firebaseDB, "rooms", arenaRoomId);
+  
+  if (nextPhase === "finished") {
+    if (arenaState.mode === "tournament") {
+      // Registrar resultado na chave de bracket
+      await saveTournamentMatchResult(data.scoreA, data.scoreB);
+    } else {
+      await updateDoc(roomRef, { state: "finished" });
+    }
+  } else if (nextPhase) {
+    arenaStartPhase(nextPhase);
+  }
+}
+
+async function saveTournamentMatchResult(scA, scB) {
+  const { doc, updateDoc } = window.firebaseAPI;
+  const roomRef = doc(window.firebaseDB, "rooms", arenaRoomId);
+  
+  const bracket = JSON.parse(JSON.stringify(arenaState.bracket));
+  const activeMatch = findNextActiveMatch(bracket);
+  
+  if (!activeMatch) return;
+  
+  const winner = scA > scB ? activeMatch.teamA : activeMatch.teamB;
+  const winnerRole = scA > scB ? activeMatch.roleA : activeMatch.roleB;
+  
+  const matchInBracket = bracket.rounds[activeMatch.roundIdx].matches[activeMatch.matchIdx];
+  matchInBracket.scoreA = scA;
+  matchInBracket.scoreB = scB;
+  matchInBracket.winner = winner;
+  
+  // Propaga vencedor para a rodada seguinte
+  const nextRoundIdx = activeMatch.roundIdx + 1;
+  if (nextRoundIdx < bracket.rounds.length) {
+    const nextMatchIdx = Math.floor(activeMatch.matchIdx / 2);
+    const nextSlot = activeMatch.matchIdx % 2 === 0 ? "teamA" : "teamB";
+    const nextRole = activeMatch.matchIdx % 2 === 0 ? "roleA" : "roleB";
+    
+    bracket.rounds[nextRoundIdx].matches[nextMatchIdx][nextSlot] = winner;
+    bracket.rounds[nextRoundIdx].matches[nextMatchIdx][nextRole] = winnerRole;
+  } else {
+    // Fim da final
+    bracket.winner = winner;
+  }
+  
+  await updateDoc(roomRef, {
+    status: "bracket",
+    state: "finished",
+    bracket: bracket
+  });
 }
 
 async function arenaStartPhase(phaseName) {
-  if (arenaPlayerRole !== "p1") return; // Only P1 computes the simulation
+  if (arenaPlayerRole !== "p1") return; // Only engine-owner computes calculations
   
   const phases = {
     "first_half_1": { start: 0, end: 22 },
@@ -508,7 +1175,6 @@ async function arenaStartPhase(phaseName) {
 }
 
 async function triggerSimulation(data) {
-  // Chamado quando ambos estão ready pela primeira vez
   const { doc, updateDoc } = window.firebaseAPI;
   const roomRef = doc(window.firebaseDB, "rooms", arenaRoomId);
   
@@ -518,7 +1184,6 @@ async function triggerSimulation(data) {
   });
   
   if (arenaPlayerRole === "p1") {
-    // Garante o carregamento/geração dos elencos caso sejam times fora do G8
     if (typeof ensureSquadAndStats === "function") {
       ensureSquadAndStats(data.p1.team);
       ensureSquadAndStats(data.p2.team);
@@ -531,14 +1196,9 @@ async function triggerSimulation(data) {
       "p1.subsLeft": 4,
       "p1.tacsLeft": 2,
       "p2.subsLeft": 4,
-      "p2.tacsLeft": 2,
-      stats: {
-        A: { shots: 0, corners: 0, fouls: 0, yellow: 0, red: 0, possession: 50 },
-        B: { shots: 0, corners: 0, fouls: 0, yellow: 0, red: 0, possession: 50 }
-      }
+      "p2.tacsLeft": 2
     };
     
-    // Fallback se não foram definidos no lobby de escolhas
     if (!data.p1.squad) {
       const sq1 = window.comparacopaData.squads[data.p1.team];
       updates["p1.squad"] = sq1.players;
@@ -552,69 +1212,63 @@ async function triggerSimulation(data) {
       updates["p2.formation"] = sq2.formation || "4-3-3";
     }
 
-    // Inicializa placares, status, e limites de subs/táticas no banco
     await updateDoc(roomRef, updates);
     setTimeout(() => arenaStartPhase("first_half_1"), 2000);
   }
 }
 
-// Animation Engine
-let currentEventIndex = 0;
-let isAnimating = false;
-
+// Visual updates during animation
 function runAnimation(simData) {
-  if (isAnimating) return; 
+  if (!simData || !simData.events) return;
   
-  // Renderiza as 22 peças estáticas nos seus esquemas táticos
+  // Render static pitch nodes
   arenaRenderPitch(arenaState);
-  
-  // Esconder a tela de pausa sempre que começar uma nova animação
   showArenaPausePanel(false);
   
   document.getElementById("arena-pitch-container").style.display = "block";
-  document.getElementById("arena-p1-ready-container").parentElement.style.display = "none";
-  document.getElementById("arena-p2-status").parentElement.style.display = "none";
+  const p1Container = document.getElementById("arena-p1-ready-container");
+  if (p1Container) p1Container.parentElement.style.display = "none";
+  const p2Container = document.getElementById("arena-p2-status");
+  if (p2Container) p2Container.parentElement.style.display = "none";
   
   const narrator = document.getElementById("arena-narrator");
-  const p1 = document.getElementById("arena-piece-p1");
-  const p2 = document.getElementById("arena-piece-p2");
   const ball = document.getElementById("arena-ball");
   
-  isAnimating = true;
-  currentEventIndex = 0;
-  
-  const arenaSpeedMs = 2000 / arenaAnimSpeed;
+  let currentEventIndex = 0;
   
   const playNext = () => {
     if (currentEventIndex >= simData.events.length) {
-      isAnimating = false;
-      // Animação terminou, mostrar painel de pausa ou resumo final
+      // Finished phase
       if (arenaState.state === "finished") {
         arenaShowMatchSummary();
-      } else if (arenaState.state && !arenaState.state.includes("half")) {
+      } else {
         showArenaPausePanel(true);
       }
       return;
     }
     
     const ev = simData.events[currentEventIndex];
-    if (!narrator) return;
-    narrator.textContent = ev.text;
+    if (narrator) narrator.textContent = ev.text;
     
-    let prevScoreA = parseInt(document.getElementById("sim-score-a").textContent) || 0;
-    let prevScoreB = parseInt(document.getElementById("sim-score-b").textContent) || 0;
+    let prevScoreA = parseInt(document.getElementById("sim-score-a")?.textContent) || 0;
+    let prevScoreB = parseInt(document.getElementById("sim-score-b")?.textContent) || 0;
 
-    // Atualizar placares na tela se houver alteração
     if (ev.scoreA !== undefined) {
       if (ev.scoreA > prevScoreA) triggerArenaFireworks("left");
-      document.getElementById("sim-score-a").textContent = ev.scoreA;
+      const elA = document.getElementById("sim-score-a");
+      if (elA) elA.textContent = ev.scoreA;
+      const elMatchA = document.getElementById("arena-score-a");
+      if (elMatchA) elMatchA.textContent = ev.scoreA;
     }
     if (ev.scoreB !== undefined) {
       if (ev.scoreB > prevScoreB) triggerArenaFireworks("right");
-      document.getElementById("sim-score-b").textContent = ev.scoreB;
+      const elB = document.getElementById("sim-score-b");
+      if (elB) elB.textContent = ev.scoreB;
+      const elMatchB = document.getElementById("arena-score-b");
+      if (elMatchB) elMatchB.textContent = ev.scoreB;
     }
 
-    // CSS Anim for the event
+    // Pieces scales animations
     const p1Pieces = document.querySelectorAll('.p1-piece');
     const p2Pieces = document.querySelectorAll('.p2-piece');
     
@@ -627,36 +1281,21 @@ function runAnimation(simData) {
     } else if (ev.anim === "shoot-p1") {
       ball.style.left = "90%";
       ball.style.top = "50%";
-      p1Pieces.forEach(el => {
-        el.style.transform = "scale(1.3)";
-        el.style.transition = "transform 0.2s";
-      });
+      p1Pieces.forEach(el => el.style.transform = "scale(1.3)");
     } else if (ev.anim === "shoot-p2") {
       ball.style.left = "10%";
       ball.style.top = "50%";
-      p2Pieces.forEach(el => {
-        el.style.transform = "scale(1.3)";
-        el.style.transition = "transform 0.2s";
-      });
+      p2Pieces.forEach(el => el.style.transform = "scale(1.3)");
     } else if (ev.anim === "mid") {
       ball.style.left = (40 + Math.random() * 20) + "%";
       ball.style.top = (30 + Math.random() * 40) + "%";
-      const randomP1 = p1Pieces[Math.floor(Math.random() * p1Pieces.length)];
-      const randomP2 = p2Pieces[Math.floor(Math.random() * p2Pieces.length)];
-      if(randomP1) randomP1.style.transform = "scale(1.2)";
-      if(randomP2) randomP2.style.transform = "scale(1.2)";
     } else if (ev.anim === "reset") {
       ball.style.left = "50%";
       ball.style.top = "50%";
     }
-
-    setTimeout(() => {
-      p1Pieces.forEach(el => el.style.transform = "scale(1)");
-      p2Pieces.forEach(el => el.style.transform = "scale(1)");
-    }, arenaSpeedMs - 100);
     
     currentEventIndex++;
-    setTimeout(playNext, arenaSpeedMs); 
+    setTimeout(playNext, 2000 / arenaAnimSpeed);
   };
   
   playNext();
@@ -696,23 +1335,17 @@ function triggerArenaFireworks(side) {
     
     setTimeout(() => style.remove(), 1000);
   }
-  
-  setTimeout(() => {
-    container.innerHTML = "";
-    container.style.display = "none";
-  }, 1000);
 }
 
-// === ARENA SIMULATION ENGINE ===
-
+// Generate logs and simulation stats
 function getArenaSectorAverages(players, coords) {
   const defense = [];
   const midfield = [];
   const attack = [];
   players.forEach((p, idx) => {
-    const slotPos = coords && coords[idx] ? coords[idx].pos : p.pos;
+    const slotPos = coords && coords[idx] ? coords[idx].pos : (p.pos || p.origPos || 'MF');
     const effOvr = getEffectivePlayerOvr ? getEffectivePlayerOvr(p, slotPos) : parseInt(p.ovr);
-    const playerWithEff = { ...p, effectiveOvr: effOvr };
+    const playerWithEff = { ...p, effectiveOvr: effOvr, pos: slotPos };
     if (slotPos === "GK" || slotPos === "DF") defense.push(playerWithEff);
     else if (slotPos === "MF") midfield.push(playerWithEff);
     else if (slotPos === "FW") attack.push(playerWithEff);
@@ -746,13 +1379,12 @@ function generateArenaPhase(startMin, endMin, stateData) {
   
   const squadA = stateData.p1.squad || window.comparacopaData.squads[teamA].players;
   const squadB = stateData.p2.squad || window.comparacopaData.squads[teamB].players;
-  const formationA = stateData.p1.formation || window.comparacopaData.squads[teamA].formation || "4-3-3";
-  const formationB = stateData.p2.formation || window.comparacopaData.squads[teamB].formation || "4-3-3";
+  const formationA = stateData.p1.formation || "4-3-3";
+  const formationB = stateData.p2.formation || "4-3-3";
   
   const teamAName = getTeamName(teamA);
   const teamBName = getTeamName(teamB);
 
-  // Usa variáveis globais do app.js: formationsCoordinates, getEffectivePlayerOvr
   const coordsA = typeof formationsCoordinates !== "undefined" ? formationsCoordinates[formationA] : null;
   const coordsB = typeof formationsCoordinates !== "undefined" ? formationsCoordinates[formationB] : null;
 
@@ -766,7 +1398,6 @@ function generateArenaPhase(startMin, endMin, stateData) {
   const defensePowerA = secA.def * formFactorsA.def;
   const defensePowerB = secB.def * formFactorsB.def;
 
-  // Para ter controle de posse nos logs
   const totalPower = attackPowerA + attackPowerB;
   const posA = Math.round((attackPowerA / totalPower) * 100);
 
@@ -775,11 +1406,15 @@ function generateArenaPhase(startMin, endMin, stateData) {
 
   const getOffensivePlayer = (squad) => {
     const off = squad.filter(p => p.pos !== "GK");
-    return off.length > 0 ? off[Math.floor(Math.random() * off.length)].name : "Jogador";
+    if (off.length === 0) return "Jogador (FW)";
+    const p = off[Math.floor(Math.random() * off.length)];
+    return `${p.name} (${p.pos || p.origPos || 'FW'})`;
   };
   const getDefensivePlayer = (squad) => {
     const def = squad.filter(p => p.pos === "DF" || p.pos === "MF");
-    return def.length > 0 ? def[Math.floor(Math.random() * def.length)].name : "Defensor";
+    if (def.length === 0) return "Defensor (DF)";
+    const p = def[Math.floor(Math.random() * def.length)];
+    return `${p.name} (${p.pos || p.origPos || 'DF'})`;
   };
 
   if (min === 0) events.push({ time: "00'", text: "Apita o árbitro! Começa o jogo na Arena!", anim: "start" });
@@ -791,7 +1426,6 @@ function generateArenaPhase(startMin, endMin, stateData) {
     min += Math.floor(Math.random() * 5) + 3;
     if (min >= endMin) min = endMin;
     
-    // Motor de Física e Probabilidade
     const randomVal = Math.random() * 100;
     
     if (randomVal < chanceGoalA) {
@@ -807,7 +1441,7 @@ function generateArenaPhase(startMin, endMin, stateData) {
       const oppGk = isTeamA ? squadB[0].name : squadA[0].name;
       const shooter = isTeamA ? getOffensivePlayer(squadA) : getOffensivePlayer(squadB);
       const team = isTeamA ? teamAName : teamBName;
-      events.push({ time: min + "'", text: `Quase gol do ${team}! ${shooter} chuta forte mas ${oppGk} faz defesa espetacular!`, anim: isTeamA ? "shoot-p1" : "shoot-p2" });
+      events.push({ time: min + "'", text: `Quase gol do ${team}! ${shooter} chuta forte mas ${oppGk} faz defense espetacular!`, anim: isTeamA ? "shoot-p1" : "shoot-p2" });
     } else if (randomVal < 50) {
       const isTeamA = Math.random() > 0.5;
       const team = isTeamA ? teamAName : teamBName;
@@ -830,7 +1464,6 @@ function generateArenaPhase(startMin, endMin, stateData) {
     }
   }
   
-  // Tratamento dos fins de fase
   if (endMin === 22) events.push({ time: "22'", text: "O juiz autoriza a parada técnica para hidratação.", anim: "reset" });
   if (endMin === 45) events.push({ time: "45'", text: "Fim do primeiro tempo.", anim: "reset" });
   if (endMin === 67) events.push({ time: "67'", text: "Nova parada para hidratação no segundo tempo.", anim: "reset" });
@@ -855,13 +1488,11 @@ function generateArenaPhase(startMin, endMin, stateData) {
 
 function generateArenaPenalties(stateData) {
   const events = [];
-  
   const teamA = stateData.p1.team;
   const teamB = stateData.p2.team;
   const teamAName = getTeamName(teamA);
   const teamBName = getTeamName(teamB);
   
-  // Power calc simplification just for probability
   const chanceA = 0.5 + (Math.random() * 0.2); 
   const chanceB = 0.5 + (Math.random() * 0.2); 
   
@@ -913,7 +1544,6 @@ function generateArenaPenalties(stateData) {
       break;
     }
     
-    // Morte súbita
     if (takenA >= 5 && penA !== penB) {
       const winner = penA > penB ? teamAName : teamBName;
       events.push({ time: "FIM", text: `FIM DE JOGO! O ${winner} VENCE NAS COBRANÇAS ALTERNADAS POR ${Math.max(penA, penB)} a ${Math.min(penA, penB)}!`, anim: "reset" });
@@ -924,8 +1554,6 @@ function generateArenaPenalties(stateData) {
   return { events };
 }
 
-let arenaPauseTimerInterval = null;
-
 function arenaRenderPitch(data) {
   const container = document.getElementById("arena-pieces-layer");
   if (!container) return;
@@ -933,18 +1561,16 @@ function arenaRenderPitch(data) {
   
   if (!data.p1 || !data.p2 || !data.p1.squad || !data.p2.squad) return;
   
-  // Coordenadas globais do app.js
   const coordsP1 = typeof formationsCoordinates !== "undefined" ? formationsCoordinates[data.p1.formation || "4-3-3"] : null;
   const coordsP2 = typeof formationsCoordinates !== "undefined" ? formationsCoordinates[data.p2.formation || "4-3-3"] : null;
   
   const colorsP1 = window.comparacopaData.teamColors[data.p1.team] || { primary: "#222", secondary: "#fff" };
   const colorsP2 = window.comparacopaData.teamColors[data.p2.team] || { primary: "#222", secondary: "#fff" };
   
-  // Renderizar time 1 (Esquerda)
+  // Render Player 1 Pieces (Left)
   data.p1.squad.forEach((player, index) => {
     const node = document.createElement("div");
     node.className = "arena-piece p1-piece";
-    // Na esquerda: y define X, x define Y (horizontal)
     const slotY = coordsP1 && coordsP1[index] ? coordsP1[index].y : player.y;
     const slotX = coordsP1 && coordsP1[index] ? coordsP1[index].x : player.x;
     node.style.left = `${slotY}%`; 
@@ -952,42 +1578,46 @@ function arenaRenderPitch(data) {
     node.style.backgroundColor = colorsP1.primary;
     node.style.color = colorsP1.text || "#ffffff";
     node.style.borderColor = colorsP1.secondary;
-    node.style.transform = "translate(-50%, -50%)"; // Centraliza o próprio botão no slot
+    node.style.transform = "translate(-50%, -50%)";
     node.innerHTML = `<span>${player.no}</span>`;
-    node.title = player.name;
+    
+    const posLabel = coordsP1 && coordsP1[index] ? coordsP1[index].pos : (player.pos || player.origPos || 'MF');
+    node.title = `${player.name} (${posLabel})`;
     container.appendChild(node);
   });
   
-  // Renderizar time 2 (Direita) - Invertido
+  // Render Player 2 Pieces (Right) - Mirrored
   data.p2.squad.forEach((player, index) => {
     const node = document.createElement("div");
     node.className = "arena-piece p2-piece";
     const slotY = coordsP2 && coordsP2[index] ? coordsP2[index].y : player.y;
     const slotX = coordsP2 && coordsP2[index] ? coordsP2[index].x : player.x;
-    // Inverte o lado para P2 (X e Y) para manter a formação espelhada corretamente
     node.style.left = `${100 - slotY}%`; 
     node.style.top = `${100 - slotX}%`;
     node.style.backgroundColor = colorsP2.primary;
     node.style.color = colorsP2.text || "#ffffff";
     node.style.borderColor = colorsP2.secondary;
-    node.style.transform = "translate(-50%, -50%)"; // Centraliza o próprio botão no slot
+    node.style.transform = "translate(-50%, -50%)";
     node.innerHTML = `<span>${player.no}</span>`;
-    node.title = player.name;
+    
+    const posLabel = coordsP2 && coordsP2[index] ? coordsP2[index].pos : (player.pos || player.origPos || 'MF');
+    node.title = `${player.name} (${posLabel})`;
     container.appendChild(node);
   });
 }
 
+let arenaPauseTimerInterval = null;
 function startArenaPauseTimer(seconds) {
   let timeLeft = seconds;
-  document.getElementById("arena-pause-timer").textContent = timeLeft;
+  const timerEl = document.getElementById("arena-pause-timer");
+  if (timerEl) timerEl.textContent = timeLeft;
   
   clearInterval(arenaPauseTimerInterval);
   arenaPauseTimerInterval = setInterval(() => {
     timeLeft--;
-    document.getElementById("arena-pause-timer").textContent = timeLeft;
+    if (timerEl) timerEl.textContent = timeLeft;
     if (timeLeft <= 0) {
       clearInterval(arenaPauseTimerInterval);
-      // Auto confirm if time runs out
       arenaConfirmReadyToResume();
     }
   }, 1000);
@@ -996,15 +1626,26 @@ function startArenaPauseTimer(seconds) {
 function showArenaPausePanel(isPause) {
   if (isPause) {
     document.getElementById("arena-pause-panel").style.display = "block";
-    document.getElementById("btn-arena-resume").disabled = false;
-    document.getElementById("btn-arena-resume").textContent = "Pular / Estou Pronto";
-    document.getElementById("arena-pause-waiting").style.display = "none";
+    const btn = document.getElementById("btn-arena-resume");
+    if (btn) {
+      btn.disabled = false;
+      btn.textContent = "Pular / Estou Pronto";
+    }
+    const wait = document.getElementById("arena-pause-waiting");
+    if (wait) wait.style.display = "none";
     
-    // Atualiza placares e nomes da partida
-    document.getElementById("arena-score-a").textContent = arenaState.scoreA || 0;
-    document.getElementById("arena-score-b").textContent = arenaState.scoreB || 0;
-    document.getElementById("arena-team-a-name").textContent = getTeamName(arenaState.p1.team);
-    document.getElementById("arena-team-b-name").textContent = getTeamName(arenaState.p2.team);
+    // Updates UI texts
+    const scA = document.getElementById("sim-score-a")?.textContent || 0;
+    const scB = document.getElementById("sim-score-b")?.textContent || 0;
+    const elScoreA = document.getElementById("arena-score-a");
+    if (elScoreA) elScoreA.textContent = scA;
+    const elScoreB = document.getElementById("arena-score-b");
+    if (elScoreB) elScoreB.textContent = scB;
+    
+    const elTeamA = document.getElementById("arena-team-a-name");
+    if (elTeamA) elTeamA.textContent = getTeamName(arenaState.p1.team);
+    const elTeamB = document.getElementById("arena-team-b-name");
+    if (elTeamB) elTeamB.textContent = getTeamName(arenaState.p2.team);
     
     if (!isAnimating) {
       arenaRenderPitch(arenaState);
@@ -1017,13 +1658,64 @@ function showArenaPausePanel(isPause) {
   }
 }
 
+async function arenaConfirmReadyToResume() {
+  const btn = document.getElementById("btn-arena-resume");
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = "AGUARDANDO...";
+  }
+  const wait = document.getElementById("arena-pause-waiting");
+  if (wait) wait.style.display = "block";
+  
+  if (arenaRoomId === "LOCAL") {
+    // Mode local handles itself
+    const currentState = localState.state;
+    const phases = {
+      "first_half_1": "first_half_2",
+      "first_half_2": "second_half_1",
+      "second_half_1": "second_half_2",
+      "second_half_2": "extra_time_1",
+      "extra_time_1": "extra_time_2",
+      "extra_time_2": "penalties"
+    };
+    
+    let nextPhase = phases[currentState];
+    if (currentState === "second_half_2" && localState.scoreA !== localState.scoreB) {
+      nextPhase = "finished";
+    }
+    if (currentState === "extra_time_2" && localState.scoreA !== localState.scoreB) {
+      nextPhase = "finished";
+    }
+    
+    if (nextPhase === "finished") {
+      arenaShowMatchSummary();
+    } else if (nextPhase) {
+      arenaStartLocalPhase(nextPhase);
+    }
+  } else {
+    // Firebase flow
+    const { doc, updateDoc } = window.firebaseAPI;
+    const roomRef = doc(window.firebaseDB, "rooms", arenaRoomId);
+    
+    if (arenaPlayerRole === "p1") {
+      await updateDoc(roomRef, { "p1.readyToResume": true });
+    } else {
+      await updateDoc(roomRef, { "p2.readyToResume": true });
+    }
+  }
+}
+
+/* ==========================================================================
+   SUBSTITUTIONS AND ACTIONS FOR ACTIVE ARENA GAME
+   ========================================================================== */
+
 function arenaOpenSubModal() {
-  if (!arenaState || !arenaState[arenaPlayerRole]) return;
+  if (!arenaState) return;
   const pState = arenaState[arenaPlayerRole];
+  if (!pState) return;
   
   if (pState.subsLeft <= 0) {
-    alert("Você já usou todas as 4 substituições permitidas!");
-    return;
+    return alert("Você já usou todas as 4 substituições permitidas!");
   }
   
   document.getElementById("arena-modal-sub").style.display = "block";
@@ -1034,30 +1726,29 @@ function arenaOpenSubModal() {
   selectIn.innerHTML = "";
   
   pState.squad.forEach((p, idx) => {
-    selectOut.innerHTML += `<option value="${idx}">${p.pos} - ${p.name} (${p.ovr})</option>`;
+    const posLabel = p.pos || p.origPos || 'MF';
+    selectOut.innerHTML += `<option value="${idx}">${posLabel} - ${p.name} (${p.ovr})</option>`;
   });
   
   pState.bench.forEach((p, idx) => {
-    selectIn.innerHTML += `<option value="${idx}">${p.pos} - ${p.name} (${p.ovr})</option>`;
+    const posLabel = p.pos || p.origPos || 'MF';
+    selectIn.innerHTML += `<option value="${idx}">${posLabel} - ${p.name} (${p.ovr})</option>`;
   });
 }
 
 async function arenaConfirmSub() {
   const pState = arenaState[arenaPlayerRole];
-  if (pState.subsLeft <= 0) return;
+  if (!pState || pState.subsLeft <= 0) return;
 
   const idxOut = document.getElementById("arena-sub-out").value;
   const idxIn = document.getElementById("arena-sub-in").value;
-  
   if (idxOut === "" || idxIn === "") return;
   
   const squad = [...pState.squad];
   const bench = [...pState.bench];
-  
   const playerOut = squad[idxOut];
   const playerIn = bench[idxIn];
   
-  // O jogador que entra herda a posição original, o x e y do jogador que sai
   const newPlayerIn = {
     ...playerIn,
     pos: playerOut.pos,
@@ -1066,37 +1757,44 @@ async function arenaConfirmSub() {
   };
   
   squad[idxOut] = newPlayerIn;
-  bench.splice(idxIn, 1); // remove o que entrou do banco
-  bench.push(playerOut);  // opcionalmente pode colocar o cara que saiu no banco
+  bench.splice(idxIn, 1);
+  bench.push(playerOut);
   
-  const { doc, updateDoc } = window.firebaseAPI;
-  const roomRef = doc(window.firebaseDB, "rooms", arenaRoomId);
-  
-  const updates = {};
-  updates[`${arenaPlayerRole}.squad`] = squad;
-  updates[`${arenaPlayerRole}.bench`] = bench;
-  updates[`${arenaPlayerRole}.subsLeft`] = pState.subsLeft - 1;
-  // Aumenta o tempo de acréscimo global
-  updates["injuryTime"] = (arenaState.injuryTime || 0) + 1;
-  
-  await updateDoc(roomRef, updates);
-  
-  alert(`Substituição feita! ${playerIn.name} entrou no lugar de ${playerOut.name}. (+1 min de acréscimo)`);
-  document.getElementById("arena-modal-sub").style.display = "none";
+  if (arenaRoomId === "LOCAL") {
+    pState.squad = squad;
+    pState.bench = bench;
+    pState.subsLeft--;
+    localState.injuryTime++;
+    alert(`Substituição feita! ${playerIn.name} entrou no lugar de ${playerOut.name}. (+1 min de acréscimo)`);
+    document.getElementById("arena-modal-sub").style.display = "none";
+    arenaRenderPitch(localState);
+  } else {
+    const { doc, updateDoc } = window.firebaseAPI;
+    const roomRef = doc(window.firebaseDB, "rooms", arenaRoomId);
+    
+    const updates = {};
+    updates[`${arenaPlayerRole}.squad`] = squad;
+    updates[`${arenaPlayerRole}.bench`] = bench;
+    updates[`${arenaPlayerRole}.subsLeft`] = pState.subsLeft - 1;
+    updates["injuryTime"] = (arenaState.injuryTime || 0) + 1;
+    
+    await updateDoc(roomRef, updates);
+    
+    alert(`Substituição feita! ${playerIn.name} entrou no lugar de ${playerOut.name}. (+1 min de acréscimo)`);
+    document.getElementById("arena-modal-sub").style.display = "none";
+  }
 }
 
 function arenaOpenTacModal() {
-  if (!arenaState || !arenaState[arenaPlayerRole]) return;
+  if (!arenaState) return;
   const pState = arenaState[arenaPlayerRole];
+  if (!pState) return;
   
   if (pState.tacsLeft <= 0) {
-    alert("Você já usou todas as 2 alterações táticas permitidas!");
-    return;
+    return alert("Você já usou todas as 2 alterações táticas permitidas!");
   }
   
   document.getElementById("arena-modal-tac").style.display = "block";
-  
-  // Se ainda não existir a dropdown na UI, crio aqui via código ou assumo que existe em index.html
   const selectForm = document.getElementById("arena-tac-select");
   if (selectForm) {
     selectForm.value = pState.formation;
@@ -1105,62 +1803,43 @@ function arenaOpenTacModal() {
 
 async function arenaConfirmTac() {
   const pState = arenaState[arenaPlayerRole];
-  if (pState.tacsLeft <= 0) return;
+  if (!pState || pState.tacsLeft <= 0) return;
   
   const selectForm = document.getElementById("arena-tac-select");
   if (!selectForm) return;
   
   const newFormation = selectForm.value;
   
-  const { doc, updateDoc } = window.firebaseAPI;
-  const roomRef = doc(window.firebaseDB, "rooms", arenaRoomId);
-  
-  const updates = {};
-  updates[`${arenaPlayerRole}.formation`] = newFormation;
-  updates[`${arenaPlayerRole}.tacsLeft`] = pState.tacsLeft - 1;
-  
-  await updateDoc(roomRef, updates);
-  
-  alert(`Tática alterada para ${newFormation}!`);
-  document.getElementById("arena-modal-tac").style.display = "none";
-}
-
-async function arenaConfirmReadyToResume() {
-  document.getElementById("btn-arena-resume").disabled = true;
-  document.getElementById("btn-arena-resume").textContent = "AGUARDANDO...";
-  document.getElementById("arena-pause-waiting").style.display = "block";
-  
-  const { doc, updateDoc } = window.firebaseAPI;
-  const roomRef = doc(window.firebaseDB, "rooms", arenaRoomId);
-  
-  if (arenaPlayerRole === "p1") {
-    await updateDoc(roomRef, { "p1.readyToResume": true });
+  if (arenaRoomId === "LOCAL") {
+    pState.formation = newFormation;
+    pState.tacsLeft--;
+    alert(`Tática alterada para ${newFormation}!`);
+    document.getElementById("arena-modal-tac").style.display = "none";
   } else {
-    await updateDoc(roomRef, { "p2.readyToResume": true });
+    const { doc, updateDoc } = window.firebaseAPI;
+    const roomRef = doc(window.firebaseDB, "rooms", arenaRoomId);
+    
+    const updates = {};
+    updates[`${arenaPlayerRole}.formation`] = newFormation;
+    updates[`${arenaPlayerRole}.tacsLeft`] = pState.tacsLeft - 1;
+    
+    await updateDoc(roomRef, updates);
+    
+    alert(`Tática alterada para ${newFormation}!`);
+    document.getElementById("arena-modal-tac").style.display = "none";
   }
 }
 
-// A simulação agora utiliza unicamente o motor de física/probabilidade generateArenaPhase definido acima.
-
-
-// === SPEED CONTROLS ===
-let arenaAnimSpeed = 1.0;
-
 function arenaSetSpeed(mult) {
   arenaAnimSpeed = mult;
-  document.getElementById("btn-speed-1").classList.remove("btn-green");
-  document.getElementById("btn-speed-15").classList.remove("btn-green");
-  document.getElementById("btn-speed-2").classList.remove("btn-green");
+  document.getElementById("btn-speed-1")?.classList.remove("btn-green");
+  document.getElementById("btn-speed-15")?.classList.remove("btn-green");
+  document.getElementById("btn-speed-2")?.classList.remove("btn-green");
   
-  if (mult === 1.0) document.getElementById("btn-speed-1").classList.add("btn-green");
-  if (mult === 1.5) document.getElementById("btn-speed-15").classList.add("btn-green");
-  if (mult === 2.0) document.getElementById("btn-speed-2").classList.add("btn-green");
+  if (mult === 1.0) document.getElementById("btn-speed-1")?.classList.add("btn-green");
+  if (mult === 1.5) document.getElementById("btn-speed-15")?.classList.add("btn-green");
+  if (mult === 2.0) document.getElementById("btn-speed-2")?.classList.add("btn-green");
 }
-
-
-// ==========================================
-// Match Summary & Sharing
-// ==========================================
 
 function arenaShowMatchSummary() {
   const modal = document.getElementById("arena-modal-summary");
@@ -1174,13 +1853,18 @@ function arenaShowMatchSummary() {
   const flagB = getTeamFlag(arenaState.p2.team);
   const nameB = getTeamName(arenaState.p2.team);
   
-  document.getElementById("summary-flag-a").textContent = flagA;
-  document.getElementById("summary-team-a").textContent = nameA;
+  const labelFlagA = document.getElementById("summary-flag-a");
+  if (labelFlagA) labelFlagA.textContent = flagA;
+  const labelTeamA = document.getElementById("summary-team-a");
+  if (labelTeamA) labelTeamA.textContent = nameA;
   
-  document.getElementById("summary-flag-b").textContent = flagB;
-  document.getElementById("summary-team-b").textContent = nameB;
+  const labelFlagB = document.getElementById("summary-flag-b");
+  if (labelFlagB) labelFlagB.textContent = flagB;
+  const labelTeamB = document.getElementById("summary-team-b");
+  if (labelTeamB) labelTeamB.textContent = nameB;
   
-  document.getElementById("summary-score").textContent = `${scoreA} - ${scoreB}`;
+  const labelScore = document.getElementById("summary-score");
+  if (labelScore) labelScore.textContent = `${scoreA} - ${scoreB}`;
   
   modal.style.display = "flex";
 }
@@ -1189,10 +1873,8 @@ function arenaDownloadSummary() {
   const card = document.getElementById("arena-summary-card");
   if (!card) return;
   
-  // Ocultar ícones ou botões desnecessários antes de capturar se houver
-  
   html2canvas(card, {
-    backgroundColor: "#111", // Fundo para a imagem renderizada
+    backgroundColor: "#111",
     scale: 2
   }).then(canvas => {
     const link = document.createElement("a");
@@ -1218,7 +1900,6 @@ function arenaShareSummary() {
       text: text
     }).catch(console.error);
   } else {
-    // Fallback: Copy to clipboard
     navigator.clipboard.writeText(text).then(() => {
       alert("Resultado copiado para a área de transferência! Compartilhe nas redes.");
     });
