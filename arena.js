@@ -332,19 +332,12 @@ function arenaLocalNextStep() {
     
     const pName = document.getElementById("arena-local-player-name")?.value.trim() || "Jogador A";
     localState.p1.name = pName;
-    localState.p1.style = localStyle;
+    localState.p1.style = "bal";
     
     localState.step = 2;
     document.getElementById("local-setup-title").textContent = "ESCALAÇÃO JOGADOR 2";
     document.getElementById("arena-local-team-select").value = "";
     document.getElementById("arena-local-player-name").value = "Jogador B";
-    
-    // Default style to Balanced for P2 setup
-    setLocalStyle("bal");
-    
-    // Hide difficulty container since it's already set by P1
-    const diffContainer = document.getElementById("local-difficulty-container");
-    if (diffContainer) diffContainer.style.display = "none";
     
     document.getElementById("arena-local-tactical-editor").style.display = "none";
     document.getElementById("btn-arena-local-next").textContent = "Iniciar Simulação →";
@@ -353,7 +346,7 @@ function arenaLocalNextStep() {
     
     const pName = document.getElementById("arena-local-player-name")?.value.trim() || "Jogador B";
     localState.p2.name = pName;
-    localState.p2.style = localStyle;
+    localState.p2.style = "bal";
     
     // Start local simulation
     document.getElementById("arena-local-setup").style.display = "none";
@@ -361,7 +354,7 @@ function arenaLocalNextStep() {
     
     // Mimic Firebase structures for local state
     arenaState = localState;
-    arenaState.difficulty = localDifficulty; // Save selected difficulty!
+    arenaState.difficulty = "classic"; // Save selected difficulty!
     arenaRoomId = "LOCAL";
     arenaPlayerRole = "p1"; // Host role for local coordinator
     
@@ -369,7 +362,7 @@ function arenaLocalNextStep() {
     document.getElementById("arena-room-code-badge").textContent = "LOCAL";
     document.getElementById("arena-lobby-title").textContent = "AMISTOSO LOCAL";
     document.getElementById("arena-lobby-vacancy-status").textContent = "EM PARTIDA LOCAL";
-    document.getElementById("arena-lobby-meta-diff").textContent = localDifficulty === "classic" ? "CLÁSSICO" : "DE ALMANAQUE";
+    document.getElementById("arena-lobby-meta-diff").textContent = "CLÁSSICO";
     document.getElementById("arena-lobby-meta-time").textContent = "SEM LIMITE";
     
     document.getElementById("arena-slot-1-name").textContent = `${localState.p1.name.toUpperCase()} (P1)`;

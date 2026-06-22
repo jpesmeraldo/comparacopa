@@ -208,3 +208,47 @@
   transform: translate(-2px, -2px);
   box-shadow: 6px 6px 0 var(--dark-accent);
 }
+
+/* Sessional Tactical Pitch Custom Styles */
+.tactical-pitch {
+  width: 100%;
+  max-width: 100%;
+  aspect-ratio: 4 / 3;
+  height: auto !important; /* Allow it to scale dynamically! */
+  border: 3px solid var(--dark-accent) !important;
+  box-shadow: 4px 4px 0 var(--dark-accent) !important;
+  background-color: var(--field-green) !important;
+  position: relative;
+}
+
+/* Scaled player nodes on the setup tactical pitch to avoid overlap */
+.tactical-pitch .player-node {
+  width: 32px !important;
+  height: 32px !important;
+  border-width: 2px !important;
+  box-shadow: 2px 2px 0 var(--dark-accent) !important;
+  font-size: 0.7rem !important;
+}
+
+.tactical-pitch .player-number {
+  font-size: 0.65rem !important;
+}
+
+.tactical-pitch .player-name-tag {
+  font-size: 0.55rem !important;
+  bottom: -15px !important;
+  padding: 1px 3px !important;
+  width: 65px !important;
+  border-width: 1px !important;
+  background: var(--dark-accent) !important;
+  color: var(--off-white) !important;
+}
+
+.tactical-pitch .player-ovr-tag {
+  width: 14px !important;
+  height: 14px !important;
+  font-size: 0.52rem !important;
+  top: -8px !important;
+  right: -8px !important;
+  border-width: 1.2px !important;
+}

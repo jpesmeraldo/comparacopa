@@ -342,43 +342,26 @@
         </div>
 
         <!-- Form 01: Amistoso Local Setup -->
-        <div id="arena-config-local" class="neo-card" style="display: none; max-width: 600px; margin: 0 auto; padding: 25px;">
+        <div id="arena-config-local" class="neo-card" style="display: none; max-width: 500px; margin: 0 auto; padding: 25px; text-align: center;">
           <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid var(--dark-accent); padding-bottom: 10px; margin-bottom: 20px;">
             <h3 id="local-player-title" style="font-family: 'Bebas Neue', cursive; font-size: 2rem; color: var(--dark-accent); margin: 0;">01 JOGADOR 1</h3>
             <button class="neo-btn btn-red" onclick="arenaHideConfig()" style="font-size: 0.8rem; padding: 5px 10px;">Voltar</button>
           </div>
           
-          <div style="margin-bottom: 15px;">
+          <div style="margin-bottom: 15px; text-align: left;">
             <label class="neo-label">Nome do Jogador:</label>
             <input type="text" id="local-player-name" class="neo-select" style="background:#fff;" value="Jogador A">
           </div>
 
-          <div style="margin-bottom: 15px;">
+          <div style="margin-bottom: 15px; text-align: left;">
             <label class="neo-label">Selecione seu Time:</label>
             <select id="local-player-team" class="neo-select" onchange="arenaLocalTeamChanged()"></select>
           </div>
 
-          <div style="margin-bottom: 15px;">
-            <label class="neo-label">Modo / Dificuldade:</label>
-            <div style="display: flex; gap: 10px;">
-              <button class="neo-btn active" id="btn-local-diff-classic" onclick="setLocalDifficulty('classic')" style="flex:1;">Clássico</button>
-              <button class="neo-btn" id="btn-local-diff-almanac" onclick="setLocalDifficulty('almanac')" style="flex:1;">De almanaque</button>
-            </div>
-          </div>
-
-          <div style="margin-bottom: 15px;">
+          <div style="margin-bottom: 15px; text-align: left;">
             <label class="neo-label">Formação:</label>
             <div id="local-formation-grid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px;">
               <!-- JS Loaded buttons -->
-            </div>
-          </div>
-
-          <div style="margin-bottom: 20px;">
-            <label class="neo-label">Estilo:</label>
-            <div style="display: flex; gap: 10px;">
-              <button class="neo-btn" id="btn-local-style-def" onclick="setLocalStyle('def')" style="flex:1;">Defensivo</button>
-              <button class="neo-btn active" id="btn-local-style-bal" onclick="setLocalStyle('bal')" style="flex:1;">Equilibrado</button>
-              <button class="neo-btn" id="btn-local-style-off" onclick="setLocalStyle('off')" style="flex:1;">Ofensivo</button>
             </div>
           </div>
 
@@ -386,19 +369,19 @@
         </div>
 
         <!-- Form 02: Amistoso On-line Setup -->
-        <div id="arena-config-online-friendly" class="neo-card" style="display: none; max-width: 600px; margin: 0 auto; padding: 25px;">
+        <div id="arena-config-online-friendly" class="neo-card" style="display: none; max-width: 500px; margin: 0 auto; padding: 25px; text-align: center;">
           <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid var(--dark-accent); padding-bottom: 10px; margin-bottom: 20px;">
             <h3 style="font-family: 'Bebas Neue', cursive; font-size: 2rem; color: var(--dark-accent); margin: 0;">02 FINAL DE COPA</h3>
             <button class="neo-btn btn-red" onclick="arenaHideConfig()" style="font-size: 0.8rem; padding: 5px 10px;">Voltar</button>
           </div>
           <p style="font-size: 0.85rem; color: #555; margin-bottom: 20px;">Cada um monta seu time e jogam a Final diretamente.</p>
 
-          <div style="margin-bottom: 15px;">
+          <div style="margin-bottom: 15px; text-align: left;">
             <label class="neo-label">Senha da Sala (Opcional):</label>
             <input type="text" id="online-friendly-pass" class="neo-select" style="background:#fff;" placeholder="sem senha = sala aberta">
           </div>
 
-          <div style="margin-bottom: 20px;">
+          <div style="margin-bottom: 20px; text-align: left;">
             <label class="neo-label">Tempo por Jogada:</label>
             <div style="display: flex; gap: 10px;">
               <button class="neo-btn" id="btn-online-friendly-time-20" onclick="setOnlineFriendlyTime(20)" style="flex:1;">20s</button>
@@ -411,22 +394,14 @@
         </div>
 
         <!-- Form 03: Torneio Setup -->
-        <div id="arena-config-online-tournament" class="neo-card" style="display: none; max-width: 600px; margin: 0 auto; padding: 25px;">
+        <div id="arena-config-online-tournament" class="neo-card" style="display: none; max-width: 500px; margin: 0 auto; padding: 25px; text-align: center;">
           <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid var(--dark-accent); padding-bottom: 10px; margin-bottom: 20px;">
             <h3 style="font-family: 'Bebas Neue', cursive; font-size: 2rem; color: var(--dark-accent); margin: 0;">03 MATA-MATA DE COPA</h3>
             <button class="neo-btn btn-red" onclick="arenaHideConfig()" style="font-size: 0.8rem; padding: 5px 10px;">Voltar</button>
           </div>
           <p style="font-size: 0.85rem; color: #555; margin-bottom: 20px;">Bracket de 4 a 16 times — humanos e CPU.</p>
 
-          <div style="margin-bottom: 15px;">
-            <label class="neo-label">Modo / Dificuldade:</label>
-            <div style="display: flex; gap: 10px;">
-              <button class="neo-btn active" id="btn-tournament-diff-classic" onclick="setTournamentDifficulty('classic')" style="flex:1;">Clássico</button>
-              <button class="neo-btn" id="btn-tournament-diff-almanac" onclick="setTournamentDifficulty('almanac')" style="flex:1;">De almanaque</button>
-            </div>
-          </div>
-
-          <div style="margin-bottom: 15px;">
+          <div style="margin-bottom: 15px; text-align: left;">
             <label class="neo-label">Tamanho da Chave:</label>
             <div style="display: flex; gap: 10px;">
               <button class="neo-btn" id="btn-tournament-size-4" onclick="setTournamentSize(4)" style="flex:1; font-size:0.85rem; padding:10px 5px;">Copa 4 times</button>
@@ -435,12 +410,12 @@
             </div>
           </div>
 
-          <div style="margin-bottom: 15px;">
+          <div style="margin-bottom: 15px; text-align: left;">
             <label class="neo-label">Senha da Sala (Opcional):</label>
             <input type="text" id="tournament-pass" class="neo-select" style="background:#fff;" placeholder="sem senha = sala aberta">
           </div>
 
-          <div style="margin-bottom: 15px;">
+          <div style="margin-bottom: 15px; text-align: left;">
             <label class="neo-label">Modo do Draft:</label>
             <div style="display: flex; gap: 10px;">
               <button class="neo-btn active" id="btn-tournament-draft-turns" onclick="setTournamentDraft('turns')" style="flex:1;">Por turnos</button>
@@ -448,7 +423,7 @@
             </div>
           </div>
 
-          <div style="margin-bottom: 20px;">
+          <div style="margin-bottom: 20px; text-align: left;">
             <label class="neo-label">Tempo por Jogada:</label>
             <div style="display: flex; gap: 10px;">
               <button class="neo-btn" id="btn-tournament-time-20" onclick="setTournamentTime(20)" style="flex:1;">20s</button>
@@ -463,49 +438,32 @@
 
       <!-- Telas de Pré-Jogo Local (Escolha de times sequencial) -->
       <div id="arena-local-setup" style="display: none;">
-        <div class="neo-card" style="max-width: 800px; margin: 0 auto; padding: 20px;">
-          <h3 id="local-setup-title" style="text-align: center; font-family: 'Bebas Neue', cursive; font-size: 2.5rem; margin-bottom: 20px; color: var(--dark-accent); text-transform: uppercase;">ESCALAÇÃO JOGADOR 1</h3>
+        <div class="neo-card" style="max-width: 500px; margin: 0 auto; padding: 20px; text-align: center; display: flex; flex-direction: column; align-items: center;">
+          <h3 id="local-setup-title" style="text-align: center; font-family: 'Bebas Neue', cursive; font-size: 2.5rem; margin-bottom: 20px; color: var(--dark-accent); text-transform: uppercase; width: 100%;">ESCALAÇÃO JOGADOR 1</h3>
           
-          <div style="margin-bottom: 15px;">
+          <div style="margin-bottom: 15px; width: 100%; text-align: left;">
             <label class="neo-label">Nome do Jogador:</label>
             <input type="text" id="arena-local-player-name" class="neo-select" style="background:#fff;" value="Jogador A">
           </div>
 
-          <div style="margin-bottom: 15px;">
+          <div style="margin-bottom: 15px; width: 100%; text-align: left;">
             <label class="neo-label">Selecione seu Time:</label>
             <select id="arena-local-team-select" class="neo-select" onchange="arenaLocalTeamChanged()"></select>
           </div>
 
-          <div id="local-difficulty-container" style="margin-bottom: 15px;">
-            <label class="neo-label">Modo / Dificuldade:</label>
-            <div style="display: flex; gap: 10px;">
-              <button class="neo-btn active" id="btn-local-setup-diff-classic" onclick="setLocalDifficulty('classic')" style="flex:1;">Clássico</button>
-              <button class="neo-btn" id="btn-local-setup-diff-almanac" onclick="setLocalDifficulty('almanac')" style="flex:1;">De almanaque</button>
-            </div>
-          </div>
-
-          <div id="arena-local-tactical-editor" style="display: none; margin-top: 15px;">
-            <div id="local-style-container" style="margin-bottom: 15px;">
-              <label class="neo-label">Estilo de Jogo:</label>
-              <div style="display: flex; gap: 10px;">
-                <button class="neo-btn" id="btn-local-setup-style-def" onclick="setLocalStyle('def')" style="flex:1;">Defensivo</button>
-                <button class="neo-btn active" id="btn-local-setup-style-bal" onclick="setLocalStyle('bal')" style="flex:1;">Equilibrado</button>
-                <button class="neo-btn" id="btn-local-setup-style-off" onclick="setLocalStyle('off')" style="flex:1;">Ofensivo</button>
-              </div>
-            </div>
-
+          <div id="arena-local-tactical-editor" style="display: none; margin-top: 15px; width: 100%; text-align: left;">
             <label class="neo-label">Esquema Tático:</label>
             <div id="arena-local-formation-btn-grid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; margin-bottom: 15px;"></div>
             
             <label class="neo-label">Ajuste seu Time (clique no jogador para substituir):</label>
-            <div id="arena-local-setup-pitch" class="tactical-pitch" style="position: relative; aspect-ratio: 4 / 3; margin-top: 5px; border: 3px solid #000; box-shadow: 4px 4px 0 #000; height: 260px; background-color: var(--field-green); overflow: hidden;">
+            <div id="arena-local-setup-pitch" class="tactical-pitch" style="position: relative; aspect-ratio: 4 / 3; margin: 5px auto 0 auto; border: 3px solid #000; box-shadow: 4px 4px 0 #000; height: 260px; background-color: var(--field-green); overflow: hidden; width: 100%; max-width: 346px;">
               <div class="field-line-center" style="position: absolute; left: 50%; top: 0; bottom: 0; width: 2px; background: rgba(255,255,255,0.4);"></div>
               <div class="field-circle" style="position: absolute; left: 50%; top: 50%; width: 60px; height: 60px; border: 2px solid rgba(255,255,255,0.4); border-radius: 50%; transform: translate(-50%, -50%);"></div>
               <div id="arena-local-setup-player-nodes" style="position: absolute; inset: 0;"></div>
             </div>
           </div>
           
-          <div style="text-align: center; margin-top: 20px; display: flex; gap: 10px; justify-content: center;">
+          <div style="text-align: center; margin-top: 20px; display: flex; gap: 10px; justify-content: center; width: 100%;">
             <button class="neo-btn" onclick="arenaReturnToLobby()">Voltar</button>
             <button class="neo-btn btn-green" id="btn-arena-local-next" onclick="arenaLocalNextStep()">Confirmar Time</button>
           </div>
@@ -583,8 +541,7 @@
           <div id="arena-lobby-vacancy-status" style="font-family: 'Space Mono', monospace; font-size: 0.85rem; color: var(--retro-red); font-weight: bold; margin-bottom: 15px; text-transform: uppercase;">Inscrições - 1 vaga aberta</div>
 
           <!-- Meta Info Line -->
-          <div style="display: flex; justify-content: space-between; border-top: 2px solid var(--dark-accent); border-bottom: 2px solid var(--dark-accent); padding: 6px 0; margin-bottom: 20px; font-family: 'Space Mono', monospace; font-size: 0.8rem; font-weight: bold; text-transform: uppercase; color: #555;">
-            <span id="arena-lobby-meta-diff">CLÁSSICO</span>
+          <div style="display: flex; justify-content: center; border-top: 2px solid var(--dark-accent); border-bottom: 2px solid var(--dark-accent); padding: 6px 0; margin-bottom: 20px; font-family: 'Space Mono', monospace; font-size: 0.8rem; font-weight: bold; text-transform: uppercase; color: #555;">
             <span id="arena-lobby-meta-time">30S POR JOGADA</span>
           </div>
 
@@ -621,41 +578,31 @@
         </div>
 
         <!-- Painel de Configuração Tática Síncrona (Below Lobby Card) -->
-        <div id="arena-tactical-config-panel" class="neo-card" style="max-width: 600px; margin: 0 auto 30px auto; padding: 25px; display: none;">
-          <h3 style="font-family: 'Bebas Neue', cursive; font-size: 1.8rem; border-bottom: 2px solid var(--dark-accent); padding-bottom: 8px; margin-top: 0; margin-bottom: 20px;">PAINEL TÁTICO DA SUA SELEÇÃO</h3>
+        <div id="arena-tactical-config-panel" class="neo-card" style="max-width: 500px; margin: 0 auto 30px auto; padding: 25px; display: none; text-align: center; display: flex; flex-direction: column; align-items: center;">
+          <h3 style="font-family: 'Bebas Neue', cursive; font-size: 1.8rem; border-bottom: 2px solid var(--dark-accent); padding-bottom: 8px; margin-top: 0; margin-bottom: 20px; width: 100%;">PAINEL TÁTICO DA SUA SELEÇÃO</h3>
           
-          <div style="margin-bottom: 15px;">
+          <div style="margin-bottom: 15px; width: 100%; text-align: left;">
             <label class="neo-label">Seu Nome:</label>
             <input type="text" id="arena-player-name-input" class="neo-select" style="background:#fff;" placeholder="Seu Nome" oninput="arenaUpdateMyName(this.value)">
           </div>
 
-          <div style="margin-bottom: 15px;">
+          <div style="margin-bottom: 15px; width: 100%; text-align: left;">
             <label class="neo-label">Selecione seu Time:</label>
             <select id="arena-team1" class="neo-select" onchange="arenaUpdateTeamSelect(1)"></select>
           </div>
 
           <!-- Active Formation Buttons Grid -->
-          <div style="margin-bottom: 15px;">
+          <div style="margin-bottom: 15px; width: 100%; text-align: left;">
             <label class="neo-label">Formação:</label>
             <div id="arena-formation-btn-grid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px;">
               <!-- JS grid buttons -->
             </div>
           </div>
 
-          <!-- Playstyle selection -->
-          <div style="margin-bottom: 20px;">
-            <label class="neo-label">Estilo de Jogo:</label>
-            <div style="display: flex; gap: 10px;">
-              <button class="neo-btn" id="btn-arena-style-def" onclick="arenaUpdateStyle('def')" style="flex:1;">Defensivo</button>
-              <button class="neo-btn active" id="btn-arena-style-bal" onclick="arenaUpdateStyle('bal')" style="flex:1;">Equilibrado</button>
-              <button class="neo-btn" id="btn-arena-style-off" onclick="arenaUpdateStyle('off')" style="flex:1;">Ofensivo</button>
-            </div>
-          </div>
-
           <!-- Minicampo Interativo -->
-          <div style="margin-bottom: 20px;">
+          <div style="margin-bottom: 20px; width: 100%; text-align: left;">
             <label class="neo-label">Ajuste seu Time (clique no jogador para substituir):</label>
-            <div id="arena-setup-pitch" class="tactical-pitch" style="position: relative; aspect-ratio: 4 / 3; margin-top: 5px; border: 3px solid #000; box-shadow: 4px 4px 0 #000; height: 260px; background-color: var(--field-green); overflow: hidden;">
+            <div id="arena-setup-pitch" class="tactical-pitch" style="position: relative; aspect-ratio: 4 / 3; margin: 5px auto 0 auto; border: 3px solid #000; box-shadow: 4px 4px 0 #000; height: 260px; background-color: var(--field-green); overflow: hidden; width: 100%; max-width: 346px;">
               <div class="field-line-center" style="position: absolute; left: 50%; top: 0; bottom: 0; width: 2px; background: rgba(255,255,255,0.4);"></div>
               <div class="field-circle" style="position: absolute; left: 50%; top: 50%; width: 60px; height: 60px; border: 2px solid rgba(255,255,255,0.4); border-radius: 50%; transform: translate(-50%, -50%);"></div>
               <div id="arena-setup-player-nodes" style="position: absolute; inset: 0;"></div>
