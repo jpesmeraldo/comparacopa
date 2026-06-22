@@ -144,8 +144,23 @@ function listenToRoom(code) {
         "extra_time_2": "penalties"
       };
       
-      const nextPhase = phases[currentState];
-      if (nextPhase) {
+      let nextPhase = phases[currentState];
+      
+      // Só vai para a prorrogação se estiver empatado aos 90'
+      if (currentState === "second_half_2" && data.scoreA !== data.scoreB) {
+        nextPhase = "finished";
+      }
+      // Só vai para pênaltis se estiver empatado após a prorrogação
+      if (currentState === "extra_time_2" && data.scoreA !== data.scoreB) {
+        nextPhase = "finished";
+      }
+      
+      if (nextPhase === "finished") {
+        const { doc, updateDoc } = window.firebaseAPI;
+        updateDoc(doc(window.firebaseDB, "rooms", arenaRoomId), { state: "finished" });
+        arenaState.p1.readyToResume = false;
+        arenaState.p2.readyToResume = false;
+      } else if (nextPhase) {
         // We will prevent loop by updating state immediately
         arenaStartPhase(nextPhase);
       }
@@ -219,24 +234,30 @@ async function arenaStartPhase(phaseName) {
   if (arenaPlayerRole !== "p1") return; // Only P1 computes the simulation
   
   const phases = {
-    "first_half_1": { start: 0, end: 22, nextPause: "break_hydration1" },
-    "first_half_2": { start: 22, end: 45, nextPause: "half_time" },
-    "second_half_1": { start: 45, end: 67, nextPause: "break_hydration2" },
-    "second_half_2": { start: 67, end: 90, nextPause: "full_time" },
-    "extra_time_1": { start: 90, end: 105, nextPause: "extra_time_break" },
-    "extra_time_2": { start: 105, end: 120, nextPause: "extra_full_time" }
+    "first_half_1": { start: 0, end: 22 },
+    "first_half_2": { start: 22, end: 45 },
+    "second_half_1": { start: 45, end: 67 },
+    "second_half_2": { start: 67, end: 90 },
+    "extra_time_1": { start: 90, end: 105 },
+    "extra_time_2": { start: 105, end: 120 }
   };
   
-  const phaseDef = phases[phaseName];
-  if (!phaseDef) return;
-
-  const simData = generateArenaPhase(phaseDef.start, phaseDef.end, arenaState);
+  let simData;
+  if (phaseName === "penalties") {
+    simData = generateArenaPenalties(arenaState);
+  } else {
+    const phaseDef = phases[phaseName];
+    if (!phaseDef) return;
+    simData = generateArenaPhase(phaseDef.start, phaseDef.end, arenaState);
+  }
   
   const { doc, updateDoc } = window.firebaseAPI;
   const roomRef = doc(window.firebaseDB, "rooms", arenaRoomId);
   
   await updateDoc(roomRef, { 
     "state": phaseName,
+    "scoreA": simData.scoreA !== undefined ? simData.scoreA : arenaState.scoreA,
+    "scoreB": simData.scoreB !== undefined ? simData.scoreB : arenaState.scoreB,
     "simulation": simData,
     "p1.readyToResume": false,
     "p2.readyToResume": false
@@ -493,6 +514,77 @@ function generateArenaPhase(startMin, endMin, stateData) {
     scoreA,
     scoreB
   };
+}
+
+function generateArenaPenalties(stateData) {
+  const events = [];
+  
+  const teamA = stateData.p1.team;
+  const teamB = stateData.p2.team;
+  const teamAName = window.comparacopaData.squads[teamA].name;
+  const teamBName = window.comparacopaData.squads[teamB].name;
+  
+  // Power calc simplification just for probability
+  const chanceA = 0.5 + (Math.random() * 0.2); 
+  const chanceB = 0.5 + (Math.random() * 0.2); 
+  
+  events.push({ time: "PÊNALTIS", text: "INÍCIO DA DISPUTA DE PÊNALTIS!", anim: "start" });
+  
+  let penA = 0;
+  let penB = 0;
+  let takenA = 0;
+  let takenB = 0;
+  
+  while (true) {
+    takenA++;
+    if (Math.random() < chanceA) {
+      penA++;
+      events.push({ time: "PÊNALTIS", text: `[Cobrança ${takenA}] ${teamAName}: ⚽ GOOOOL! (${penA}x${penB})`, anim: "shoot-p1" });
+    } else {
+      events.push({ time: "PÊNALTIS", text: `[Cobrança ${takenA}] ${teamAName}: ❌ PERDEU! (${penA}x${penB})`, anim: "shoot-p1" });
+    }
+    
+    let remainingA = Math.max(0, 5 - takenA);
+    let remainingB = Math.max(0, 5 - takenB);
+    
+    if (penA > penB + remainingB) {
+      events.push({ time: "FIM", text: `FIM DE JOGO! O ${teamAName} VENCE NOS PÊNALTIS POR ${penA} a ${penB}!`, anim: "reset" });
+      break;
+    }
+    if (penB > penA + remainingA) {
+      events.push({ time: "FIM", text: `FIM DE JOGO! O ${teamBName} VENCE NOS PÊNALTIS POR ${penB} a ${penA}!`, anim: "reset" });
+      break;
+    }
+    
+    takenB++;
+    if (Math.random() < chanceB) {
+      penB++;
+      events.push({ time: "PÊNALTIS", text: `[Cobrança ${takenB}] ${teamBName}: ⚽ GOOOOL! (${penA}x${penB})`, anim: "shoot-p2" });
+    } else {
+      events.push({ time: "PÊNALTIS", text: `[Cobrança ${takenB}] ${teamBName}: ❌ PERDEU! (${penA}x${penB})`, anim: "shoot-p2" });
+    }
+    
+    remainingA = Math.max(0, 5 - takenA);
+    remainingB = Math.max(0, 5 - takenB);
+    
+    if (penA > penB + remainingB) {
+      events.push({ time: "FIM", text: `FIM DE JOGO! O ${teamAName} VENCE NOS PÊNALTIS POR ${penA} a ${penB}!`, anim: "reset" });
+      break;
+    }
+    if (penB > penA + remainingA) {
+      events.push({ time: "FIM", text: `FIM DE JOGO! O ${teamBName} VENCE NOS PÊNALTIS POR ${penB} a ${penA}!`, anim: "reset" });
+      break;
+    }
+    
+    // Morte súbita
+    if (takenA >= 5 && penA !== penB) {
+      const winner = penA > penB ? teamAName : teamBName;
+      events.push({ time: "FIM", text: `FIM DE JOGO! O ${winner} VENCE NAS COBRANÇAS ALTERNADAS POR ${Math.max(penA, penB)} a ${Math.min(penA, penB)}!`, anim: "reset" });
+      break;
+    }
+  }
+  
+  return { events };
 }
 
 let arenaPauseTimerInterval = null;
