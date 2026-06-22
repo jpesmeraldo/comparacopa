@@ -780,6 +780,7 @@ function renderStats() {
 
 function renderFormBadges(elementId, formArray) {
   const container = document.getElementById(elementId);
+  if (!container) return; // Segurança contra elementos removidos
   container.innerHTML = "";
   formArray.forEach(result => {
     const badge = document.createElement("div");
