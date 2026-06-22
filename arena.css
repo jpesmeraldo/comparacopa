@@ -170,25 +170,41 @@
     margin-top: -7.5px;
     margin-left: -7.5px;
   }
+}
 
-  /* Arena Lobby Options Hover */
-  .lobby-option:hover {
-    transform: translate(-3px, -3px);
-    box-shadow: 3px 3px 0 var(--dark-accent);
-    background-color: rgba(0,0,0,0.02);
-  }
+/* Arena Lobby Options Hover (Universal) */
+.lobby-option {
+  transition: all 0.2s ease-in-out;
+}
+.lobby-option:hover {
+  transform: translate(-3px, -3px);
+  box-shadow: 3px 3px 0 var(--dark-accent);
+  background-color: rgba(0,0,0,0.02);
+}
 
-  /* Bracket styling */
-  .bracket-container {
-    display: flex;
-    gap: 20px;
-    justify-content: space-between;
-    align-items: center;
-  }
-  .bracket-round {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    flex: 1;
-  }
+/* Bracket styling */
+.bracket-container {
+  display: flex;
+  gap: 20px;
+  justify-content: space-between;
+  align-items: center;
+  overflow-x: auto;
+  padding: 10px 0;
+}
+.bracket-round {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+}
+
+/* Slot rows formatting */
+.lobby-slot-row {
+  transition: all 0.2s ease-in-out;
+  border: 3px solid var(--dark-accent) !important;
+  box-shadow: 4px 4px 0 var(--dark-accent);
+}
+.lobby-slot-row:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0 var(--dark-accent);
 }

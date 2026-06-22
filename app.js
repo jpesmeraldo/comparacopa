@@ -33,6 +33,22 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Atualizar resultados em tempo real silenciosamente ao inicializar
   updateRealTimeResults(true);
+
+  // Check for sala code in query params for deep linking
+  const urlParams = new URLSearchParams(window.location.search);
+  const sala = urlParams.get('sala');
+  if (sala) {
+    switchSection('arena');
+    const input = document.getElementById("arena-room-input");
+    if (input) {
+      input.value = sala.toUpperCase();
+      setTimeout(() => {
+        if (typeof arenaJoinRoomByCode === "function") {
+          arenaJoinRoomByCode();
+        }
+      }, 500);
+    }
+  }
 });
 
 // Alternar entre abas principais (Comparador vs Torneio)

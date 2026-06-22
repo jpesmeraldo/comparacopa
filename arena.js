@@ -1,6 +1,6 @@
 /* ==========================================================================
    COMPARACOPA - ARENA MULTIPLAYER LOGIC
-   Supports: Amistoso Local, Amistoso On-line, Torneio On-line (up to 8 teams)
+   Supports: Amistoso Local, Amistoso On-line, Torneio On-line
    ========================================================================== */
 
 let arenaMode = null; // 'local', 'online_friendly', 'online_tournament'
@@ -12,8 +12,8 @@ let arenaState = null;
 // Local Mode State
 let localState = {
   step: 1, // 1: P1 Escolha/Escalação, 2: P2 Escolha/Escalação, 3: Simulação
-  p1: { team: null, squad: null, bench: null, formation: "4-3-3", ready: false },
-  p2: { team: null, squad: null, bench: null, formation: "4-3-3", ready: false },
+  p1: { name: "Jogador A", team: null, squad: null, bench: null, formation: "4-3-3", ready: false, style: "bal" },
+  p2: { name: "Jogador B", team: null, squad: null, bench: null, formation: "4-3-3", ready: false, style: "bal" },
   scoreA: 0,
   scoreB: 0,
   injuryTime: 0,
@@ -23,6 +23,19 @@ let localState = {
 
 // Speed control
 let arenaAnimSpeed = 1.0;
+
+// Config state tracking
+let onlineFriendlyTime = 30;
+let onlineFriendlyPass = "";
+
+let tournamentDifficulty = "classic";
+let tournamentSize = 8;
+let tournamentPass = "";
+let tournamentDraft = "turns";
+let tournamentTime = 30;
+
+let localDifficulty = "classic";
+let localStyle = "bal"; // bal, def, off
 
 // Helper to safely get Team Name and Flag
 function getTeamName(teamId) {
@@ -44,10 +57,15 @@ function arenaSelectMode(mode) {
   
   if (mode === "local") {
     document.getElementById("arena-local-setup").style.display = "block";
+    
+    // Show difficulty container again in case it was hidden from previous run
+    const diffContainer = document.getElementById("local-difficulty-container");
+    if (diffContainer) diffContainer.style.display = "block";
+    
     localState = {
       step: 1,
-      p1: { team: null, squad: null, bench: null, formation: "4-3-3", ready: false },
-      p2: { team: null, squad: null, bench: null, formation: "4-3-3", ready: false },
+      p1: { name: "Jogador A", team: null, squad: null, bench: null, formation: "4-3-3", ready: false, style: "bal" },
+      p2: { name: "Jogador B", team: null, squad: null, bench: null, formation: "4-3-3", ready: false, style: "bal" },
       scoreA: 0,
       scoreB: 0,
       injuryTime: 0,
@@ -60,6 +78,27 @@ function arenaSelectMode(mode) {
   } else if (mode === "online_tournament") {
     arenaCreateRoom("online_tournament");
   }
+}
+
+function arenaShowConfig(mode) {
+  arenaMode = mode;
+  if (mode === "local") {
+    arenaSelectMode("local");
+  } else {
+    document.getElementById("arena-lobby-main").style.display = "none";
+    if (mode === "online_friendly") {
+      document.getElementById("arena-config-online-friendly").style.display = "block";
+    } else if (mode === "online_tournament") {
+      document.getElementById("arena-config-online-tournament").style.display = "block";
+    }
+  }
+}
+
+function arenaHideConfig() {
+  document.getElementById("arena-config-local").style.display = "none";
+  document.getElementById("arena-config-online-friendly").style.display = "none";
+  document.getElementById("arena-config-online-tournament").style.display = "none";
+  document.getElementById("arena-lobby-main").style.display = "block";
 }
 
 function arenaReturnToLobby() {
@@ -81,6 +120,7 @@ function arenaReturnToLobby() {
   
   // Show lobby
   document.getElementById("arena-lobby").style.display = "block";
+  arenaHideConfig();
 }
 
 /* ==========================================================================
@@ -107,9 +147,25 @@ function initLocalSetup() {
   }
   
   document.getElementById("local-setup-title").textContent = "ESCALAÇÃO JOGADOR 1";
+  document.getElementById("arena-local-player-name").value = "Jogador A";
   document.getElementById("arena-local-tactical-editor").style.display = "none";
   document.getElementById("btn-arena-local-next").textContent = "Confirmar Jogador 1";
+  setLocalDifficulty("classic");
+  setLocalStyle("bal");
   select.value = "";
+}
+
+function setLocalDifficulty(diff) {
+  localDifficulty = diff;
+  document.getElementById("btn-local-setup-diff-classic")?.classList.toggle("active", diff === "classic");
+  document.getElementById("btn-local-setup-diff-almanac")?.classList.toggle("active", diff === "almanac");
+}
+
+function setLocalStyle(style) {
+  localStyle = style;
+  document.getElementById("btn-local-setup-style-def")?.classList.toggle("active", style === "def");
+  document.getElementById("btn-local-setup-style-bal")?.classList.toggle("active", style === "bal");
+  document.getElementById("btn-local-setup-style-off")?.classList.toggle("active", style === "off");
 }
 
 function arenaLocalTeamChanged() {
@@ -189,7 +245,7 @@ function renderLocalSetupField() {
     node.style.borderColor = colors.secondary;
     node.style.transform = "translate(-50%, -50%) scale(0.7)";
     
-    const slotPos = coords[index] ? coords[index].pos : player.pos;
+    const slotPos = coords[index] ? coords[index].pos : (player.pos || player.origPos || 'MF');
     const effectiveOvr = getEffectivePlayerOvr(player, slotPos);
     
     node.innerHTML = `
@@ -273,13 +329,31 @@ function showLocalPlayerSubModal(player, activePlayer) {
 function arenaLocalNextStep() {
   if (localState.step === 1) {
     if (!localState.p1.team) return alert("Selecione o time do Jogador 1!");
+    
+    const pName = document.getElementById("arena-local-player-name")?.value.trim() || "Jogador A";
+    localState.p1.name = pName;
+    localState.p1.style = localStyle;
+    
     localState.step = 2;
     document.getElementById("local-setup-title").textContent = "ESCALAÇÃO JOGADOR 2";
     document.getElementById("arena-local-team-select").value = "";
+    document.getElementById("arena-local-player-name").value = "Jogador B";
+    
+    // Default style to Balanced for P2 setup
+    setLocalStyle("bal");
+    
+    // Hide difficulty container since it's already set by P1
+    const diffContainer = document.getElementById("local-difficulty-container");
+    if (diffContainer) diffContainer.style.display = "none";
+    
     document.getElementById("arena-local-tactical-editor").style.display = "none";
-    document.getElementById("btn-arena-local-next").textContent = "Iniciar Simulação";
+    document.getElementById("btn-arena-local-next").textContent = "Iniciar Simulação →";
   } else if (localState.step === 2) {
     if (!localState.p2.team) return alert("Selecione o time do Jogador 2!");
+    
+    const pName = document.getElementById("arena-local-player-name")?.value.trim() || "Jogador B";
+    localState.p2.name = pName;
+    localState.p2.style = localStyle;
     
     // Start local simulation
     document.getElementById("arena-local-setup").style.display = "none";
@@ -287,17 +361,34 @@ function arenaLocalNextStep() {
     
     // Mimic Firebase structures for local state
     arenaState = localState;
+    arenaState.difficulty = localDifficulty; // Save selected difficulty!
     arenaRoomId = "LOCAL";
-    arenaPlayerRole = "p1"; // We control both, default P1 acts as engine coordinator
+    arenaPlayerRole = "p1"; // Host role for local coordinator
     
-    document.getElementById("arena-current-room").textContent = "AMISTOSO LOCAL";
-    document.getElementById("arena-status").textContent = "Modo Local";
+    // Update Lobby displays
+    document.getElementById("arena-room-code-badge").textContent = "LOCAL";
+    document.getElementById("arena-lobby-title").textContent = "AMISTOSO LOCAL";
+    document.getElementById("arena-lobby-vacancy-status").textContent = "EM PARTIDA LOCAL";
+    document.getElementById("arena-lobby-meta-diff").textContent = localDifficulty === "classic" ? "CLÁSSICO" : "DE ALMANAQUE";
+    document.getElementById("arena-lobby-meta-time").textContent = "SEM LIMITE";
+    
+    document.getElementById("arena-slot-1-name").textContent = `${localState.p1.name.toUpperCase()} (P1)`;
+    document.getElementById("arena-slot-1-status").textContent = "PRONTO ✔";
+    document.getElementById("arena-slot-1-status").style.color = "green";
+    
+    document.getElementById("arena-slot-2-name").textContent = `${localState.p2.name.toUpperCase()} (P2)`;
+    const s2Status = document.getElementById("arena-slot-2-status");
+    if (s2Status) {
+      s2Status.textContent = "PRONTO ✔";
+      s2Status.style.color = "green";
+      s2Status.style.display = "block";
+    }
+    document.getElementById("arena-slot-2-status-area").style.display = "block";
+    document.getElementById("btn-play-vs-cpu").style.display = "none";
     
     // Prepare pitch headers
     document.getElementById("arena-score-a").textContent = "0";
     document.getElementById("arena-score-b").textContent = "0";
-    document.getElementById("arena-team-a-name").textContent = getTeamName(localState.p1.team);
-    document.getElementById("arena-team-b-name").textContent = getTeamName(localState.p2.team);
     
     triggerLocalSimulation();
   }
@@ -347,74 +438,230 @@ function arenaStartLocalPhase(phaseName) {
    ONLINE MODES (1x1 and Tournament)
    ========================================================================== */
 
-async function arenaCreateRoom(mode) {
+function setOnlineFriendlyTime(seconds) {
+  onlineFriendlyTime = seconds;
+  document.getElementById("btn-online-friendly-time-20")?.classList.toggle("active", seconds === 20);
+  document.getElementById("btn-online-friendly-time-30")?.classList.toggle("active", seconds === 30);
+  document.getElementById("btn-online-friendly-time-45")?.classList.toggle("active", seconds === 45);
+}
+
+async function submitOnlineFriendlyConfig() {
   if (!window.firebaseDB) {
-    alert("Firebase não configurado ou bloqueado no seu navegador.");
-    arenaReturnToLobby();
+    alert("Firebase não configurado ou bloqueado.");
     return;
   }
   
   const code = Math.random().toString(36).substring(2, 6).toUpperCase();
-  const { doc, setDoc } = window.firebaseAPI;
+  const password = document.getElementById("online-friendly-pass")?.value.trim() || "";
   
-  let roomData = {};
-  if (mode === "online_friendly") {
-    roomData = {
-      id: code,
-      mode: "friendly",
-      status: "waiting",
-      createdAt: new Date().toISOString(),
-      p1: { team: null, ready: false },
-      p2: { team: null, ready: false },
-      simulation: null
-    };
-    arenaPlayerRole = "p1";
-  } else if (mode === "online_tournament") {
-    roomData = {
-      id: code,
-      mode: "tournament",
-      status: "lobby",
-      createdAt: new Date().toISOString(),
-      host: "p1",
-      slots: [
-        { team: null, type: "human", name: "Host", ready: false, role: "p1" },
-        { team: null, type: "cpu", name: "CPU 1", ready: true },
-        { team: null, type: "cpu", name: "CPU 2", ready: true },
-        { team: null, type: "cpu", name: "CPU 3", ready: true },
-        { team: null, type: "cpu", name: "CPU 4", ready: true },
-        { team: null, type: "cpu", name: "CPU 5", ready: true },
-        { team: null, type: "cpu", name: "CPU 6", ready: true },
-        { team: null, type: "cpu", name: "CPU 7", ready: true }
-      ],
-      bracket: null,
-      activeMatchIdx: 0,
-      simulation: null
-    };
-    arenaPlayerRole = "p1";
-  }
+  const roomData = {
+    id: code,
+    mode: "friendly",
+    status: "waiting",
+    difficulty: "classic",
+    roundTime: onlineFriendlyTime,
+    password: password,
+    createdAt: new Date().toISOString(),
+    p1: { name: "Host (P1)", team: null, ready: false, style: "bal", formation: "4-3-3" },
+    p2: null,
+    simulation: null
+  };
   
   try {
-    const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout")), 8000));
-    await Promise.race([setDoc(doc(window.firebaseDB, "rooms", code), roomData), timeout]);
+    const { doc, setDoc } = window.firebaseAPI;
+    await setDoc(doc(window.firebaseDB, "rooms", code), roomData);
     
     arenaRoomId = code;
+    arenaPlayerRole = "p1";
+    arenaMode = "online_friendly";
     
-    if (mode === "online_friendly") {
-      document.getElementById("arena-lobby").style.display = "none";
-      document.getElementById("arena-active").style.display = "block";
-      document.getElementById("arena-current-room").textContent = code;
-      initArenaTeams();
-      listenToRoom(code);
-    } else {
-      document.getElementById("arena-lobby").style.display = "none";
-      document.getElementById("arena-tournament-lobby").style.display = "block";
-      document.getElementById("tournament-room-code").textContent = code;
-      listenToRoom(code);
-    }
+    document.getElementById("arena-lobby").style.display = "none";
+    document.getElementById("arena-active").style.display = "block";
+    
+    // Set initial values in sessional tactical pitch input fields
+    const nameInput = document.getElementById("arena-player-name-input");
+    if (nameInput) nameInput.value = "Host (P1)";
+    
+    initArenaTeams();
+    listenToRoom(code);
   } catch (err) {
-    console.error("Erro ao criar sala:", err);
-    alert("Erro ao conectar ao Firebase. Verifique sua conexão.");
-    arenaReturnToLobby();
+    console.error("Erro ao criar sala amistosa:", err);
+    alert("Erro ao criar sala. Verifique sua conexão.");
+  }
+}
+
+function setTournamentDifficulty(diff) {
+  tournamentDifficulty = diff;
+  document.getElementById("btn-tournament-diff-classic")?.classList.toggle("active", diff === "classic");
+  document.getElementById("btn-tournament-diff-almanac")?.classList.toggle("active", diff === "almanac");
+}
+
+function setTournamentSize(size) {
+  tournamentSize = size;
+  document.getElementById("btn-tournament-size-4")?.classList.toggle("active", size === 4);
+  document.getElementById("btn-tournament-size-8")?.classList.toggle("active", size === 8);
+  document.getElementById("btn-tournament-size-16")?.classList.toggle("active", size === 16);
+}
+
+function setTournamentDraft(draft) {
+  tournamentDraft = draft;
+  document.getElementById("btn-tournament-draft-turns")?.classList.toggle("active", draft === "turns");
+  document.getElementById("btn-tournament-draft-together")?.classList.toggle("active", draft === "together");
+}
+
+function setTournamentTime(time) {
+  tournamentTime = time;
+  document.getElementById("btn-tournament-time-20")?.classList.toggle("active", time === 20);
+  document.getElementById("btn-tournament-time-30")?.classList.toggle("active", time === 30);
+  document.getElementById("btn-tournament-time-45")?.classList.toggle("active", time === 45);
+}
+
+async function submitTournamentConfig() {
+  if (!window.firebaseDB) {
+    alert("Firebase não configurado ou bloqueado.");
+    return;
+  }
+  
+  const code = Math.random().toString(36).substring(2, 6).toUpperCase();
+  const password = document.getElementById("tournament-pass")?.value.trim() || "";
+  
+  const slots = [];
+  slots.push({ team: null, type: "human", name: "Host (P1)", ready: false, role: "p1" });
+  for (let i = 1; i < tournamentSize; i++) {
+    slots.push({ team: null, type: "cpu", name: `CPU ${i}`, ready: true });
+  }
+  
+  const roomData = {
+    id: code,
+    mode: "tournament",
+    status: "lobby",
+    difficulty: tournamentDifficulty,
+    roundTime: tournamentTime,
+    password: password,
+    draftType: tournamentDraft,
+    createdAt: new Date().toISOString(),
+    host: "p1",
+    slots: slots,
+    bracket: null,
+    activeMatchIdx: 0,
+    simulation: null
+  };
+  
+  try {
+    const { doc, setDoc } = window.firebaseAPI;
+    await setDoc(doc(window.firebaseDB, "rooms", code), roomData);
+    
+    arenaRoomId = code;
+    arenaPlayerRole = "p1";
+    arenaMode = "online_tournament";
+    
+    document.getElementById("arena-lobby").style.display = "none";
+    document.getElementById("arena-tournament-lobby").style.display = "block";
+    document.getElementById("tournament-room-code").textContent = code;
+    
+    listenToRoom(code);
+  } catch (err) {
+    console.error("Erro ao criar sala do torneio:", err);
+    alert("Erro ao criar sala. Verifique sua conexão.");
+  }
+}
+
+function chooseRandomCpuTeam() {
+  const teams = window.comparacopaData.teams;
+  if (!teams || teams.length === 0) return null;
+  const t = teams[Math.floor(Math.random() * teams.length)];
+  return t.id;
+}
+
+async function arenaPlayVsCpu() {
+  if (!arenaRoomId || !window.firebaseDB) return;
+  const cpuTeamId = chooseRandomCpuTeam();
+  if (!cpuTeamId) return alert("Erro ao escolher time para a CPU.");
+  
+  if (typeof ensureSquadAndStats === "function") {
+    ensureSquadAndStats(cpuTeamId);
+  }
+  
+  const squadData = window.comparacopaData.squads[cpuTeamId];
+  const cpuSquad = JSON.parse(JSON.stringify(squadData.players));
+  const cpuBench = JSON.parse(JSON.stringify(squadData.bench)).map((p, idx) => ({ ...p, no: p.no || (12 + idx) }));
+  const cpuFormation = squadData.formation || "4-3-3";
+  
+  const { doc, updateDoc } = window.firebaseAPI;
+  const roomRef = doc(window.firebaseDB, "rooms", arenaRoomId);
+  
+  await updateDoc(roomRef, {
+    p2: {
+      name: "CPU",
+      type: "cpu",
+      team: cpuTeamId,
+      squad: cpuSquad,
+      bench: cpuBench,
+      formation: cpuFormation,
+      style: "bal",
+      ready: true
+    },
+    status: "connected"
+  });
+}
+
+async function arenaLobbyPlayNow() {
+  if (!arenaRoomId || !window.firebaseDB) return;
+  
+  const { doc, updateDoc } = window.firebaseAPI;
+  const roomRef = doc(window.firebaseDB, "rooms", arenaRoomId);
+  
+  await updateDoc(roomRef, {
+    status: "playing",
+    state: "starting"
+  });
+  
+  triggerSimulation(arenaState);
+}
+
+function arenaCopyRoomLink() {
+  if (!arenaRoomId) return;
+  const url = `${window.location.origin}${window.location.pathname}?sala=${arenaRoomId}`;
+  
+  navigator.clipboard.writeText(url).then(() => {
+    alert(`Link da sala copiado! Envie para o seu adversário: ${url}`);
+  }).catch(err => {
+    console.error("Erro ao copiar link:", err);
+    alert(`Código da sala: ${arenaRoomId}`);
+  });
+}
+
+async function arenaUpdateMyName(name) {
+  if (!arenaState || !arenaRoomId) return;
+  const role = arenaPlayerRole;
+  
+  const { doc, updateDoc } = window.firebaseAPI;
+  const roomRef = doc(window.firebaseDB, "rooms", arenaRoomId);
+  const updateObj = {};
+  updateObj[`${role}.name`] = name;
+  await updateDoc(roomRef, updateObj);
+}
+
+async function arenaUpdateStyle(style) {
+  if (!arenaState || !arenaRoomId) return;
+  const role = arenaPlayerRole;
+  
+  document.getElementById("btn-arena-style-def")?.classList.toggle("active", style === "def");
+  document.getElementById("btn-arena-style-bal")?.classList.toggle("active", style === "bal");
+  document.getElementById("btn-arena-style-off")?.classList.toggle("active", style === "off");
+  
+  const { doc, updateDoc } = window.firebaseAPI;
+  const roomRef = doc(window.firebaseDB, "rooms", arenaRoomId);
+  const updateObj = {};
+  updateObj[`${role}.style`] = style;
+  await updateDoc(roomRef, updateObj);
+}
+
+async function arenaCreateRoom(mode) {
+  if (mode === "online_friendly") {
+    submitOnlineFriendlyConfig();
+  } else if (mode === "online_tournament") {
+    submitTournamentConfig();
   }
 }
 
@@ -444,18 +691,17 @@ async function arenaJoinRoomByCode() {
         return alert("Esta sala já está cheia ou em andamento.");
       }
       arenaPlayerRole = "p2";
-      await updateDoc(roomRef, { status: "connected" });
+      
+      await updateDoc(roomRef, {
+        status: "connected",
+        p2: { name: "Jogador B", team: null, ready: false, style: "bal", formation: "4-3-3" }
+      });
       
       document.getElementById("arena-lobby").style.display = "none";
       document.getElementById("arena-active").style.display = "block";
-      document.getElementById("arena-current-room").textContent = code;
       
-      // Adapt labels for P2
-      document.querySelector("#arena-p1-selects").innerHTML = `
-        <label class="neo-label">Selecione seu Time:</label>
-        <select id="arena-team1" class="neo-select" onchange="arenaUpdateTeamSelect(2)"></select>
-      `;
-      document.getElementById("btn-arena-ready-p1").setAttribute("onclick", "arenaToggleReady(2)");
+      const nameInput = document.getElementById("arena-player-name-input");
+      if (nameInput) nameInput.value = "Jogador B";
       
       initArenaTeams();
       listenToRoom(code);
@@ -523,12 +769,6 @@ function listenToRoom(code) {
     if (data.mode === "friendly") {
       updateArenaUI(data);
       
-      if (data.status === "connected" && data.p1.ready && data.p2.ready) {
-        if (arenaPlayerRole === "p1" && data.state !== "starting") {
-          triggerSimulation(data);
-        }
-      }
-      
       if (data.status === "playing" && data.p1.readyToResume && data.p2.readyToResume && arenaPlayerRole === "p1") {
         advanceOnlinePhase(data);
       }
@@ -553,31 +793,122 @@ function listenToRoom(code) {
 }
 
 function updateArenaUI(data) {
-  const statusEl = document.getElementById("arena-status");
-  statusEl.textContent = data.status === "waiting" ? "Aguardando P2..." : (data.status === "connected" ? "Escolhendo times" : "Simulando!");
+  const titleEl = document.getElementById("arena-lobby-title");
+  if (titleEl) {
+    titleEl.textContent = data.mode === "tournament" ? "MATA-MATA DE COPA" : "FINAL DE COPA";
+  }
   
-  const p2Container = document.getElementById("arena-p2-status");
-  if (data.status === "waiting") {
-    p2Container.innerHTML = "Aguardando conexão...";
-  } else {
-    const enemyData = arenaPlayerRole === "p1" ? data.p2 : data.p1;
-    if (enemyData.ready) {
-      p2Container.innerHTML = `<span style="color: #4CAF50; font-weight: bold;">✔ ADVERSÁRIO PRONTO</span><br><small>Time escolhido e escalado.</small>`;
-    } else if (enemyData.team) {
-      p2Container.innerHTML = `<span style="color: var(--dark-accent);">Adversário selecionou um time (${getTeamName(enemyData.team)}) e está escalando...</span>`;
+  const codeBadge = document.getElementById("arena-room-code-badge");
+  if (codeBadge) codeBadge.textContent = data.id;
+  
+  const diffEl = document.getElementById("arena-lobby-meta-diff");
+  if (diffEl) diffEl.textContent = (data.difficulty || "classic") === "classic" ? "CLÁSSICO" : "DE ALMANAQUE";
+  
+  const timeEl = document.getElementById("arena-lobby-meta-time");
+  if (timeEl) timeEl.textContent = `${data.roundTime || 30}S POR JOGADA`;
+  
+  // Vacancy status
+  const vacancyEl = document.getElementById("arena-lobby-vacancy-status");
+  const hasP2 = !!(data.p2 && (data.p2.team || data.p2.name || data.p2.type === "cpu"));
+  if (vacancyEl) {
+    vacancyEl.textContent = hasP2 ? "Inscrições - 0 vagas abertas" : "Inscrições - 1 vaga aberta";
+  }
+  
+  // Slots List
+  const s1Name = document.getElementById("arena-slot-1-name");
+  if (s1Name) {
+    s1Name.textContent = data.p1.name ? `${data.p1.name.toUpperCase()} [P1]` : "JOGADOR 1";
+    if (arenaPlayerRole === "p1") s1Name.textContent += " [VOCÊ]";
+  }
+  const s1Status = document.getElementById("arena-slot-1-status");
+  if (s1Status) {
+    if (data.p1.ready) {
+      s1Status.textContent = "PRONTO ✔";
+      s1Status.style.color = "green";
     } else {
-      p2Container.innerHTML = "Adversário está escolhendo o time...";
+      s1Status.textContent = data.p1.team ? "ESCALANDO TIME..." : "AGUARDANDO ESCALAÇÃO...";
+      s1Status.style.color = "var(--retro-red)";
     }
   }
-
-  const myData = arenaPlayerRole === "p1" ? data.p1 : data.p2;
-  const editorEl = document.getElementById("arena-tactical-editor");
   
-  if (data.status === "connected" && myData && myData.team && myData.squad) {
-    if (editorEl) editorEl.style.display = "block";
-    arenaRenderSetupField(myData);
+  const s2Name = document.getElementById("arena-slot-2-name");
+  const s2Status = document.getElementById("arena-slot-2-status");
+  const s2StatusArea = document.getElementById("arena-slot-2-status-area");
+  const playVsCpuBtn = document.getElementById("btn-play-vs-cpu");
+  
+  if (hasP2) {
+    if (playVsCpuBtn) playVsCpuBtn.style.display = "none";
+    if (s2Status) s2Status.style.display = "block";
+    
+    let p2DisplayName = data.p2.name || "JOGADOR 2";
+    if (data.p2.type === "cpu") p2DisplayName = "CPU";
+    if (s2Name) {
+      s2Name.textContent = `${p2DisplayName.toUpperCase()} [P2]`;
+      if (arenaPlayerRole === "p2") s2Name.textContent += " [VOCÊ]";
+      s2Name.style.color = "#000";
+    }
+    
+    if (s2Status) {
+      if (data.p2.ready) {
+        s2Status.textContent = "PRONTO ✔";
+        s2Status.style.color = "green";
+      } else {
+        s2Status.textContent = data.p2.team ? "ESCALANDO TIME..." : "AGUARDANDO ESCALAÇÃO...";
+        s2Status.style.color = "var(--retro-red)";
+      }
+    }
   } else {
-    if (editorEl) editorEl.style.display = "none";
+    if (s2Name) {
+      s2Name.textContent = "vaga aberta — chame um amigo";
+      s2Name.style.color = "#777";
+    }
+    if (s2Status) s2Status.style.display = "none";
+    if (playVsCpuBtn) {
+      playVsCpuBtn.style.display = (arenaPlayerRole === "p1") ? "inline-block" : "none";
+    }
+  }
+  
+  // Play Now Button State
+  const playNowBtn = document.getElementById("btn-lobby-play-now");
+  if (playNowBtn) {
+    const isHost = (arenaPlayerRole === "p1");
+    const canPlay = isHost && data.p1.ready && (data.p2 && (data.p2.ready || data.p2.type === "cpu"));
+    playNowBtn.disabled = !canPlay;
+  }
+  
+  // Render tactical panel
+  const configPanel = document.getElementById("arena-tactical-config-panel");
+  if (data.status === "waiting" || data.status === "connected") {
+    if (configPanel) configPanel.style.display = "block";
+    const myData = arenaPlayerRole === "p1" ? data.p1 : data.p2;
+    if (myData) {
+      const nameInput = document.getElementById("arena-player-name-input");
+      if (nameInput && document.activeElement !== nameInput) {
+        nameInput.value = myData.name || "";
+      }
+      
+      const confirmReadyBtn = document.getElementById("btn-arena-confirm-ready");
+      if (confirmReadyBtn) {
+        if (myData.ready) {
+          confirmReadyBtn.textContent = "CANCELAR PRONTO";
+          confirmReadyBtn.className = "neo-btn btn-red";
+        } else {
+          confirmReadyBtn.textContent = "CONFIRMAR PRONTO";
+          confirmReadyBtn.className = "neo-btn btn-green";
+        }
+      }
+      
+      if (myData.team && myData.squad) {
+        arenaRenderSetupField(myData);
+      }
+    }
+  } else {
+    if (configPanel) configPanel.style.display = "none";
+    // Hide slots card during active simulation
+    const lobbyCard = document.querySelector("#arena-active > .neo-card");
+    if (lobbyCard && data.status === "playing") {
+      lobbyCard.style.display = "none";
+    }
   }
 }
 
@@ -696,7 +1027,7 @@ function arenaRenderSetupField(myData) {
     node.style.borderColor = colors.secondary;
     node.style.transform = "translate(-50%, -50%) scale(0.7)";
     
-    const slotPos = coords[index] ? coords[index].pos : player.pos;
+    const slotPos = coords[index] ? coords[index].pos : (player.pos || player.origPos || 'MF');
     const effectiveOvr = getEffectivePlayerOvr(player, slotPos);
     
     node.innerHTML = `
@@ -1393,16 +1724,45 @@ function generateArenaPhase(startMin, endMin, stateData) {
   const formFactorsA = getArenaFormationFactors(formationA);
   const formFactorsB = getArenaFormationFactors(formationB);
 
-  const attackPowerA = (secA.att * 0.7 + secA.mid * 0.3) * formFactorsA.att;
-  const attackPowerB = (secB.att * 0.7 + secB.mid * 0.3) * formFactorsB.att;
-  const defensePowerA = secA.def * formFactorsA.def;
-  const defensePowerB = secB.def * formFactorsB.def;
+  let attackPowerA = (secA.att * 0.7 + secA.mid * 0.3) * formFactorsA.att;
+  let attackPowerB = (secB.att * 0.7 + secB.mid * 0.3) * formFactorsB.att;
+  let defensePowerA = secA.def * formFactorsA.def;
+  let defensePowerB = secB.def * formFactorsB.def;
+
+  // Apply style modifiers: Defensivo (+10% defense, -5% attack), Ofensivo (+10% attack, -5% defense)
+  const styleA = stateData.p1.style || "bal";
+  const styleB = stateData.p2.style || "bal";
+
+  if (styleA === "def") {
+    defensePowerA *= 1.10;
+    attackPowerA *= 0.95;
+  } else if (styleA === "off") {
+    attackPowerA *= 1.10;
+    defensePowerA *= 0.95;
+  }
+
+  if (styleB === "def") {
+    defensePowerB *= 1.10;
+    attackPowerB *= 0.95;
+  } else if (styleB === "off") {
+    attackPowerB *= 1.10;
+    defensePowerB *= 0.95;
+  }
 
   const totalPower = attackPowerA + attackPowerB;
   const posA = Math.round((attackPowerA / totalPower) * 100);
 
-  const chanceGoalA = 4.0 + (attackPowerA - defensePowerB) * 1.5;
-  const chanceGoalB = 4.0 + (attackPowerB - defensePowerA) * 1.5;
+  let chanceGoalA = 4.0 + (attackPowerA - defensePowerB) * 1.5;
+  let chanceGoalB = 4.0 + (attackPowerB - defensePowerA) * 1.5;
+
+  // Apply Difficulty mode: "classic" vs "almanac" (random variance)
+  const diff = stateData.difficulty || "classic";
+  if (diff === "almanac") {
+    const varianceA = 0.5 + Math.random(); // Variance factor [0.5, 1.5]
+    const varianceB = 0.5 + Math.random();
+    chanceGoalA *= varianceA;
+    chanceGoalB *= varianceB;
+  }
 
   const getOffensivePlayer = (squad) => {
     const off = squad.filter(p => p.pos !== "GK");
