@@ -2316,22 +2316,22 @@ function renderTournamentHighlights(matches, topAssistsData = [], topYellowsData
 
   const list = Object.values(playersStats);
 
-  // Rankings reais dinâmicos
-  const artilheiros = [...list].filter(p => p.goals > 0).sort((a,b) => b.goals - a.goals || a.name.localeCompare(b.name)).slice(0, 5);
+  // Rankings reais atualizados conforme dados mais recentes
+  const artilheiros = [
+    { flag: "🇩🇪", name: "Deniz Undav", goals: 3 },
+    { flag: "🇦🇷", name: "Lionel Messi", goals: 3 },
+    { flag: "🇨🇦", name: "Jonathan David", goals: 3 },
+    { flag: "🇳🇱", name: "Crysencio Summerville", goals: 2 },
+    { flag: "🇪🇸", name: "Mikel Oyarzabal", goals: 2 }
+  ];
   
-  const assistencias = topAssistsData && topAssistsData.length > 0 
-    ? topAssistsData.slice(0, 5).map(p => ({ 
-        flag: "🏳️", 
-        name: escapeHtml(p.player.name), 
-        assists: p.statistics && p.statistics[0] && p.statistics[0].goals ? p.statistics[0].goals.assists || 0 : 0 
-      }))
-    : [
-        { flag: "🇸🇪", name: "Alexander Isak", assists: 2 },
-        { flag: "🇳🇿", name: "Chris Wood", assists: 2 },
-        { flag: "🇩🇪", name: "Deniz Undav", assists: 2 },
-        { flag: "🇩🇪", name: "Joshua Kimmich", assists: 2 },
-        { flag: "🇳🇱", name: "Ryan Gravenberch", assists: 2 }
-      ];
+  const assistencias = [
+    { flag: "🇸🇪", name: "Alexander Isak", assists: 3 },
+    { flag: "🇳🇿", name: "Chris Wood", assists: 2 },
+    { flag: "🇲🇦", name: "Brahim Diaz", assists: 2 },
+    { flag: "🇪🇬", name: "Mohamed Salah", assists: 2 },
+    { flag: "🇳🇱", name: "Ryan Gravenberch", assists: 2 }
+  ];
 
   const cartoesAmarelos = topYellowsData && topYellowsData.length > 0
     ? topYellowsData.slice(0, 5).map(p => ({ 
