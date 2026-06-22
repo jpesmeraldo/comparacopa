@@ -4,9 +4,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Comparacopa</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="arena.css">
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Firebase initialization module -->
+  <script type="module" src="firebase-config.js"></script>
   <!-- html2canvas -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <!-- Google AdSense -->
@@ -29,6 +35,7 @@
     <div class="nav-section-btns">
       <button class="neo-btn btn-green active" id="btn-sec-compare" onclick="switchSection('compare')">Comparador & Simulador</button>
       <button class="neo-btn" id="btn-sec-tournament" onclick="switchSection('tournament')">Tabela & Mata-Mata</button>
+      <button class="neo-btn btn-red" id="btn-sec-arena" onclick="switchSection('arena')"><i data-lucide="swords" style="width: 14px; height: 14px; margin-right: 4px; vertical-align: middle;"></i>Modo Arena (Multiplayer)</button>
     </div>
 
     <!-- Bloco AdSense Topo (Banner 728x90) -->
@@ -277,6 +284,91 @@
 
       </div>
 
+    </section>
+
+    <!-- ==========================================
+         SEÇÃO ARENA MULTIPLAYER
+    =========================================== -->
+    <section id="section-arena" class="content-section" style="display: none;">
+      <div class="arena-lobby-container" id="arena-lobby">
+        <h2 style="font-family: 'Bebas Neue', cursive; font-size: 2rem; color: var(--dark-accent); text-align: center; margin-bottom: 20px;">Lobby da Arena</h2>
+        
+        <div style="display: flex; gap: 20px; justify-content: center; align-items: center; flex-wrap: wrap; margin-bottom: 20px;">
+          <!-- Criar Sala -->
+          <div class="highlight-box" style="flex: 1; min-width: 280px; text-align: center; padding: 20px;">
+            <h3 style="margin-bottom: 10px; font-family: 'Space Mono', monospace;">Criar Nova Sala</h3>
+            <p style="font-size: 0.85rem; color: #666; margin-bottom: 15px;">Crie um código único e envie para o seu desafiante.</p>
+            <button class="neo-btn btn-red" onclick="arenaCreateRoom()" style="font-size: 1.1rem; padding: 10px 20px; width: 100%;">
+              <i data-lucide="plus-circle" style="width: 18px; margin-right: 5px;"></i> Criar Sala
+            </button>
+          </div>
+          
+          <div style="font-family: 'Bebas Neue', cursive; font-size: 1.5rem; color: #999;">OU</div>
+
+          <!-- Entrar na Sala -->
+          <div class="highlight-box" style="flex: 1; min-width: 280px; text-align: center; padding: 20px;">
+            <h3 style="margin-bottom: 10px; font-family: 'Space Mono', monospace;">Entrar em Sala</h3>
+            <p style="font-size: 0.85rem; color: #666; margin-bottom: 15px;">Digite o código da sala criada pelo seu adversário.</p>
+            <input type="text" id="arena-room-input" class="neo-input" placeholder="Ex: A7B9" style="text-align: center; font-size: 1.2rem; text-transform: uppercase; margin-bottom: 10px; letter-spacing: 2px;">
+            <button class="neo-btn btn-green" onclick="arenaJoinRoom()" style="font-size: 1.1rem; padding: 10px 20px; width: 100%;">
+              <i data-lucide="log-in" style="width: 18px; margin-right: 5px;"></i> Entrar
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Área Ativa da Arena (Escondida até entrar na sala) -->
+      <div class="arena-active-container" id="arena-active" style="display: none;">
+        <div class="arena-header" style="background: var(--dark-accent); color: var(--off-white); padding: 10px; text-align: center; font-family: 'Space Mono', monospace; border: 3px solid #000; box-shadow: 4px 4px 0 #000; margin-bottom: 20px;">
+          Sala: <strong id="arena-current-room" style="color: var(--retro-yellow); font-size: 1.2rem; letter-spacing: 2px;">----</strong> | Status: <span id="arena-status" style="color: #4CAF50;">Aguardando...</span>
+        </div>
+
+        <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+          <!-- Coluna Jogador 1 (Você) -->
+          <div style="flex: 1; min-width: 300px; border: 2px solid var(--dark-accent); padding: 15px; background: #fff;">
+            <h3 style="text-align: center; border-bottom: 2px solid var(--dark-accent); padding-bottom: 5px; margin-bottom: 15px;">VOCÊ (P1)</h3>
+            <div id="arena-p1-selects">
+              <!-- Select de times (clone do app principal, mas adaptado) -->
+              <label class="neo-label">Selecione seu Time:</label>
+              <select id="arena-team1" class="neo-select" onchange="arenaUpdateTeamSelect(1)"></select>
+            </div>
+            <div id="arena-p1-ready-container" style="text-align: center; margin-top: 15px;">
+              <button class="neo-btn" id="btn-arena-ready-p1" onclick="arenaToggleReady(1)" style="width: 100%;">ESTOU PRONTO</button>
+            </div>
+          </div>
+
+          <!-- Coluna Jogador 2 (Adversário) -->
+          <div style="flex: 1; min-width: 300px; border: 2px dashed #999; padding: 15px; background: #fafafa;">
+            <h3 style="text-align: center; border-bottom: 2px dashed #999; padding-bottom: 5px; margin-bottom: 15px; color: #666;">ADVERSÁRIO (P2)</h3>
+            <div id="arena-p2-status" style="text-align: center; font-family: 'Space Mono', monospace; color: #666; margin-top: 20px;">
+              Aguardando conexão...
+            </div>
+          </div>
+        </div>
+
+        <!-- Campo Animado (Futebol de Botão) -->
+        <div id="arena-pitch-container" style="display: none; margin-top: 30px;">
+          <!-- Texto da narração sobreposto -->
+          <div id="arena-narrator" style="background: rgba(0,0,0,0.8); color: #0f0; font-family: 'Space Mono', monospace; padding: 15px; border: 3px solid #000; margin-bottom: -15px; position: relative; z-index: 10; font-size: 0.9rem; min-height: 60px; display: flex; align-items: center; justify-content: center; text-align: center;">
+            Preparando simulação...
+          </div>
+          
+          <div id="arena-pitch" class="arena-pitch">
+            <!-- Linhas do campo -->
+            <div class="pitch-lines"></div>
+            <div class="pitch-center-circle"></div>
+            <div class="pitch-center-line"></div>
+            <div class="pitch-penalty-area left"></div>
+            <div class="pitch-penalty-area right"></div>
+            
+            <!-- Botões / Peças -->
+            <div id="arena-piece-p1" class="arena-piece piece-p1">P1</div>
+            <div id="arena-piece-p2" class="arena-piece piece-p2">P2</div>
+            <div id="arena-ball" class="arena-ball">⚽</div>
+          </div>
+        </div>
+
+      </div>
     </section>
 
     <!-- SEÇÃO 2: TABELA DA COPA E BRACKETS -->
@@ -610,5 +702,6 @@
 
   <script src="data.js"></script>
   <script src="app.js"></script>
+  <script src="arena.js"></script>
 </body>
 </html>
