@@ -342,6 +342,23 @@
               <label class="neo-label">Selecione seu Time:</label>
               <select id="arena-team1" class="neo-select" onchange="arenaUpdateTeamSelect(1)"></select>
             </div>
+            
+            <!-- Pré-jogo: Editor Tático e Escalação -->
+            <div id="arena-tactical-editor" style="display: none; margin-top: 15px;">
+              <label class="neo-label">Esquema Tático:</label>
+              <div id="arena-formation-btn-grid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; margin-bottom: 15px;">
+                <!-- JS grid buttons -->
+              </div>
+              <label class="neo-label">Ajuste seu Time (clique no botão para substituir):</label>
+              <div id="arena-setup-pitch" class="tactical-pitch" style="position: relative; aspect-ratio: 4 / 3; margin-top: 5px; border: 3px solid #000; box-shadow: 4px 4px 0 #000; height: 260px; background-color: var(--field-green); overflow: hidden;">
+                <!-- Linhas do Campo -->
+                <div class="field-line-center" style="position: absolute; left: 50%; top: 0; bottom: 0; width: 2px; background: rgba(255,255,255,0.4);"></div>
+                <div class="field-circle" style="position: absolute; left: 50%; top: 50%; width: 60px; height: 60px; border: 2px solid rgba(255,255,255,0.4); border-radius: 50%; transform: translate(-50%, -50%);"></div>
+                <!-- Camada de Jogadores -->
+                <div id="arena-setup-player-nodes" style="position: absolute; inset: 0;"></div>
+              </div>
+            </div>
+
             <div id="arena-p1-ready-container" style="text-align: center; margin-top: 15px;">
               <button class="neo-btn" id="btn-arena-ready-p1" onclick="arenaToggleReady(1)" style="width: 100%;">ESTOU PRONTO</button>
             </div>

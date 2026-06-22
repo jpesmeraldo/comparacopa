@@ -3,6 +3,19 @@ let arenaPlayerRole = null; // 'p1' or 'p2'
 let arenaUnsubscribe = null;
 let arenaState = null;
 
+// Helpers to safely get Team Name and Flag
+function getTeamName(teamId) {
+  if (!teamId) return "Time";
+  const t = window.comparacopaData.teams.find(x => x.id === teamId);
+  return t ? t.name : teamId;
+}
+
+function getTeamFlag(teamId) {
+  if (!teamId) return "🏳️";
+  const t = window.comparacopaData.teams.find(x => x.id === teamId);
+  return t ? t.flag : "🏳️";
+}
+
 // Initialize Teams Dropdown for Arena
 function initArenaTeams() {
   const select = document.getElementById("arena-team1");
@@ -217,19 +230,52 @@ function updateArenaUI(data) {
       p2Container.innerHTML = "Adversário está escolhendo o time...";
     }
   }
+
+  // Desenha o campo tático na fase de escolha de times (setup/connected)
+  const myData = arenaPlayerRole === "p1" ? data.p1 : data.p2;
+  const editorEl = document.getElementById("arena-tactical-editor");
+  
+  if (data.status === "connected" && myData && myData.team && myData.squad) {
+    if (editorEl) editorEl.style.display = "block";
+    arenaRenderSetupField(myData);
+  } else {
+    if (editorEl) editorEl.style.display = "none";
+  }
 }
 
 async function arenaUpdateTeamSelect(playerNum) {
   const val = document.getElementById("arena-team1").value;
   if (!val) return;
   
+  // Garante a geração do elenco caso seja um time fora do G8
+  if (typeof ensureSquadAndStats === "function") {
+    ensureSquadAndStats(val);
+  }
+  
+  const squadData = window.comparacopaData.squads[val];
+  const initialSquad = JSON.parse(JSON.stringify(squadData.players));
+  const initialBench = JSON.parse(JSON.stringify(squadData.bench)).map((p, idx) => ({ ...p, no: p.no || (12 + idx) }));
+  const initialFormation = squadData.formation || "4-3-3";
+  
   const { doc, updateDoc } = window.firebaseAPI;
   const roomRef = doc(window.firebaseDB, "rooms", arenaRoomId);
   
   if (arenaPlayerRole === "p1") {
-    await updateDoc(roomRef, { "p1.team": val });
+    await updateDoc(roomRef, {
+      "p1.team": val,
+      "p1.squad": initialSquad,
+      "p1.bench": initialBench,
+      "p1.formation": initialFormation,
+      "p1.ready": false
+    });
   } else {
-    await updateDoc(roomRef, { "p2.team": val });
+    await updateDoc(roomRef, {
+      "p2.team": val,
+      "p2.squad": initialSquad,
+      "p2.bench": initialBench,
+      "p2.formation": initialFormation,
+      "p2.ready": false
+    });
   }
 }
 
@@ -248,6 +294,183 @@ async function arenaToggleReady(playerNum) {
   } else {
     await updateDoc(roomRef, { "p2.ready": true });
   }
+}
+
+// Renderiza o mini-campo tático do lobby de pré-jogo
+function arenaRenderSetupField(myData) {
+  const container = document.getElementById("arena-setup-player-nodes");
+  if (!container) return;
+  container.innerHTML = "";
+  
+  // Renderiza botões de formação
+  const grid = document.getElementById("arena-formation-btn-grid");
+  if (grid) {
+    grid.innerHTML = "";
+    const formations = ["4-3-3", "4-4-2", "4-2-3-1", "4-2-4", "3-5-2", "5-3-2", "4-5-1", "3-4-3"];
+    formations.forEach(f => {
+      const btn = document.createElement("button");
+      btn.className = `formation-btn ${f === myData.formation ? 'active' : ''}`;
+      btn.style.fontSize = "0.75rem";
+      btn.style.padding = "5px";
+      btn.textContent = f;
+      btn.onclick = () => arenaChangeFormation(f);
+      grid.appendChild(btn);
+    });
+  }
+  
+  const teamId = myData.team;
+  const colors = window.comparacopaData.teamColors[teamId] || { primary: "#222", secondary: "#fff" };
+  
+  // Coordenadas da formação atual
+  const coords = formationsCoordinates[myData.formation || "4-3-3"];
+  if (!coords) return;
+  
+  myData.squad.forEach((player, index) => {
+    // Garantir posições iniciais se não estiverem no Firestore
+    if (player.y === undefined && coords[index]) {
+      player.y = coords[index].y;
+      player.x = coords[index].x;
+    }
+    
+    const finalY = player.y !== undefined ? player.y : (coords[index] ? coords[index].y : 50);
+    const finalX = player.x !== undefined ? player.x : (coords[index] ? coords[index].x : 50);
+    
+    const node = document.createElement("div");
+    node.className = "player-node";
+    node.style.left = `${finalY}%`; 
+    node.style.top = `${finalX}%`;  
+    node.style.backgroundColor = colors.primary;
+    node.style.color = colors.text || "#ffffff";
+    node.style.borderColor = colors.secondary;
+    node.style.transform = "translate(-50%, -50%) scale(0.7)"; // mini layout
+    
+    const slotPos = coords[index] ? coords[index].pos : player.pos;
+    const effectiveOvr = getEffectivePlayerOvr(player, slotPos);
+    
+    node.innerHTML = `
+      <span class="player-number" style="font-size:0.8rem; line-height:1.2;">${player.no}</span>
+      <div class="player-ovr-tag" style="font-size: 0.55rem; padding: 1px 3px;">${effectiveOvr}</div>
+      <div class="player-name-tag" style="font-size: 0.55rem; padding: 2px 4px; bottom:-12px; width:70px;">${escapeHtml(player.name)}</div>
+    `;
+    
+    node.onclick = () => arenaShowPlayerModal(player, arenaPlayerRole);
+    container.appendChild(node);
+  });
+}
+
+// Altera o esquema tático da sua equipe no lobby
+async function arenaChangeFormation(newFormation) {
+  if (!arenaState || !arenaRoomId) return;
+  const role = arenaPlayerRole;
+  const myData = arenaState[role];
+  
+  const coords = formationsCoordinates[newFormation];
+  if (!coords) return;
+  
+  // Atualiza coordenadas dos titulares
+  const updatedSquad = myData.squad.map((player, index) => {
+    if (coords[index]) {
+      return {
+        ...player,
+        y: coords[index].y,
+        x: coords[index].x
+      };
+    }
+    return player;
+  });
+  
+  const { doc, updateDoc } = window.firebaseAPI;
+  const roomRef = doc(window.firebaseDB, "rooms", arenaRoomId);
+  
+  const updateObj = {};
+  updateObj[`${role}.formation`] = newFormation;
+  updateObj[`${role}.squad`] = updatedSquad;
+  
+  await updateDoc(roomRef, updateObj);
+}
+
+// Modal de substituição adaptado para a Arena Multiplayer
+async function arenaShowPlayerModal(player, role) {
+  const modal = document.getElementById("player-modal");
+  const teamId = role === "p1" ? arenaState.p1.team : arenaState.p2.team;
+  
+  // Resolve nome/bandeira
+  let flag = "🏳️";
+  if (window.comparacopaData.teamColors[teamId]) {
+    const t = window.comparacopaData.teams.find(x => x.id === teamId);
+    if (t) flag = t.flag;
+  }
+
+  document.getElementById("sticker-flag").textContent = flag;
+  document.getElementById("sticker-name").textContent = player.name;
+  document.getElementById("sticker-club").textContent = `${player.pos} | ${player.club || "Seleção"}`;
+  document.getElementById("sticker-ovr").textContent = player.ovr;
+  
+  document.getElementById("sticker-pac").textContent = player.pac || 50;
+  document.getElementById("sticker-sho").textContent = player.sho || 50;
+  document.getElementById("sticker-pas").textContent = player.pas || 50;
+  document.getElementById("sticker-dri").textContent = player.dri || 50;
+  document.getElementById("sticker-def").textContent = player.def || 50;
+  document.getElementById("sticker-phy").textContent = player.phy || 50;
+
+  // Carregar banco de reservas
+  const selectSub = document.getElementById("select-substitute");
+  selectSub.innerHTML = "";
+
+  const roleData = role === "p1" ? arenaState.p1 : arenaState.p2;
+  const bench = roleData.bench || [];
+
+  if (bench.length === 0) {
+    document.getElementById("substitute-section").style.display = "none";
+  } else {
+    document.getElementById("substitute-section").style.display = "block";
+    bench.forEach((benchPlayer, index) => {
+      const opt = document.createElement("option");
+      opt.value = index;
+      opt.textContent = `${benchPlayer.name} (${benchPlayer.pos} - OVR ${benchPlayer.ovr})`;
+      selectSub.appendChild(opt);
+    });
+  }
+
+  modal.style.display = "flex";
+
+  // Configurar ação de substituição
+  const btnSub = document.getElementById("btn-confirm-sub");
+  btnSub.onclick = async () => {
+    const selectedSubIndex = selectSub.value;
+    if (selectedSubIndex === "") return;
+
+    const benchPlayer = bench[selectedSubIndex];
+    const squadPlayers = JSON.parse(JSON.stringify(roleData.squad));
+    const benchPlayers = JSON.parse(JSON.stringify(roleData.bench));
+
+    const titularIndex = squadPlayers.findIndex(p => p.name === player.name);
+    if (titularIndex === -1) return;
+
+    // Guardar coordenadas do slot
+    const targetY = player.y;
+    const targetX = player.x;
+
+    delete player.y;
+    delete player.x;
+
+    benchPlayer.y = targetY;
+    benchPlayer.x = targetX;
+
+    // Trocar objetos
+    squadPlayers[titularIndex] = benchPlayer;
+    benchPlayers[selectedSubIndex] = player;
+
+    const { doc, updateDoc } = window.firebaseAPI;
+    const roomRef = doc(window.firebaseDB, "rooms", arenaRoomId);
+
+    const updateObj = {};
+    updateObj[`${role}.squad`] = squadPlayers;
+    updateObj[`${role}.bench`] = benchPlayers;
+
+    await updateDoc(roomRef, updateObj);
+    modal.style.display = "none";
+  };
 }
 
 async function arenaStartPhase(phaseName) {
@@ -301,8 +524,7 @@ async function triggerSimulation(data) {
       ensureSquadAndStats(data.p2.team);
     }
 
-    // Inicializa placares, status, e limites de subs/táticas no banco
-    await updateDoc(roomRef, {
+    const updates = {
       scoreA: 0,
       scoreB: 0,
       injuryTime: 0,
@@ -310,15 +532,28 @@ async function triggerSimulation(data) {
       "p1.tacsLeft": 2,
       "p2.subsLeft": 4,
       "p2.tacsLeft": 2,
-      "p1.squad": window.comparacopaData.squads[data.p1.team].players,
-      "p1.bench": window.comparacopaData.squads[data.p1.team].bench.map((p, idx) => ({ ...p, no: p.no || (12 + idx) })),
-      "p2.squad": window.comparacopaData.squads[data.p2.team].players,
-      "p2.bench": window.comparacopaData.squads[data.p2.team].bench.map((p, idx) => ({ ...p, no: p.no || (12 + idx) })),
       stats: {
         A: { shots: 0, corners: 0, fouls: 0, yellow: 0, red: 0, possession: 50 },
         B: { shots: 0, corners: 0, fouls: 0, yellow: 0, red: 0, possession: 50 }
       }
-    });
+    };
+    
+    // Fallback se não foram definidos no lobby de escolhas
+    if (!data.p1.squad) {
+      const sq1 = window.comparacopaData.squads[data.p1.team];
+      updates["p1.squad"] = sq1.players;
+      updates["p1.bench"] = sq1.bench.map((p, idx) => ({ ...p, no: p.no || (12 + idx) }));
+      updates["p1.formation"] = sq1.formation || "4-3-3";
+    }
+    if (!data.p2.squad) {
+      const sq2 = window.comparacopaData.squads[data.p2.team];
+      updates["p2.squad"] = sq2.players;
+      updates["p2.bench"] = sq2.bench.map((p, idx) => ({ ...p, no: p.no || (12 + idx) }));
+      updates["p2.formation"] = sq2.formation || "4-3-3";
+    }
+
+    // Inicializa placares, status, e limites de subs/táticas no banco
+    await updateDoc(roomRef, updates);
     setTimeout(() => arenaStartPhase("first_half_1"), 2000);
   }
 }
@@ -329,6 +564,9 @@ let isAnimating = false;
 
 function runAnimation(simData) {
   if (isAnimating) return; 
+  
+  // Renderiza as 22 peças estáticas nos seus esquemas táticos
+  arenaRenderPitch(arenaState);
   
   // Esconder a tela de pausa sempre que começar uma nova animação
   showArenaPausePanel(false);
@@ -511,8 +749,8 @@ function generateArenaPhase(startMin, endMin, stateData) {
   const formationA = stateData.p1.formation || window.comparacopaData.squads[teamA].formation || "4-3-3";
   const formationB = stateData.p2.formation || window.comparacopaData.squads[teamB].formation || "4-3-3";
   
-  const teamAName = window.comparacopaData.squads[teamA].name;
-  const teamBName = window.comparacopaData.squads[teamB].name;
+  const teamAName = getTeamName(teamA);
+  const teamBName = getTeamName(teamB);
 
   // Usa variáveis globais do app.js: formationsCoordinates, getEffectivePlayerOvr
   const coordsA = typeof formationsCoordinates !== "undefined" ? formationsCoordinates[formationA] : null;
@@ -620,8 +858,8 @@ function generateArenaPenalties(stateData) {
   
   const teamA = stateData.p1.team;
   const teamB = stateData.p2.team;
-  const teamAName = window.comparacopaData.squads[teamA].name;
-  const teamBName = window.comparacopaData.squads[teamB].name;
+  const teamAName = getTeamName(teamA);
+  const teamBName = getTeamName(teamB);
   
   // Power calc simplification just for probability
   const chanceA = 0.5 + (Math.random() * 0.2); 
@@ -765,8 +1003,8 @@ function showArenaPausePanel(isPause) {
     // Atualiza placares e nomes da partida
     document.getElementById("arena-score-a").textContent = arenaState.scoreA || 0;
     document.getElementById("arena-score-b").textContent = arenaState.scoreB || 0;
-    document.getElementById("arena-team-a-name").textContent = window.comparacopaData.squads[arenaState.p1.team].name;
-    document.getElementById("arena-team-b-name").textContent = window.comparacopaData.squads[arenaState.p2.team].name;
+    document.getElementById("arena-team-a-name").textContent = getTeamName(arenaState.p1.team);
+    document.getElementById("arena-team-b-name").textContent = getTeamName(arenaState.p2.team);
     
     if (!isAnimating) {
       arenaRenderPitch(arenaState);
@@ -931,14 +1169,16 @@ function arenaShowMatchSummary() {
   const scoreA = arenaState.scoreA || 0;
   const scoreB = arenaState.scoreB || 0;
   
-  const teamAData = window.comparacopaData.squads[arenaState.p1.team];
-  const teamBData = window.comparacopaData.squads[arenaState.p2.team];
+  const flagA = getTeamFlag(arenaState.p1.team);
+  const nameA = getTeamName(arenaState.p1.team);
+  const flagB = getTeamFlag(arenaState.p2.team);
+  const nameB = getTeamName(arenaState.p2.team);
   
-  document.getElementById("summary-flag-a").textContent = teamAData.flag || "🏳️";
-  document.getElementById("summary-team-a").textContent = teamAData.name;
+  document.getElementById("summary-flag-a").textContent = flagA;
+  document.getElementById("summary-team-a").textContent = nameA;
   
-  document.getElementById("summary-flag-b").textContent = teamBData.flag || "🏳️";
-  document.getElementById("summary-team-b").textContent = teamBData.name;
+  document.getElementById("summary-flag-b").textContent = flagB;
+  document.getElementById("summary-team-b").textContent = nameB;
   
   document.getElementById("summary-score").textContent = `${scoreA} - ${scoreB}`;
   
@@ -965,10 +1205,12 @@ function arenaDownloadSummary() {
 function arenaShareSummary() {
   const scoreA = arenaState.scoreA || 0;
   const scoreB = arenaState.scoreB || 0;
-  const teamAData = window.comparacopaData.squads[arenaState.p1.team];
-  const teamBData = window.comparacopaData.squads[arenaState.p2.team];
+  const flagA = getTeamFlag(arenaState.p1.team);
+  const nameA = getTeamName(arenaState.p1.team);
+  const flagB = getTeamFlag(arenaState.p2.team);
+  const nameB = getTeamName(arenaState.p2.team);
   
-  const text = `🏆 FIM DE JOGO na Comparacopa Arena!\n\n${teamAData.flag} ${teamAData.name} ${scoreA} x ${scoreB} ${teamBData.name} ${teamBData.flag}\n\nDesafie seus amigos e monte a sua seleção!`;
+  const text = `🏆 FIM DE JOGO na Comparacopa Arena!\n\n${flagA} ${nameA} ${scoreA} x ${scoreB} ${nameB} ${flagB}\n\nDesafie seus amigos e monte a sua seleção!`;
   
   if (navigator.share) {
     navigator.share({
