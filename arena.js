@@ -191,32 +191,57 @@ async function arenaToggleReady(playerNum) {
   }
 }
 
-async function triggerSimulation(data) {
-  // P1 uses current engine logic (from app.js context)
-  // For now, let's create a mockup simulation sequence
-  const simData = {
-    events: [
-      { time: "00'", text: "Apita o árbitro! Começa o jogo!", anim: "start" },
-      { time: "15'", text: "Toque de bola no meio campo...", anim: "mid" },
-      { time: "30'", text: "Chute perigoso!", anim: "shoot-p1" },
-      { time: "45'", text: "Fim do primeiro tempo. 0x0.", anim: "reset" },
-      { time: "60'", text: "Ataque rápido pelo lado direito...", anim: "mid" },
-      { time: "90'", text: "Fim de jogo! Empate! Vamos para a prorrogação!", anim: "reset" },
-      { time: "105'", text: "Times cansados na prorrogação...", anim: "mid" },
-      { time: "120'", text: "Fim da prorrogação! PÊNALTIS!", anim: "reset" },
-      { time: "PÊNALTIS", text: "P1 chuta e... GOOOOL!", anim: "shoot-p1" },
-      { time: "PÊNALTIS", text: "P2 chuta e... NA TRAVE! P1 VENCE!", anim: "shoot-p2" }
-    ],
-    winner: "p1"
+async function arenaStartPhase(phaseName) {
+  if (arenaPlayerRole !== "p1") return; // Only P1 computes the simulation
+  
+  const phases = {
+    "first_half_1": { start: 0, end: 22, nextPause: "break_hydration1" },
+    "first_half_2": { start: 22, end: 45, nextPause: "half_time" },
+    "second_half_1": { start: 45, end: 67, nextPause: "break_hydration2" },
+    "second_half_2": { start: 67, end: 90, nextPause: "full_time" },
+    "extra_time_1": { start: 90, end: 105, nextPause: "extra_time_break" },
+    "extra_time_2": { start: 105, end: 120, nextPause: "extra_full_time" }
   };
+  
+  const phaseDef = phases[phaseName];
+  if (!phaseDef) return;
 
+  const simData = generateArenaPhase(phaseDef.start, phaseDef.end, arenaState);
+  
+  const { doc, updateDoc } = window.firebaseAPI;
+  const roomRef = doc(window.firebaseDB, "rooms", arenaRoomId);
+  
+  await updateDoc(roomRef, { 
+    "state": phaseName,
+    "simulation": simData,
+    "p1.readyToResume": false,
+    "p2.readyToResume": false
+  });
+}
+
+async function triggerSimulation(data) {
+  // Chamado quando ambos estão ready pela primeira vez
   const { doc, updateDoc } = window.firebaseAPI;
   const roomRef = doc(window.firebaseDB, "rooms", arenaRoomId);
   
   await updateDoc(roomRef, { 
     status: "playing",
-    simulation: simData
+    state: "starting"
   });
+  
+  if (arenaPlayerRole === "p1") {
+    // Inicializa placares e status no banco
+    await updateDoc(roomRef, {
+      scoreA: 0,
+      scoreB: 0,
+      injuryTime: 0,
+      stats: {
+        A: { shots: 0, corners: 0, fouls: 0, yellow: 0, red: 0, possession: 50 },
+        B: { shots: 0, corners: 0, fouls: 0, yellow: 0, red: 0, possession: 50 }
+      }
+    });
+    setTimeout(() => arenaStartPhase("first_half_1"), 2000);
+  }
 }
 
 // Animation Engine
@@ -224,7 +249,7 @@ let currentEventIndex = 0;
 let isAnimating = false;
 
 function runAnimation(simData) {
-  if (isAnimating) return; // Prevent double trigger if already running
+  if (isAnimating) return; 
   
   document.getElementById("arena-pitch-container").style.display = "block";
   document.getElementById("arena-p1-ready-container").parentElement.style.display = "none";
@@ -236,17 +261,25 @@ function runAnimation(simData) {
   const ball = document.getElementById("arena-ball");
   
   isAnimating = true;
+  currentEventIndex = 0;
   
   const playNext = () => {
     if (currentEventIndex >= simData.events.length) {
-      narrator.innerHTML = `<strong>FIM DE JOGO! VENCEDOR: ${simData.winner.toUpperCase()}</strong>`;
+      isAnimating = false;
+      // Animação terminou, mostrar painel de pausa se o status permitir
+      if (arenaState.state && !arenaState.state.includes("half")) {
+        showArenaPausePanel(true);
+      }
       return;
     }
     
     const ev = simData.events[currentEventIndex];
     narrator.innerHTML = `<span style="color: var(--retro-yellow);">${ev.time}</span> - ${ev.text}`;
     
-    // Reset classes
+    // Atualizar placares na tela se houver alteração
+    if (ev.scoreA !== undefined) document.getElementById("sim-score-a").textContent = ev.scoreA;
+    if (ev.scoreB !== undefined) document.getElementById("sim-score-b").textContent = ev.scoreB;
+
     p1.className = "arena-piece piece-p1";
     p2.className = "arena-piece piece-p2";
     
@@ -261,21 +294,105 @@ function runAnimation(simData) {
     } else if (ev.anim === "shoot-p1") {
       p1.classList.add("bump-anim");
       p1.style.transform = "translate(-10px, 0)";
-      ball.style.transform = "translate(150px, -50px)"; // Chute para direita
+      ball.style.transform = "translate(150px, -50px)"; 
     } else if (ev.anim === "shoot-p2") {
       p2.classList.add("bump-anim");
       p2.style.transform = "translate(10px, 0)";
-      ball.style.transform = "translate(-150px, 50px)"; // Chute para esquerda
+      ball.style.transform = "translate(-150px, 50px)"; 
     }
     
     currentEventIndex++;
-    setTimeout(playNext, 3000); // 3 segundos por evento
+    // Base animation time: 2000ms / speed multiplier
+    const timeToWait = 2000 / arenaAnimSpeed;
+    setTimeout(playNext, timeToWait); 
   };
   
   playNext();
 }
 
-// === PAUSE AND INTERVENTIONS LOGIC ===
+// === ARENA SIMULATION ENGINE ===
+
+function getArenaSectorAverages(players, coords) {
+  const defense = [];
+  const midfield = [];
+  const attack = [];
+  players.forEach((p, idx) => {
+    const slotPos = coords && coords[idx] ? coords[idx].pos : p.pos;
+    const effOvr = getEffectivePlayerOvr ? getEffectivePlayerOvr(p, slotPos) : parseInt(p.ovr);
+    const playerWithEff = { ...p, effectiveOvr: effOvr };
+    if (slotPos === "GK" || slotPos === "DF") defense.push(playerWithEff);
+    else if (slotPos === "MF") midfield.push(playerWithEff);
+    else if (slotPos === "FW") attack.push(playerWithEff);
+  });
+  return {
+    def: defense.reduce((sum, p) => sum + p.effectiveOvr, 0) / (defense.length || 1),
+    mid: midfield.reduce((sum, p) => sum + p.effectiveOvr, 0) / (midfield.length || 1),
+    att: attack.reduce((sum, p) => sum + p.effectiveOvr, 0) / (attack.length || 1)
+  };
+}
+
+function getArenaFormationFactors(form) {
+  const factors = {
+    "4-2-4": { att: 1.25, def: 0.85 }, "3-4-3": { att: 1.20, def: 0.85 },
+    "4-3-3": { att: 1.00, def: 1.00 }, "4-2-3-1": { att: 1.00, def: 1.00 },
+    "4-4-2": { att: 0.95, def: 1.05 }, "3-5-2": { att: 1.05, def: 1.00 },
+    "5-3-2": { att: 0.80, def: 1.25 }, "4-5-1": { att: 0.80, def: 1.20 }
+  };
+  return factors[form] || { att: 1.0, def: 1.0 };
+}
+
+function generateArenaPhase(startMin, endMin, stateData) {
+  const events = [];
+  let min = startMin;
+  
+  let scoreA = stateData.scoreA || 0;
+  let scoreB = stateData.scoreB || 0;
+  
+  // To avoid breaking without full logic, let's use a simpler mockup that integrates with real teams
+  const teamA = stateData.p1.team;
+  const teamB = stateData.p2.team;
+  
+  const teamAName = window.comparacopaData.squads[teamA].name;
+  const teamBName = window.comparacopaData.squads[teamB].name;
+
+  if (min === 0) events.push({ time: "00'", text: "Apita o árbitro! Começa o jogo!", anim: "start" });
+  if (min === 46) events.push({ time: "46'", text: "Começa o segundo tempo!", anim: "start" });
+  if (min === 91) events.push({ time: "91'", text: "Bola rolando na prorrogação!", anim: "start" });
+
+  while(min < endMin) {
+    min += Math.floor(Math.random() * 5) + 3;
+    if (min >= endMin) min = endMin;
+    
+    // Simplification of real logic for stability
+    const r = Math.random() * 100;
+    if (r < 5) {
+      scoreA++;
+      events.push({ time: min + "'", text: `GOOOOL do ${teamAName}!`, anim: "shoot-p1", scoreA });
+    } else if (r < 10) {
+      scoreB++;
+      events.push({ time: min + "'", text: `GOOOOL do ${teamBName}!`, anim: "shoot-p2", scoreB });
+    } else {
+      events.push({ time: min + "'", text: "Disputa acirrada no meio campo...", anim: "mid" });
+    }
+  }
+  
+  if (endMin === 22) events.push({ time: "22'", text: "Pausa para hidratação autorizada.", anim: "reset" });
+  if (endMin === 45) events.push({ time: "45'", text: "Fim do primeiro tempo.", anim: "reset" });
+  if (endMin === 67) events.push({ time: "67'", text: "Pausa para hidratação na etapa final.", anim: "reset" });
+  if (endMin === 90) {
+    const totalAcre = stateData.injuryTime || 0;
+    if (totalAcre > 0) {
+      events.push({ time: `90'+${totalAcre}`, text: `O árbitro dá ${totalAcre} minutos de acréscimo!`, anim: "mid" });
+    }
+    events.push({ time: "FIM", text: "Fim do tempo regulamentar.", anim: "reset" });
+  }
+  
+  return {
+    events,
+    scoreA,
+    scoreB
+  };
+}
 
 let arenaPauseTimerInterval = null;
 
