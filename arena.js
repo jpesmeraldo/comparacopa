@@ -703,9 +703,9 @@ function arenaRenderPitch(data) {
     node.className = "arena-piece p2-piece";
     const slotY = coordsP2 && coordsP2[index] ? coordsP2[index].y : player.y;
     const slotX = coordsP2 && coordsP2[index] ? coordsP2[index].x : player.x;
-    // Inverte o lado para P2
+    // Inverte o lado para P2 (X e Y) para manter a formação espelhada corretamente
     node.style.left = `${100 - slotY}%`; 
-    node.style.top = `${slotX}%`;
+    node.style.top = `${100 - slotX}%`;
     node.style.backgroundColor = colorsP2.primary;
     node.style.color = colorsP2.text || "#ffffff";
     node.style.borderColor = colorsP2.secondary;

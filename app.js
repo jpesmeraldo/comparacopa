@@ -897,10 +897,13 @@ function renderTacticalField() {
       player.y = coords[index].y;
     }
 
+    const finalY = activeFieldTeam === "B" ? 100 - (player.y !== undefined ? player.y : 50) : (player.y !== undefined ? player.y : 50);
+    const finalX = activeFieldTeam === "B" ? 100 - (player.x !== undefined ? player.x : 50) : (player.x !== undefined ? player.x : 50);
+
     const node = document.createElement("div");
     node.className = "player-node";
-    node.style.left = `${player.y !== undefined ? player.y : 50}%`; 
-    node.style.top = `${player.x !== undefined ? player.x : 50}%`;  
+    node.style.left = `${finalY}%`; 
+    node.style.top = `${finalX}%`;  
     node.style.backgroundColor = colors.primary;
     node.style.color = colors.text || "#ffffff";
     node.style.borderColor = colors.secondary;
