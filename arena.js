@@ -127,14 +127,38 @@ function listenToRoom(code) {
     
     // Check if both are ready to simulate
     if (data.status === "connected" && data.p1.ready && data.p2.ready) {
-      if (arenaPlayerRole === "p1") {
+      if (arenaPlayerRole === "p1" && data.state !== "starting") {
         triggerSimulation(data);
       }
     }
     
+    // Avançar de fase quando ambos clicam em "Estou Pronto / Pular" na pausa
+    if (data.status === "playing" && data.p1.readyToResume && data.p2.readyToResume && arenaPlayerRole === "p1") {
+      const currentState = data.state;
+      const phases = {
+        "first_half_1": "first_half_2",
+        "first_half_2": "second_half_1",
+        "second_half_1": "second_half_2",
+        "second_half_2": "extra_time_1",
+        "extra_time_1": "extra_time_2",
+        "extra_time_2": "penalties"
+      };
+      
+      const nextPhase = phases[currentState];
+      if (nextPhase) {
+        // We will prevent loop by updating state immediately
+        arenaStartPhase(nextPhase);
+      }
+    }
+    
     // Se a simulação já estiver rolando
+    // Evita resetar se os states forem iguais e a animação já estiver ocorrendo.
     if (data.status === "playing" && data.simulation) {
-      runAnimation(data.simulation);
+      // Para não re-engatilhar a mesma fase
+      if (!window.currentArenaPhaseRun || window.currentArenaPhaseRun !== data.state) {
+        window.currentArenaPhaseRun = data.state;
+        runAnimation(data.simulation);
+      }
     }
   });
 }
@@ -250,6 +274,9 @@ let isAnimating = false;
 
 function runAnimation(simData) {
   if (isAnimating) return; 
+  
+  // Esconder a tela de pausa sempre que começar uma nova animação
+  showArenaPausePanel(false);
   
   document.getElementById("arena-pitch-container").style.display = "block";
   document.getElementById("arena-p1-ready-container").parentElement.style.display = "none";
