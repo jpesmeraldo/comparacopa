@@ -433,6 +433,48 @@
       </div>
     </div>
 
+    <!-- Modal de Resumo de Fim de Jogo Arena -->
+    <div id="arena-modal-summary" class="modal">
+      <div class="modal-content" style="max-width: 500px; text-align: center; padding: 20px;">
+        <span class="close" onclick="document.getElementById('arena-modal-summary').style.display='none'">&times;</span>
+        
+        <!-- Card que será salvo pelo html2canvas -->
+        <div id="arena-summary-card" style="background: var(--dark-accent); color: white; padding: 30px 20px; border-radius: 10px; border: 4px solid var(--retro-yellow); position: relative; margin-bottom: 20px;">
+          <h2 style="font-family: 'Bebas Neue', cursive; font-size: 2.5rem; color: var(--retro-yellow); margin-bottom: 5px;">FIM DE JOGO</h2>
+          <p style="font-family: 'Space Mono', monospace; font-size: 0.9rem; margin-bottom: 25px; color: #ccc;">Comparacopa Arena 2026</p>
+          
+          <div style="display: flex; justify-content: space-around; align-items: center; margin-bottom: 20px;">
+            <div style="flex: 1;">
+              <div id="summary-flag-a" style="font-size: 3rem; margin-bottom: 5px;"></div>
+              <div id="summary-team-a" style="font-family: 'Bebas Neue', cursive; font-size: 1.5rem;"></div>
+            </div>
+            
+            <div style="flex: 1;">
+              <span id="summary-score" style="font-family: 'Space Mono', monospace; font-size: 3.5rem; font-weight: bold; background: #111; padding: 10px 20px; border-radius: 8px; border: 2px solid #333;">0 - 0</span>
+            </div>
+            
+            <div style="flex: 1;">
+              <div id="summary-flag-b" style="font-size: 3rem; margin-bottom: 5px;"></div>
+              <div id="summary-team-b" style="font-family: 'Bebas Neue', cursive; font-size: 1.5rem;"></div>
+            </div>
+          </div>
+          
+          <div style="margin-top: 20px; border-top: 1px dashed #666; padding-top: 15px;">
+            <p style="font-family: 'Space Mono', monospace; font-size: 0.8rem; color: #aaa;">Desafie seus amigos! Crie sua sala e monte a sua seleção.</p>
+          </div>
+        </div>
+        
+        <div style="display: flex; gap: 15px; justify-content: center;">
+          <button class="neo-btn btn-blue" onclick="arenaDownloadSummary()">
+            <i data-lucide="download"></i> Salvar Imagem
+          </button>
+          <button class="neo-btn btn-green" onclick="arenaShareSummary()">
+            <i data-lucide="share-2"></i> Compartilhar
+          </button>
+        </div>
+      </div>
+    </div>
+
     <!-- SEÇÃO 2: TABELA DA COPA E BRACKETS -->
     <section id="section-tournament" class="content-section">
       

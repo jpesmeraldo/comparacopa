@@ -327,8 +327,10 @@ function runAnimation(simData) {
   const playNext = () => {
     if (currentEventIndex >= simData.events.length) {
       isAnimating = false;
-      // Animação terminou, mostrar painel de pausa se o status permitir
-      if (arenaState.state && !arenaState.state.includes("half")) {
+      // Animação terminou, mostrar painel de pausa ou resumo final
+      if (arenaState.state === "finished") {
+        arenaShowMatchSummary();
+      } else if (arenaState.state && !arenaState.state.includes("half")) {
         showArenaPausePanel(true);
       }
       return;
@@ -873,3 +875,66 @@ function arenaSetSpeed(mult) {
   if (mult === 2.0) document.getElementById("btn-speed-2").classList.add("btn-green");
 }
 
+
+// ==========================================
+// Match Summary & Sharing
+// ==========================================
+
+function arenaShowMatchSummary() {
+  const modal = document.getElementById("arena-modal-summary");
+  if (!modal || !arenaState) return;
+  
+  const scoreA = arenaState.scoreA || 0;
+  const scoreB = arenaState.scoreB || 0;
+  
+  const teamAData = window.comparacopaData.squads[arenaState.p1.team];
+  const teamBData = window.comparacopaData.squads[arenaState.p2.team];
+  
+  document.getElementById("summary-flag-a").textContent = teamAData.flag || "🏳️";
+  document.getElementById("summary-team-a").textContent = teamAData.name;
+  
+  document.getElementById("summary-flag-b").textContent = teamBData.flag || "🏳️";
+  document.getElementById("summary-team-b").textContent = teamBData.name;
+  
+  document.getElementById("summary-score").textContent = `${scoreA} - ${scoreB}`;
+  
+  modal.style.display = "flex";
+}
+
+function arenaDownloadSummary() {
+  const card = document.getElementById("arena-summary-card");
+  if (!card) return;
+  
+  // Ocultar ícones ou botões desnecessários antes de capturar se houver
+  
+  html2canvas(card, {
+    backgroundColor: "#111", // Fundo para a imagem renderizada
+    scale: 2
+  }).then(canvas => {
+    const link = document.createElement("a");
+    link.download = `Comparacopa_Arena_Resultado.png`;
+    link.href = canvas.toDataURL("image/png");
+    link.click();
+  });
+}
+
+function arenaShareSummary() {
+  const scoreA = arenaState.scoreA || 0;
+  const scoreB = arenaState.scoreB || 0;
+  const teamAData = window.comparacopaData.squads[arenaState.p1.team];
+  const teamBData = window.comparacopaData.squads[arenaState.p2.team];
+  
+  const text = `🏆 FIM DE JOGO na Comparacopa Arena!\n\n${teamAData.flag} ${teamAData.name} ${scoreA} x ${scoreB} ${teamBData.name} ${teamBData.flag}\n\nDesafie seus amigos e monte a sua seleção!`;
+  
+  if (navigator.share) {
+    navigator.share({
+      title: "Resultado Comparacopa Arena",
+      text: text
+    }).catch(console.error);
+  } else {
+    // Fallback: Copy to clipboard
+    navigator.clipboard.writeText(text).then(() => {
+      alert("Resultado copiado para a área de transferência! Compartilhe nas redes.");
+    });
+  }
+}

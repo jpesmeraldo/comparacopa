@@ -137,3 +137,37 @@
 .bump-anim {
   animation: piece-bump 0.3s ease;
 }
+
+/* =========================================
+   MOBILE RESPONSIVENESS
+   ========================================= */
+@media (max-width: 600px) {
+  .arena-pitch {
+    height: 60vw;
+    max-height: 400px;
+  }
+  .pitch-center-circle {
+    width: 60px;
+    height: 60px;
+  }
+  .pitch-penalty-area {
+    width: 60px;
+    height: 120px;
+  }
+  .arena-piece {
+    width: 25px;
+    height: 25px;
+    font-size: 0.8rem;
+    margin-top: -12.5px;
+    margin-left: -12.5px;
+    border-width: 2px;
+  }
+  .arena-ball {
+    width: 15px;
+    height: 15px;
+    font-size: 14px;
+    line-height: 15px;
+    margin-top: -7.5px;
+    margin-left: -7.5px;
+  }
+}
