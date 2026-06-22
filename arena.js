@@ -788,7 +788,7 @@ function listenToRoom(code) {
 function updateArenaUI(data) {
   const titleEl = document.getElementById("arena-lobby-title");
   if (titleEl) {
-    titleEl.textContent = data.mode === "tournament" ? "MATA-MATA DE COPA" : "FINAL DE COPA";
+    titleEl.textContent = data.mode === "tournament" ? "MATA-MATA DE COPA" : "AMISTOSO ON-LINE";
   }
   
   const codeBadge = document.getElementById("arena-room-code-badge");
