@@ -375,44 +375,110 @@ function generateArenaPhase(startMin, endMin, stateData) {
   let scoreA = stateData.scoreA || 0;
   let scoreB = stateData.scoreB || 0;
   
-  // To avoid breaking without full logic, let's use a simpler mockup that integrates with real teams
   const teamA = stateData.p1.team;
   const teamB = stateData.p2.team;
+  
+  const squadA = stateData.p1.squad || window.comparacopaData.squads[teamA].players;
+  const squadB = stateData.p2.squad || window.comparacopaData.squads[teamB].players;
+  const formationA = stateData.p1.formation || window.comparacopaData.squads[teamA].formation || "4-3-3";
+  const formationB = stateData.p2.formation || window.comparacopaData.squads[teamB].formation || "4-3-3";
   
   const teamAName = window.comparacopaData.squads[teamA].name;
   const teamBName = window.comparacopaData.squads[teamB].name;
 
-  if (min === 0) events.push({ time: "00'", text: "Apita o árbitro! Começa o jogo!", anim: "start" });
-  if (min === 46) events.push({ time: "46'", text: "Começa o segundo tempo!", anim: "start" });
-  if (min === 91) events.push({ time: "91'", text: "Bola rolando na prorrogação!", anim: "start" });
+  // Usa variáveis globais do app.js: formationsCoordinates, getEffectivePlayerOvr
+  const coordsA = typeof formationsCoordinates !== "undefined" ? formationsCoordinates[formationA] : null;
+  const coordsB = typeof formationsCoordinates !== "undefined" ? formationsCoordinates[formationB] : null;
+
+  const secA = getArenaSectorAverages(squadA, coordsA);
+  const secB = getArenaSectorAverages(squadB, coordsB);
+  const formFactorsA = getArenaFormationFactors(formationA);
+  const formFactorsB = getArenaFormationFactors(formationB);
+
+  const attackPowerA = (secA.att * 0.7 + secA.mid * 0.3) * formFactorsA.att;
+  const attackPowerB = (secB.att * 0.7 + secB.mid * 0.3) * formFactorsB.att;
+  const defensePowerA = secA.def * formFactorsA.def;
+  const defensePowerB = secB.def * formFactorsB.def;
+
+  // Para ter controle de posse nos logs
+  const totalPower = attackPowerA + attackPowerB;
+  const posA = Math.round((attackPowerA / totalPower) * 100);
+
+  const chanceGoalA = 4.0 + (attackPowerA - defensePowerB) * 1.5;
+  const chanceGoalB = 4.0 + (attackPowerB - defensePowerA) * 1.5;
+
+  const getOffensivePlayer = (squad) => {
+    const off = squad.filter(p => p.pos !== "GK");
+    return off.length > 0 ? off[Math.floor(Math.random() * off.length)].name : "Jogador";
+  };
+  const getDefensivePlayer = (squad) => {
+    const def = squad.filter(p => p.pos === "DF" || p.pos === "MF");
+    return def.length > 0 ? def[Math.floor(Math.random() * def.length)].name : "Defensor";
+  };
+
+  if (min === 0) events.push({ time: "00'", text: "Apita o árbitro! Começa o jogo na Arena!", anim: "start" });
+  if (min === 46) events.push({ time: "46'", text: "Começa o segundo tempo! A bola volta a rolar!", anim: "start" });
+  if (min === 91) events.push({ time: "91'", text: "Bola rolando na prorrogação! Haja coração!", anim: "start" });
+  if (min === 106) events.push({ time: "106'", text: "Últimos 15 minutos de prorrogação!", anim: "start" });
 
   while(min < endMin) {
     min += Math.floor(Math.random() * 5) + 3;
     if (min >= endMin) min = endMin;
     
-    // Simplification of real logic for stability
-    const r = Math.random() * 100;
-    if (r < 5) {
+    // Motor de Física e Probabilidade
+    const randomVal = Math.random() * 100;
+    
+    if (randomVal < chanceGoalA) {
       scoreA++;
-      events.push({ time: min + "'", text: `GOOOOL do ${teamAName}!`, anim: "shoot-p1", scoreA });
-    } else if (r < 10) {
+      const scorer = getOffensivePlayer(squadA);
+      events.push({ time: min + "'", text: `GOOOOOOOOL do ${teamAName}! ${scorer} estufa as redes! (${scoreA}-${scoreB})`, anim: "shoot-p1", scoreA, scoreB });
+    } else if (randomVal < chanceGoalA + chanceGoalB) {
       scoreB++;
-      events.push({ time: min + "'", text: `GOOOOL do ${teamBName}!`, anim: "shoot-p2", scoreB });
+      const scorer = getOffensivePlayer(squadB);
+      events.push({ time: min + "'", text: `GOOOOOOOOL do ${teamBName}! ${scorer} marca um golaço! (${scoreA}-${scoreB})`, anim: "shoot-p2", scoreA, scoreB });
+    } else if (randomVal < 35) {
+      const isTeamA = Math.random() > 0.5;
+      const oppGk = isTeamA ? squadB[0].name : squadA[0].name;
+      const shooter = isTeamA ? getOffensivePlayer(squadA) : getOffensivePlayer(squadB);
+      const team = isTeamA ? teamAName : teamBName;
+      events.push({ time: min + "'", text: `Quase gol do ${team}! ${shooter} chuta forte mas ${oppGk} faz defesa espetacular!`, anim: isTeamA ? "shoot-p1" : "shoot-p2" });
+    } else if (randomVal < 50) {
+      const isTeamA = Math.random() > 0.5;
+      const team = isTeamA ? teamAName : teamBName;
+      events.push({ time: min + "'", text: `Escanteio para o ${team}. A zaga adversária afasta o perigo.`, anim: "mid" });
+    } else if (randomVal < 70) {
+      const isTeamA = Math.random() > 0.5;
+      const actingTeam = isTeamA ? teamAName : teamBName;
+      const foulSquad = isTeamA ? squadA : squadB;
+      const foulPlayer = getDefensivePlayer(foulSquad);
+      const cardChance = Math.random();
+      if (cardChance < 0.20) {
+        events.push({ time: min + "'", text: `Falta dura de ${foulPlayer} (${actingTeam})! O árbitro mostra o cartão amarelo.`, anim: "reset" });
+      } else {
+        events.push({ time: min + "'", text: `Falta tática cometida por ${foulPlayer} (${actingTeam}) para matar o ataque.`, anim: "mid" });
+      }
     } else {
-      events.push({ time: min + "'", text: "Disputa acirrada no meio campo...", anim: "mid" });
+      const isTeamA = Math.random() > (posA / 100);
+      const team = isTeamA ? teamAName : teamBName;
+      events.push({ time: min + "'", text: `${team} valoriza a posse de bola e troca passes com calma no meio campo.`, anim: "mid" });
     }
   }
   
-  if (endMin === 22) events.push({ time: "22'", text: "Pausa para hidratação autorizada.", anim: "reset" });
+  // Tratamento dos fins de fase
+  if (endMin === 22) events.push({ time: "22'", text: "O juiz autoriza a parada técnica para hidratação.", anim: "reset" });
   if (endMin === 45) events.push({ time: "45'", text: "Fim do primeiro tempo.", anim: "reset" });
-  if (endMin === 67) events.push({ time: "67'", text: "Pausa para hidratação na etapa final.", anim: "reset" });
+  if (endMin === 67) events.push({ time: "67'", text: "Nova parada para hidratação no segundo tempo.", anim: "reset" });
+  
   if (endMin === 90) {
     const totalAcre = stateData.injuryTime || 0;
     if (totalAcre > 0) {
-      events.push({ time: `90'+${totalAcre}`, text: `O árbitro dá ${totalAcre} minutos de acréscimo!`, anim: "mid" });
+      events.push({ time: `90'`, text: `O árbitro dá +${totalAcre} minutos de acréscimo!`, anim: "mid" });
     }
     events.push({ time: "FIM", text: "Fim do tempo regulamentar.", anim: "reset" });
   }
+  
+  if (endMin === 105) events.push({ time: "105'", text: "Intervalo rápido da prorrogação.", anim: "reset" });
+  if (endMin === 120) events.push({ time: "120'", text: "Fim da prorrogação! Se o jogo estiver empatado, vamos para os PÊNALTIS!", anim: "reset" });
   
   return {
     events,
