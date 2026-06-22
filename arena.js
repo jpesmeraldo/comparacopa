@@ -274,3 +274,72 @@ function runAnimation(simData) {
   
   playNext();
 }
+
+// === PAUSE AND INTERVENTIONS LOGIC ===
+
+let arenaPauseTimerInterval = null;
+
+function startArenaPauseTimer(seconds) {
+  let timeLeft = seconds;
+  document.getElementById("arena-pause-timer").textContent = timeLeft;
+  
+  clearInterval(arenaPauseTimerInterval);
+  arenaPauseTimerInterval = setInterval(() => {
+    timeLeft--;
+    document.getElementById("arena-pause-timer").textContent = timeLeft;
+    if (timeLeft <= 0) {
+      clearInterval(arenaPauseTimerInterval);
+      // Auto confirm if time runs out
+      arenaConfirmReadyToResume();
+    }
+  }, 1000);
+}
+
+function showArenaPausePanel(isPause) {
+  if (isPause) {
+    document.getElementById("arena-pause-panel").style.display = "block";
+    document.getElementById("btn-arena-resume").disabled = false;
+    document.getElementById("btn-arena-resume").textContent = "Pular / Estou Pronto";
+    document.getElementById("arena-pause-waiting").style.display = "none";
+    startArenaPauseTimer(30);
+  } else {
+    document.getElementById("arena-pause-panel").style.display = "none";
+    clearInterval(arenaPauseTimerInterval);
+  }
+}
+
+function arenaOpenSubModal() {
+  // Populate select boxes with current team players
+  document.getElementById("arena-modal-sub").style.display = "block";
+}
+
+function arenaConfirmSub() {
+  // Save sub logic here
+  alert("Substituição computada! (mockup)");
+  document.getElementById("arena-modal-sub").style.display = "none";
+}
+
+function arenaOpenTacModal() {
+  document.getElementById("arena-modal-tac").style.display = "block";
+}
+
+function arenaConfirmTac() {
+  // Save tac logic here
+  alert("Tática alterada! (mockup)");
+  document.getElementById("arena-modal-tac").style.display = "none";
+}
+
+async function arenaConfirmReadyToResume() {
+  document.getElementById("btn-arena-resume").disabled = true;
+  document.getElementById("btn-arena-resume").textContent = "AGUARDANDO...";
+  document.getElementById("arena-pause-waiting").style.display = "block";
+  
+  const { doc, updateDoc } = window.firebaseAPI;
+  const roomRef = doc(window.firebaseDB, "rooms", arenaRoomId);
+  
+  if (arenaPlayerRole === "p1") {
+    await updateDoc(roomRef, { "p1.readyToResume": true });
+  } else {
+    await updateDoc(roomRef, { "p2.readyToResume": true });
+  }
+}

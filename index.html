@@ -369,7 +369,62 @@
         </div>
 
       </div>
+      
+      <!-- Painel de Ações da Pausa (Substituição e Tática) -->
+      <div id="arena-pause-panel" style="display: none; background: #222; border: 2px solid var(--retro-red); padding: 15px; margin-top: 20px; text-align: center; color: #fff;">
+        <h3 style="color: var(--retro-red); margin-bottom: 10px; font-family: 'Space Mono', monospace;">
+          TEMPO RESTANTE: <span id="arena-pause-timer">30</span>s
+        </h3>
+        <p style="font-size: 0.85rem; margin-bottom: 15px; color: #aaa;">
+          Substituições: <span id="arena-subs-left">4</span> restantes | Táticas: <span id="arena-tactics-left">2</span> restantes
+        </p>
+        <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+          <button class="neo-btn" id="btn-arena-sub" onclick="arenaOpenSubModal()" style="font-size: 0.9rem;">Fazer Substituição</button>
+          <button class="neo-btn" id="btn-arena-tac" onclick="arenaOpenTacModal()" style="font-size: 0.9rem;">Mudar Tática</button>
+          <button class="neo-btn btn-green" id="btn-arena-resume" onclick="arenaConfirmReadyToResume()" style="font-size: 0.9rem;">Pular / Estou Pronto</button>
+        </div>
+        <div id="arena-pause-waiting" style="display: none; margin-top: 15px; color: var(--retro-yellow); font-family: 'Space Mono', monospace;">
+          Aguardando o adversário...
+        </div>
+      </div>
+
     </section>
+
+    <!-- Modais de Arena (Substituição e Tática) -->
+    <!-- Modal Substituição Arena -->
+    <div id="arena-modal-sub" class="modal">
+      <div class="modal-content" style="max-width: 400px; text-align: center;">
+        <span class="close" onclick="document.getElementById('arena-modal-sub').style.display='none'">&times;</span>
+        <h2 style="margin-bottom: 20px; font-family: 'Bebas Neue', cursive; color: var(--dark-accent);">Substituição</h2>
+        
+        <label class="neo-label">Quem SAI?</label>
+        <select id="arena-sub-out" class="neo-select" style="margin-bottom: 15px;"></select>
+        
+        <label class="neo-label">Quem ENTRA?</label>
+        <select id="arena-sub-in" class="neo-select" style="margin-bottom: 20px;"></select>
+        
+        <button class="neo-btn btn-green" onclick="arenaConfirmSub()" style="width: 100%;">Confirmar Troca</button>
+      </div>
+    </div>
+
+    <!-- Modal Tática Arena -->
+    <div id="arena-modal-tac" class="modal">
+      <div class="modal-content" style="max-width: 400px; text-align: center;">
+        <span class="close" onclick="document.getElementById('arena-modal-tac').style.display='none'">&times;</span>
+        <h2 style="margin-bottom: 20px; font-family: 'Bebas Neue', cursive; color: var(--dark-accent);">Mudança Tática</h2>
+        
+        <label class="neo-label">Nova Formação</label>
+        <select id="arena-tac-select" class="neo-select" style="margin-bottom: 20px;">
+          <option value="4-3-3">4-3-3 Ofensivo</option>
+          <option value="4-4-2">4-4-2 Equilibrado</option>
+          <option value="3-5-2">3-5-2 Controle de Meio</option>
+          <option value="5-3-2">5-3-2 Retranca</option>
+          <option value="4-2-3-1">4-2-3-1 Moderno</option>
+        </select>
+        
+        <button class="neo-btn btn-green" onclick="arenaConfirmTac()" style="width: 100%;">Aplicar Tática</button>
+      </div>
+    </div>
 
     <!-- SEÇÃO 2: TABELA DA COPA E BRACKETS -->
     <section id="section-tournament" class="content-section">
