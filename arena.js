@@ -295,6 +295,12 @@ async function triggerSimulation(data) {
   });
   
   if (arenaPlayerRole === "p1") {
+    // Garante o carregamento/geração dos elencos caso sejam times fora do G8
+    if (typeof ensureSquadAndStats === "function") {
+      ensureSquadAndStats(data.p1.team);
+      ensureSquadAndStats(data.p2.team);
+    }
+
     // Inicializa placares, status, e limites de subs/táticas no banco
     await updateDoc(roomRef, {
       scoreA: 0,
@@ -896,36 +902,7 @@ async function arenaConfirmReadyToResume() {
   }
 }
 
-// === ARENA SIMULATION ENGINE ===
-
-function generateArenaPhase(startMin, endMin, isExtraTime, currentScoreA, currentScoreB) {
-  // Mockup for now to test the state machine.
-  // We will replace this with real math later.
-  const events = [];
-  let min = startMin;
-  
-  if (min === 0) events.push({ time: "00'", text: "Apita o árbitro! Começa o jogo na Arena!", anim: "start" });
-  if (min === 46) events.push({ time: "46'", text: "Começa o segundo tempo!", anim: "start" });
-  if (min === 91) events.push({ time: "91'", text: "Bola rolando na prorrogação!", anim: "start" });
-  if (min === 106) events.push({ time: "106'", text: "Últimos 15 minutos de prorrogação!", anim: "start" });
-
-  while(min < endMin) {
-    min += Math.floor(Math.random() * 5) + 3;
-    if (min >= endMin) min = endMin;
-    events.push({ time: min + "'", text: "Toque de bola estudado...", anim: "mid" });
-  }
-  
-  if (endMin === 22) events.push({ time: "22'", text: "Pausa para hidratação autorizada pelo juiz.", anim: "reset" });
-  if (endMin === 45) events.push({ time: "45'", text: "Fim do primeiro tempo.", anim: "reset" });
-  if (endMin === 67) events.push({ time: "67'", text: "Pausa para hidratação na etapa final.", anim: "reset" });
-  if (endMin === 90) events.push({ time: "90'", text: "Fim do tempo regulamentar.", anim: "reset" });
-  
-  return {
-    events,
-    scoreA: currentScoreA,
-    scoreB: currentScoreB
-  };
-}
+// A simulação agora utiliza unicamente o motor de física/probabilidade generateArenaPhase definido acima.
 
 
 // === SPEED CONTROLS ===
