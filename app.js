@@ -994,20 +994,22 @@ function showPlayerModal(player, teamId) {
     const titularIndex = squad.players.findIndex(p => p === player);
     if (titularIndex === -1) return;
 
-    // Guardar coordenadas e número do slot do campo
+    // Guardar coordenadas do slot do campo
     const targetX = player.x;
     const targetY = player.y;
-    const targetNo = player.no;
 
     // Limpar as coordenadas do jogador que vai para o banco
     delete player.x;
     delete player.y;
-    delete player.no;
 
-    // Atribuir coordenadas e número do slot ao jogador que entra no campo
+    // Atribuir coordenadas ao jogador que entra no campo
     benchPlayer.x = targetX;
     benchPlayer.y = targetY;
-    benchPlayer.no = targetNo;
+    
+    // Garantir que o jogador do banco tenha um número caso a base de dados não forneça
+    if (!benchPlayer.no) {
+      benchPlayer.no = 12 + parseInt(selectedSubIndex);
+    }
 
     // Realizar a troca de objetos nos arrays
     squad.players[titularIndex] = benchPlayer;

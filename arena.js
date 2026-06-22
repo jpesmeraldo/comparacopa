@@ -83,6 +83,9 @@ async function arenaJoinRoom() {
       return;
     }
     
+    // Atualiza campo visual
+    arenaRenderPitch(snap.data());
+    
     const data = snap.data();
     if (data.status !== "waiting") {
       alert("Esta sala já está em andamento ou fechada.");
@@ -285,9 +288,9 @@ async function triggerSimulation(data) {
       "p2.subsLeft": 4,
       "p2.tacsLeft": 2,
       "p1.squad": window.comparacopaData.squads[data.p1.team].players,
-      "p1.bench": window.comparacopaData.squads[data.p1.team].bench,
+      "p1.bench": window.comparacopaData.squads[data.p1.team].bench.map((p, idx) => ({ ...p, no: p.no || (12 + idx) })),
       "p2.squad": window.comparacopaData.squads[data.p2.team].players,
-      "p2.bench": window.comparacopaData.squads[data.p2.team].bench,
+      "p2.bench": window.comparacopaData.squads[data.p2.team].bench.map((p, idx) => ({ ...p, no: p.no || (12 + idx) })),
       stats: {
         A: { shots: 0, corners: 0, fouls: 0, yellow: 0, red: 0, possession: 50 },
         B: { shots: 0, corners: 0, fouls: 0, yellow: 0, red: 0, possession: 50 }
@@ -319,6 +322,8 @@ function runAnimation(simData) {
   isAnimating = true;
   currentEventIndex = 0;
   
+  const arenaSpeedMs = 2000 / arenaAnimSpeed;
+  
   const playNext = () => {
     if (currentEventIndex >= simData.events.length) {
       isAnimating = false;
@@ -330,37 +335,56 @@ function runAnimation(simData) {
     }
     
     const ev = simData.events[currentEventIndex];
-    narrator.innerHTML = `<span style="color: var(--retro-yellow);">${ev.time}</span> - ${ev.text}`;
+    if (!narrator) return;
+    narrator.textContent = ev.text;
     
     // Atualizar placares na tela se houver alteração
     if (ev.scoreA !== undefined) document.getElementById("sim-score-a").textContent = ev.scoreA;
     if (ev.scoreB !== undefined) document.getElementById("sim-score-b").textContent = ev.scoreB;
 
-    p1.className = "arena-piece piece-p1";
-    p2.className = "arena-piece piece-p2";
+    // CSS Anim for the event
+    const p1Pieces = document.querySelectorAll('.p1-piece');
+    const p2Pieces = document.querySelectorAll('.p2-piece');
     
-    if (ev.anim === "start" || ev.anim === "reset") {
-      p1.style.transform = "translate(-100px, 0)";
-      p2.style.transform = "translate(100px, 0)";
-      ball.style.transform = "translate(0, 0)";
-    } else if (ev.anim === "mid") {
-      p1.style.transform = "translate(-30px, -20px)";
-      p2.style.transform = "translate(30px, 20px)";
-      ball.style.transform = "translate(-10px, 0)";
+    p1Pieces.forEach(el => el.style.transform = "scale(1)");
+    p2Pieces.forEach(el => el.style.transform = "scale(1)");
+
+    if (ev.anim === "start") {
+      ball.style.left = "50%";
+      ball.style.top = "50%";
     } else if (ev.anim === "shoot-p1") {
-      p1.classList.add("bump-anim");
-      p1.style.transform = "translate(-10px, 0)";
-      ball.style.transform = "translate(150px, -50px)"; 
+      ball.style.left = "90%";
+      ball.style.top = "50%";
+      p1Pieces.forEach(el => {
+        el.style.transform = "scale(1.3)";
+        el.style.transition = "transform 0.2s";
+      });
     } else if (ev.anim === "shoot-p2") {
-      p2.classList.add("bump-anim");
-      p2.style.transform = "translate(10px, 0)";
-      ball.style.transform = "translate(-150px, 50px)"; 
+      ball.style.left = "10%";
+      ball.style.top = "50%";
+      p2Pieces.forEach(el => {
+        el.style.transform = "scale(1.3)";
+        el.style.transition = "transform 0.2s";
+      });
+    } else if (ev.anim === "mid") {
+      ball.style.left = (40 + Math.random() * 20) + "%";
+      ball.style.top = (30 + Math.random() * 40) + "%";
+      const randomP1 = p1Pieces[Math.floor(Math.random() * p1Pieces.length)];
+      const randomP2 = p2Pieces[Math.floor(Math.random() * p2Pieces.length)];
+      if(randomP1) randomP1.style.transform = "scale(1.2)";
+      if(randomP2) randomP2.style.transform = "scale(1.2)";
+    } else if (ev.anim === "reset") {
+      ball.style.left = "50%";
+      ball.style.top = "50%";
     }
+
+    setTimeout(() => {
+      p1Pieces.forEach(el => el.style.transform = "scale(1)");
+      p2Pieces.forEach(el => el.style.transform = "scale(1)");
+    }, arenaSpeedMs - 100);
     
     currentEventIndex++;
-    // Base animation time: 2000ms / speed multiplier
-    const timeToWait = 2000 / arenaAnimSpeed;
-    setTimeout(playNext, timeToWait); 
+    setTimeout(playNext, arenaSpeedMs); 
   };
   
   playNext();
@@ -589,6 +613,57 @@ function generateArenaPenalties(stateData) {
 
 let arenaPauseTimerInterval = null;
 
+function arenaRenderPitch(data) {
+  const container = document.getElementById("arena-pieces-layer");
+  if (!container) return;
+  container.innerHTML = "";
+  
+  if (!data.p1 || !data.p2 || !data.p1.squad || !data.p2.squad) return;
+  
+  // Coordenadas globais do app.js
+  const coordsP1 = typeof formationsCoordinates !== "undefined" ? formationsCoordinates[data.p1.formation || "4-3-3"] : null;
+  const coordsP2 = typeof formationsCoordinates !== "undefined" ? formationsCoordinates[data.p2.formation || "4-3-3"] : null;
+  
+  const colorsP1 = window.comparacopaData.teamColors[data.p1.team] || { primary: "#222", secondary: "#fff" };
+  const colorsP2 = window.comparacopaData.teamColors[data.p2.team] || { primary: "#222", secondary: "#fff" };
+  
+  // Renderizar time 1 (Esquerda)
+  data.p1.squad.forEach((player, index) => {
+    const node = document.createElement("div");
+    node.className = "arena-piece p1-piece";
+    // Na esquerda: y define X, x define Y (horizontal)
+    const slotY = coordsP1 && coordsP1[index] ? coordsP1[index].y : player.y;
+    const slotX = coordsP1 && coordsP1[index] ? coordsP1[index].x : player.x;
+    node.style.left = `${slotY}%`; 
+    node.style.top = `${slotX}%`;
+    node.style.backgroundColor = colorsP1.primary;
+    node.style.color = colorsP1.text || "#ffffff";
+    node.style.borderColor = colorsP1.secondary;
+    node.style.transform = "translate(-50%, -50%)"; // Centraliza o próprio botão no slot
+    node.innerHTML = `<span>${player.no}</span>`;
+    node.title = player.name;
+    container.appendChild(node);
+  });
+  
+  // Renderizar time 2 (Direita) - Invertido
+  data.p2.squad.forEach((player, index) => {
+    const node = document.createElement("div");
+    node.className = "arena-piece p2-piece";
+    const slotY = coordsP2 && coordsP2[index] ? coordsP2[index].y : player.y;
+    const slotX = coordsP2 && coordsP2[index] ? coordsP2[index].x : player.x;
+    // Inverte o lado para P2
+    node.style.left = `${100 - slotY}%`; 
+    node.style.top = `${slotX}%`;
+    node.style.backgroundColor = colorsP2.primary;
+    node.style.color = colorsP2.text || "#ffffff";
+    node.style.borderColor = colorsP2.secondary;
+    node.style.transform = "translate(-50%, -50%)"; // Centraliza o próprio botão no slot
+    node.innerHTML = `<span>${player.no}</span>`;
+    node.title = player.name;
+    container.appendChild(node);
+  });
+}
+
 function startArenaPauseTimer(seconds) {
   let timeLeft = seconds;
   document.getElementById("arena-pause-timer").textContent = timeLeft;
@@ -611,6 +686,17 @@ function showArenaPausePanel(isPause) {
     document.getElementById("btn-arena-resume").disabled = false;
     document.getElementById("btn-arena-resume").textContent = "Pular / Estou Pronto";
     document.getElementById("arena-pause-waiting").style.display = "none";
+    
+    // Atualiza placares e nomes da partida
+    document.getElementById("arena-score-a").textContent = arenaState.scoreA || 0;
+    document.getElementById("arena-score-b").textContent = arenaState.scoreB || 0;
+    document.getElementById("arena-team-a-name").textContent = window.comparacopaData.squads[arenaState.p1.team].name;
+    document.getElementById("arena-team-b-name").textContent = window.comparacopaData.squads[arenaState.p2.team].name;
+    
+    if (!isAnimating) {
+      arenaRenderPitch(arenaState);
+    }
+    
     startArenaPauseTimer(30);
   } else {
     document.getElementById("arena-pause-panel").style.display = "none";
