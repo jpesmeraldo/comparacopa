@@ -301,10 +301,7 @@ function showLocalPlayerSubModal(player) {
     if (selectedSubIndex === "") return;
 
     const benchPlayer = bench[selectedSubIndex];
-    const squadPlayers = JSON.parse(JSON.stringify(activePlayer.squad));
-    const benchPlayers = JSON.parse(JSON.stringify(activePlayer.bench));
-
-    const titularIndex = squadPlayers.findIndex(p => p.name === player.name);
+    const titularIndex = activePlayer.squad.findIndex(p => p.name === player.name);
     if (titularIndex === -1) return;
 
     const targetY = player.y;
@@ -316,11 +313,9 @@ function showLocalPlayerSubModal(player) {
     benchPlayer.y = targetY;
     benchPlayer.x = targetX;
 
-    squadPlayers[titularIndex] = benchPlayer;
-    benchPlayers[selectedSubIndex] = player;
-
-    activePlayer.squad = squadPlayers;
-    activePlayer.bench = benchPlayers;
+    // Direct reference swap in activePlayer
+    activePlayer.squad[titularIndex] = benchPlayer;
+    activePlayer.bench[selectedSubIndex] = player;
 
     modal.style.display = "none";
     renderLocalSetupField();
