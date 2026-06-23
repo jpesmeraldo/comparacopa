@@ -1800,7 +1800,8 @@ async function advanceOnlinePhase(data) {
     "second_half_1": "second_half_2",
     "second_half_2": "extra_time_1",
     "extra_time_1": "extra_time_2",
-    "extra_time_2": "penalties"
+    "extra_time_2": "penalties",
+    "penalties": "finished"
   };
   
   let nextPhase = phases[currentState];
@@ -1987,7 +1988,14 @@ function runAnimation(simData) {
           isGameFinished = true;
         }
       } else {
-        if (arenaState.state === "finished") {
+        const state = arenaState.state;
+        if (state === "finished") {
+          isGameFinished = true;
+        } else if (state === "second_half_2" && arenaState.scoreA !== arenaState.scoreB) {
+          isGameFinished = true;
+        } else if (state === "extra_time_2" && arenaState.scoreA !== arenaState.scoreB) {
+          isGameFinished = true;
+        } else if (state === "penalties") {
           isGameFinished = true;
         }
       }
@@ -1995,6 +2003,16 @@ function runAnimation(simData) {
       if (isGameFinished) {
         if (arenaRoomId === "LOCAL") {
           localState.state = "finished";
+        } else {
+          if (arenaPlayerRole === "p1" && arenaState.state !== "finished") {
+            const { doc, updateDoc } = window.firebaseAPI;
+            const roomRef = doc(window.firebaseDB, "rooms", arenaRoomId);
+            if (arenaState.mode === "friendly") {
+              updateDoc(roomRef, { state: "finished" });
+            } else if (arenaState.mode === "tournament") {
+              saveTournamentMatchResult(arenaState.scoreA, arenaState.scoreB);
+            }
+          }
         }
         arenaShowMatchSummary();
       } else {
@@ -2262,9 +2280,9 @@ function generateArenaPhase(startMin, endMin, stateData) {
   };
 
   if (min === 0) events.push({ time: "00'", text: "Apita o árbitro! Começa o jogo na Arena!", anim: "start" });
-  if (min === 46) events.push({ time: "46'", text: "Começa o segundo tempo! A bola volta a rolar!", anim: "start" });
-  if (min === 91) events.push({ time: "91'", text: "Bola rolando na prorrogação! Haja coração!", anim: "start" });
-  if (min === 106) events.push({ time: "106'", text: "Últimos 15 minutos de prorrogação!", anim: "start" });
+  if (min === 45) events.push({ time: "45'", text: "Começa o segundo tempo! A bola volta a rolar!", anim: "start" });
+  if (min === 90) events.push({ time: "90'", text: "Bola rolando na prorrogação! Haja coração!", anim: "start" });
+  if (min === 105) events.push({ time: "105'", text: "Últimos 15 minutos de prorrogação!", anim: "start" });
 
   while(min < endMin) {
     min += Math.floor(Math.random() * 3) + 1;
@@ -2321,7 +2339,13 @@ function generateArenaPhase(startMin, endMin, stateData) {
   }
   
   if (endMin === 105) events.push({ time: "105'", text: "Intervalo rápido da prorrogação.", anim: "reset" });
-  if (endMin === 120) events.push({ time: "120'", text: "Fim da prorrogação! Se o jogo estiver empatado, vamos para os PÊNALTIS!", anim: "reset" });
+  if (endMin === 120) {
+    if (scoreA === scoreB) {
+      events.push({ time: "120'", text: "Fim da prorrogação! Como o jogo continua empatado, vamos para a disputa de PÊNALTIS!", anim: "reset" });
+    } else {
+      events.push({ time: "120'", text: "Fim da prorrogação!", anim: "reset" });
+    }
+  }
   
   return {
     events,
