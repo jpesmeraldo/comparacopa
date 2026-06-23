@@ -3000,7 +3000,14 @@ function arenaShareSummary() {
   const flagB = getTeamFlag(arenaState.p2.team);
   const nameB = getTeamName(arenaState.p2.team);
   
-  const text = `🏆 FIM DE JOGO na Arena Comparacopa!\n\n${flagA} ${nameA} ${scoreA} x ${scoreB} ${nameB} ${flagB}\n\nDesafie seus amigos dentro do campo!\n👉 Acesse: https://www.comparacopa.com.br`;
+  let scoreText = `${scoreA} x ${scoreB}`;
+  if (arenaState.simulation && arenaState.simulation.penA !== undefined && arenaState.simulation.penB !== undefined) {
+    const penA = arenaState.simulation.penA;
+    const penB = arenaState.simulation.penB;
+    scoreText = `${scoreA} (${penA}) x (${penB}) ${scoreB}`;
+  }
+  
+  const text = `🏆 FIM DE JOGO na Arena Comparacopa!\n\n${flagA} ${nameA} ${scoreText} ${nameB} ${flagB}\n\nDesafie seus amigos dentro do campo!\n👉 Acesse: https://www.comparacopa.com.br`;
   
   if (navigator.share) {
     navigator.share({
