@@ -955,6 +955,18 @@ function listenToRoom(code) {
 }
 
 function updateArenaUI(data) {
+  if (data.status === "connected") {
+    // Hide active match container, pitch, and summary
+    const activeEl = document.getElementById("arena-active");
+    if (activeEl) activeEl.style.display = "none";
+    const pitchEl = document.getElementById("arena-pitch-container");
+    if (pitchEl) pitchEl.style.display = "none";
+    const pauseEl = document.getElementById("arena-pause-panel");
+    if (pauseEl) pauseEl.style.display = "none";
+    const modalSummary = document.getElementById("arena-modal-summary");
+    if (modalSummary) modalSummary.style.display = "none";
+  }
+
   const titleEl = document.getElementById("arena-lobby-title");
   if (titleEl) {
     titleEl.textContent = data.mode === "tournament" ? "MATA-MATA DE COPA" : "AMISTOSO ON-LINE";
@@ -1578,6 +1590,13 @@ function updateTournamentUI(data) {
   } else if (data.status === "bracket" || data.status === "match_playing" || data.status === "finished") {
     document.getElementById("arena-tournament-lobby").style.display = "none";
     document.getElementById("arena-tournament-bracket-screen").style.display = "block";
+    
+    if (data.status === "bracket") {
+      document.getElementById("arena-active").style.display = "none";
+      document.getElementById("arena-pitch-container").style.display = "none";
+      document.getElementById("arena-pause-panel").style.display = "none";
+      document.getElementById("arena-modal-summary").style.display = "none";
+    }
     
     // Render brackets
     renderBrackets(data.bracket);
@@ -2971,6 +2990,8 @@ async function arenaOnlineReplay() {
     scoreB: 0,
     injuryTime: 0,
     simulation: null,
+    firstConfirmTime: null,
+    firstConfirmRole: null,
     "p1.ready": true,
     "p1.readyToResume": false,
     "p2.ready": true,
@@ -2992,6 +3013,8 @@ async function arenaOnlineChangeTeams() {
     scoreB: 0,
     injuryTime: 0,
     simulation: null,
+    firstConfirmTime: null,
+    firstConfirmRole: null,
     "p1.ready": false,
     "p1.readyToResume": false,
     "p2.ready": false,
