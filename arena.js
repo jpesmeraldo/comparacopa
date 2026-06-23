@@ -23,6 +23,7 @@ let localState = {
 
 // Speed control
 let arenaAnimSpeed = 1.0;
+let arenaIsAnimating = false;
 let localActivePausePlayer = "p1";
 
 // Config state tracking
@@ -101,8 +102,8 @@ function arenaSelectMode(mode) {
     
     localState = {
       step: 1,
-      p1: { name: "Jogador A", team: null, squad: null, bench: null, formation: "4-3-3", ready: false, style: "bal" },
-      p2: { name: "Jogador B", team: null, squad: null, bench: null, formation: "4-3-3", ready: false, style: "bal" },
+      p1: { name: "Jogador A", team: null, squad: null, bench: null, formation: "4-3-3", ready: false, style: "bal", goals: [] },
+      p2: { name: "Jogador B", team: null, squad: null, bench: null, formation: "4-3-3", ready: false, style: "bal", goals: [] },
       scoreA: 0,
       scoreB: 0,
       injuryTime: 0,
@@ -146,6 +147,12 @@ function arenaReturnToLobby() {
   arenaRoomId = null;
   arenaPlayerRole = null;
   arenaMode = null;
+  
+  if (window.arenaAnimationTimeout) {
+    clearTimeout(window.arenaAnimationTimeout);
+    window.arenaAnimationTimeout = null;
+  }
+  arenaIsAnimating = false;
   
   // Hide all panels
   document.getElementById("arena-local-setup").style.display = "none";
@@ -517,6 +524,23 @@ function arenaStartLocalPhase(phaseName) {
   
   localState.scoreA = simData.scoreA !== undefined ? simData.scoreA : localState.scoreA;
   localState.scoreB = simData.scoreB !== undefined ? simData.scoreB : localState.scoreB;
+  
+  const p1Goals = localState.p1.goals || [];
+  const p2Goals = localState.p2.goals || [];
+  if (simData && simData.events) {
+    simData.events.forEach(ev => {
+      if (ev.goal) {
+        if (ev.goal.team === "A") {
+          p1Goals.push({ scorer: ev.goal.scorer, time: ev.goal.time });
+        } else {
+          p2Goals.push({ scorer: ev.goal.scorer, time: ev.goal.time });
+        }
+      }
+    });
+  }
+  localState.p1.goals = p1Goals;
+  localState.p2.goals = p2Goals;
+  
   localState.simulation = simData;
   
   runAnimation(simData);
@@ -921,6 +945,7 @@ function listenToRoom(code) {
     
     if (data.mode === "friendly") {
       updateArenaUI(data);
+      updateOnlineReplayButtonState(data);
       
       // Auto play when both players are ready in the lobby!
       if (data.status === "connected" && data.p1.ready && data.p2 && data.p2.ready && arenaPlayerRole === "p1") {
@@ -932,9 +957,11 @@ function listenToRoom(code) {
       }
       
       if (data.status === "playing" && data.simulation) {
-        if (!window.currentArenaPhaseRun || window.currentArenaPhaseRun !== data.state) {
-          window.currentArenaPhaseRun = data.state;
-          runAnimation(data.simulation);
+        if (!arenaIsAnimating) {
+          if (!window.currentArenaPhaseRun || window.currentArenaPhaseRun !== data.state) {
+            window.currentArenaPhaseRun = data.state;
+            runAnimation(data.simulation);
+          }
         }
       }
     } else if (data.mode === "tournament") {
@@ -945,9 +972,11 @@ function listenToRoom(code) {
       }
       
       if (data.status === "match_playing" && data.simulation) {
-        if (!window.currentArenaPhaseRun || window.currentArenaPhaseRun !== data.state) {
-          window.currentArenaPhaseRun = data.state;
-          runAnimation(data.simulation);
+        if (!arenaIsAnimating) {
+          if (!window.currentArenaPhaseRun || window.currentArenaPhaseRun !== data.state) {
+            window.currentArenaPhaseRun = data.state;
+            runAnimation(data.simulation);
+          }
         }
       }
     }
@@ -1816,8 +1845,8 @@ async function tournamentStartMatch(roundIdx, matchIdx) {
   await updateDoc(roomRef, {
     status: "match_playing",
     state: "starting",
-    p1: { team: match.teamA, squad: squadA, bench: benchA, formation: "4-3-3", ready: true, readyToResume: false, type: match.roleA ? "human" : "cpu" },
-    p2: { team: match.teamB, squad: squadB, bench: benchB, formation: "4-3-3", ready: true, readyToResume: false, type: match.roleB ? "human" : "cpu" },
+    p1: { team: match.teamA, squad: squadA, bench: benchA, formation: "4-3-3", ready: true, readyToResume: false, type: match.roleA ? "human" : "cpu", goals: [] },
+    p2: { team: match.teamB, squad: squadB, bench: benchB, formation: "4-3-3", ready: true, readyToResume: false, type: match.roleB ? "human" : "cpu", goals: [] },
     scoreA: 0,
     scoreB: 0,
     injuryTime: 0
@@ -1927,6 +1956,20 @@ async function arenaStartPhase(phaseName) {
     simData = generateArenaPhase(phaseDef.start, phaseDef.end, arenaState);
   }
   
+  const p1Goals = arenaState.p1.goals || [];
+  const p2Goals = arenaState.p2.goals || [];
+  if (simData && simData.events) {
+    simData.events.forEach(ev => {
+      if (ev.goal) {
+        if (ev.goal.team === "A") {
+          p1Goals.push({ scorer: ev.goal.scorer, time: ev.goal.time });
+        } else {
+          p2Goals.push({ scorer: ev.goal.scorer, time: ev.goal.time });
+        }
+      }
+    });
+  }
+
   const { doc, updateDoc } = window.firebaseAPI;
   const roomRef = doc(window.firebaseDB, "rooms", arenaRoomId);
   
@@ -1936,7 +1979,9 @@ async function arenaStartPhase(phaseName) {
     "scoreB": simData.scoreB !== undefined ? simData.scoreB : arenaState.scoreB,
     "simulation": simData,
     "p1.readyToResume": false,
-    "p2.readyToResume": false
+    "p2.readyToResume": false,
+    "p1.goals": p1Goals,
+    "p2.goals": p2Goals
   });
 }
 
@@ -1962,7 +2007,9 @@ async function triggerSimulation(data) {
       "p1.subsLeft": 4,
       "p1.tacsLeft": 2,
       "p2.subsLeft": 4,
-      "p2.tacsLeft": 2
+      "p2.tacsLeft": 2,
+      "p1.goals": [],
+      "p2.goals": []
     };
     
     if (!data.p1.squad) {
@@ -1986,6 +2033,11 @@ async function triggerSimulation(data) {
 // Visual updates during animation
 function runAnimation(simData) {
   if (!simData || !simData.events) return;
+  if (window.arenaAnimationTimeout) {
+    clearTimeout(window.arenaAnimationTimeout);
+    window.arenaAnimationTimeout = null;
+  }
+  arenaIsAnimating = true;
   
   // Update scoreboard header flags and names for online matches
   if (arenaState && arenaState.p1 && arenaState.p2) {
@@ -2063,8 +2115,10 @@ function runAnimation(simData) {
             }
           }
         }
+        arenaIsAnimating = false;
         arenaShowMatchSummary();
       } else {
+        arenaIsAnimating = false;
         showArenaPausePanel(true);
       }
       return;
@@ -2181,7 +2235,7 @@ function runAnimation(simData) {
     }
     
     currentEventIndex++;
-    setTimeout(playNext, 2000 / arenaAnimSpeed);
+    window.arenaAnimationTimeout = setTimeout(playNext, 2000 / arenaAnimSpeed);
   };
   
   playNext();
@@ -2668,8 +2722,53 @@ function showArenaPausePanel(isPause) {
     const tacB = document.getElementById("arena-team-b-tacs");
     if (tacB) tacB.textContent = arenaState.p2.tacsLeft;
     
-    if (!isAnimating) {
+    if (!arenaIsAnimating) {
       arenaRenderPitch(arenaState);
+    }
+    
+    // Show/Hide draw actions if it is a draw in friendly match at 90' or 120'
+    const drawActions = document.getElementById("arena-draw-actions");
+    const resumeBtn = document.getElementById("btn-arena-resume");
+    const subBtn = document.getElementById("btn-arena-sub");
+    const tacBtn = document.getElementById("btn-arena-tac");
+    
+    const isFriendly = (arenaRoomId === "LOCAL" || (arenaState && arenaState.mode === "friendly"));
+    const currentState = (arenaRoomId === "LOCAL") ? localState.state : (arenaState ? arenaState.state : "");
+    const scA = (arenaRoomId === "LOCAL") ? localState.scoreA : (arenaState ? arenaState.scoreA : 0);
+    const scB = (arenaRoomId === "LOCAL") ? localState.scoreB : (arenaState ? arenaState.scoreB : 0);
+    const isTied = (scA === scB);
+    const isDrawPoint = (currentState === "second_half_2" || currentState === "extra_time_2");
+    
+    if (drawActions && resumeBtn) {
+      if (isFriendly && isTied && isDrawPoint) {
+        resumeBtn.style.display = "none";
+        drawActions.style.display = "flex";
+        if (subBtn) subBtn.style.display = "none";
+        if (tacBtn) tacBtn.style.display = "none";
+        
+        const continueBtn = document.getElementById("btn-arena-continue-extra");
+        if (continueBtn) {
+          continueBtn.textContent = (currentState === "second_half_2") ? "Prorrogação (2x 15')" : "Cobrança de Pênaltis";
+        }
+        
+        if (arenaRoomId !== "LOCAL" && arenaPlayerRole !== "p1") {
+          document.getElementById("btn-arena-end-draw").disabled = true;
+          continueBtn.disabled = true;
+          const waitEl = document.getElementById("arena-pause-waiting");
+          if (waitEl) {
+            waitEl.style.display = "block";
+            waitEl.textContent = "Aguardando o Host decidir se a partida encerra em empate ou segue...";
+          }
+        } else {
+          document.getElementById("btn-arena-end-draw").disabled = false;
+          continueBtn.disabled = false;
+        }
+      } else {
+        resumeBtn.style.display = "inline-block";
+        drawActions.style.display = "none";
+        if (subBtn) subBtn.style.display = "inline-block";
+        if (tacBtn) tacBtn.style.display = "inline-block";
+      }
     }
     
     startArenaPauseTimer(60);
@@ -2955,6 +3054,15 @@ function arenaShowMatchSummary() {
       labelScore.style.fontSize = "2.2rem";
     }
   }
+
+  const scorersAEl = document.getElementById("summary-scorers-a");
+  const scorersBEl = document.getElementById("summary-scorers-b");
+  if (scorersAEl) {
+    scorersAEl.innerHTML = (arenaState.p1.goals || []).map(g => `<div>${g.scorer} (${g.time})</div>`).join("");
+  }
+  if (scorersBEl) {
+    scorersBEl.innerHTML = (arenaState.p2.goals || []).map(g => `<div>${g.scorer} (${g.time})</div>`).join("");
+  }
   
   modal.style.display = "flex";
   
@@ -2986,8 +3094,7 @@ function arenaShowMatchSummary() {
       
       const btnReplay = document.getElementById("btn-summary-replay");
       if (btnReplay) {
-        btnReplay.textContent = "Jogar de Novo";
-        btnReplay.onclick = arenaOnlineReplay;
+        updateOnlineReplayButtonState(arenaState);
       }
       
       const btnChange = document.getElementById("btn-summary-change-teams");
@@ -3004,7 +3111,7 @@ function arenaShowMatchSummary() {
   }
 }
 
-async function arenaOnlineReplay() {
+async function resetRoomForReplay() {
   if (!arenaRoomId || !window.firebaseDB) return;
   document.getElementById("arena-modal-summary").style.display = "none";
   
@@ -3024,10 +3131,15 @@ async function arenaOnlineReplay() {
     "p1.readyToResume": false,
     "p1.subsLeft": 4,
     "p1.tacsLeft": 2,
+    "p1.goals": [],
+    "p1.wantsReplay": false,
     "p2.ready": true,
     "p2.readyToResume": false,
     "p2.subsLeft": 4,
-    "p2.tacsLeft": 2
+    "p2.tacsLeft": 2,
+    "p2.goals": [],
+    "p2.wantsReplay": false,
+    replayInitiatedTime: null
   };
   
   if (arenaState.p1.team && window.comparacopaData && window.comparacopaData.squads[arenaState.p1.team]) {
@@ -3044,6 +3156,112 @@ async function arenaOnlineReplay() {
   }
   
   await updateDoc(roomRef, updates);
+}
+
+async function arenaRequestOnlineReplay() {
+  if (!arenaRoomId || !window.firebaseDB) return;
+  
+  const { doc, updateDoc } = window.firebaseAPI;
+  const roomRef = doc(window.firebaseDB, "rooms", arenaRoomId);
+  
+  // Auto-Bypass for CPU: If P2 is CPU, click immediately starts the game
+  if (arenaState.p2 && arenaState.p2.type === "cpu") {
+    await resetRoomForReplay();
+    return;
+  }
+  
+  const updates = {};
+  updates[`${arenaPlayerRole}.wantsReplay`] = true;
+  
+  // If timer is not active or has expired, start a new 30s timer
+  let startTimer = false;
+  if (!arenaState.replayInitiatedTime) {
+    startTimer = true;
+  } else {
+    const elapsed = Math.floor((Date.now() - new Date(arenaState.replayInitiatedTime).getTime()) / 1000);
+    if (elapsed >= 30) {
+      startTimer = true;
+    }
+  }
+  
+  if (startTimer) {
+    updates.replayInitiatedTime = new Date().toISOString();
+  }
+  
+  await updateDoc(roomRef, updates);
+}
+
+function updateOnlineReplayButtonState(data) {
+  if (data.mode !== "friendly" || arenaRoomId === "LOCAL" || data.state !== "finished") {
+    if (window.arenaReplayInterval) {
+      clearInterval(window.arenaReplayInterval);
+      window.arenaReplayInterval = null;
+    }
+    return;
+  }
+  
+  const btnReplay = document.getElementById("btn-summary-replay");
+  if (!btnReplay) return;
+  
+  if (window.arenaReplayInterval) {
+    clearInterval(window.arenaReplayInterval);
+    window.arenaReplayInterval = null;
+  }
+  
+  const myData = arenaPlayerRole === "p1" ? data.p1 : data.p2;
+  
+  // Check if both players accepted
+  if (data.p1 && data.p1.wantsReplay && data.p2 && data.p2.wantsReplay) {
+    btnReplay.textContent = "Iniciando...";
+    btnReplay.disabled = true;
+    if (arenaPlayerRole === "p1") {
+      resetRoomForReplay();
+    }
+    return;
+  }
+  
+  if (data.replayInitiatedTime) {
+    const updateButtonText = () => {
+      const elapsed = Math.floor((Date.now() - new Date(data.replayInitiatedTime).getTime()) / 1000);
+      const timeLeft = Math.max(0, 30 - elapsed);
+      
+      if (timeLeft <= 0) {
+        clearInterval(window.arenaReplayInterval);
+        window.arenaReplayInterval = null;
+        
+        btnReplay.textContent = "Jogar de Novo";
+        btnReplay.disabled = false;
+        btnReplay.onclick = arenaRequestOnlineReplay;
+        
+        // Host resets Firestore states upon expiration
+        if (arenaPlayerRole === "p1") {
+          const { doc, updateDoc } = window.firebaseAPI;
+          const roomRef = doc(window.firebaseDB, "rooms", arenaRoomId);
+          updateDoc(roomRef, {
+            "p1.wantsReplay": false,
+            "p2.wantsReplay": false,
+            replayInitiatedTime: null
+          });
+        }
+      } else {
+        if (myData && myData.wantsReplay) {
+          btnReplay.textContent = `Aguardando Adversário (${timeLeft}s)`;
+          btnReplay.disabled = true;
+        } else {
+          btnReplay.textContent = `Aceitar Jogar de Novo (${timeLeft}s)`;
+          btnReplay.disabled = false;
+          btnReplay.onclick = arenaRequestOnlineReplay;
+        }
+      }
+    };
+    
+    updateButtonText();
+    window.arenaReplayInterval = setInterval(updateButtonText, 1000);
+  } else {
+    btnReplay.textContent = "Jogar de Novo";
+    btnReplay.disabled = false;
+    btnReplay.onclick = arenaRequestOnlineReplay;
+  }
 }
 
 async function arenaOnlineChangeTeams() {
@@ -3123,6 +3341,8 @@ function arenaLocalReplay() {
   localState.status = "playing";
   localState.state = "starting";
   
+  localState.p1.goals = [];
+  localState.p2.goals = [];
   localState.p1.subsLeft = 4;
   localState.p1.tacsLeft = 2;
   localState.p2.subsLeft = 4;
@@ -3149,4 +3369,37 @@ function arenaLocalChangeTeams() {
   document.getElementById("arena-modal-summary").style.display = "none";
   document.getElementById("arena-active").style.display = "none";
   arenaSelectMode("local");
+}
+
+async function arenaDeclareDraw() {
+  if (arenaRoomId === "LOCAL") {
+    localState.state = "finished";
+    showArenaPausePanel(false);
+    arenaShowMatchSummary();
+  } else {
+    if (arenaPlayerRole !== "p1") return;
+    const { doc, updateDoc } = window.firebaseAPI;
+    const roomRef = doc(window.firebaseDB, "rooms", arenaRoomId);
+    showArenaPausePanel(false);
+    await updateDoc(roomRef, { state: "finished" });
+  }
+}
+
+async function arenaContinueWithDraw() {
+  const currentState = (arenaRoomId === "LOCAL") ? localState.state : arenaState.state;
+  const phases = {
+    "second_half_2": "extra_time_1",
+    "extra_time_2": "penalties"
+  };
+  const nextPhase = phases[currentState];
+  if (!nextPhase) return;
+  
+  if (arenaRoomId === "LOCAL") {
+    showArenaPausePanel(false);
+    arenaStartLocalPhase(nextPhase);
+  } else {
+    if (arenaPlayerRole !== "p1") return;
+    showArenaPausePanel(false);
+    arenaStartPhase(nextPhase);
+  }
 }

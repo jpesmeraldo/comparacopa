@@ -719,6 +719,10 @@
           <button class="neo-btn" id="btn-arena-tac" onclick="arenaOpenTacModal()" style="font-size: 0.9rem;">Mudar Tática</button>
           <button class="neo-btn btn-green" id="btn-arena-resume" onclick="arenaConfirmReadyToResume()" style="font-size: 0.9rem;">Pular / Estou Pronto</button>
         </div>
+        <div id="arena-draw-actions" style="display: none; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 10px; width: 100%;">
+          <button class="neo-btn btn-blue" id="btn-arena-end-draw" onclick="arenaDeclareDraw()" style="font-size: 0.9rem;">Encerrar como Empate</button>
+          <button class="neo-btn btn-yellow" id="btn-arena-continue-extra" onclick="arenaContinueWithDraw()" style="font-size: 0.9rem;"></button>
+        </div>
         <div id="arena-pause-waiting" style="display: none; margin-top: 15px; color: var(--retro-yellow); font-family: 'Space Mono', monospace;">
           Aguardando o adversário...
         </div>
@@ -776,6 +780,7 @@
             <div style="flex: 1; min-width: 0; text-align: center;">
               <div id="summary-flag-a" style="font-size: 2.2rem; margin-bottom: 5px;"></div>
               <div id="summary-team-a" style="font-family: 'Bebas Neue', cursive; font-size: 1.2rem; line-height: 1.2; overflow-wrap: break-word;"></div>
+              <div id="summary-scorers-a" style="font-family: 'Space Mono', monospace; font-size: 0.7rem; color: #ccc; margin-top: 8px; text-align: center; line-height: 1.2;"></div>
             </div>
             
             <div style="flex: 0 0 auto; text-align: center;">
@@ -785,6 +790,7 @@
             <div style="flex: 1; min-width: 0; text-align: center;">
               <div id="summary-flag-b" style="font-size: 2.2rem; margin-bottom: 5px;"></div>
               <div id="summary-team-b" style="font-family: 'Bebas Neue', cursive; font-size: 1.2rem; line-height: 1.2; overflow-wrap: break-word;"></div>
+              <div id="summary-scorers-b" style="font-family: 'Space Mono', monospace; font-size: 0.7rem; color: #ccc; margin-top: 8px; text-align: center; line-height: 1.2;"></div>
             </div>
           </div>
           
@@ -1061,11 +1067,13 @@
         <div style="flex: 1; text-align: right;">
           <span style="font-size: 1.8rem; font-weight: 900;" id="sum-flag-a">🇧🇷</span>
           <div style="font-size: 0.85rem; font-weight: 800; text-transform: uppercase;" id="sum-name-a">Brasil</div>
+          <div id="sum-scorers-a" style="font-family: 'Space Mono', monospace; font-size: 0.7rem; color: #555; text-align: right; margin-top: 4px; line-height: 1.2;"></div>
         </div>
         <div style="font-size: 2.2rem; font-weight: 900; font-family: 'Space Mono', monospace;" id="sum-score">2 - 1</div>
         <div style="flex: 1; text-align: left;">
           <span style="font-size: 1.8rem; font-weight: 900;" id="sum-flag-b">🇫🇷</span>
           <div style="font-size: 0.85rem; font-weight: 800; text-transform: uppercase;" id="sum-name-b">França</div>
+          <div id="sum-scorers-b" style="font-family: 'Space Mono', monospace; font-size: 0.7rem; color: #555; text-align: left; margin-top: 4px; line-height: 1.2;"></div>
         </div>
       </div>
 

@@ -2082,6 +2082,15 @@ function showSummaryModal(scoreA, scoreB, stats) {
     document.getElementById("sum-score").innerHTML = `<span>${scoreA} - ${scoreB}</span>`;
   }
 
+  const scorersAEl = document.getElementById("sum-scorers-a");
+  const scorersBEl = document.getElementById("sum-scorers-b");
+  if (scorersAEl) {
+    scorersAEl.innerHTML = (stats.A.goals || []).map(g => `<div>${g.scorer} (${g.minute}')</div>`).join("");
+  }
+  if (scorersBEl) {
+    scorersBEl.innerHTML = (stats.B.goals || []).map(g => `<div>${g.scorer} (${g.minute}')</div>`).join("");
+  }
+
   document.getElementById("sum-poss-a").textContent = `${stats.A.possession}%`;
   document.getElementById("sum-poss-b").textContent = `${stats.B.possession}%`;
   document.getElementById("sum-shots-a").textContent = stats.A.shots;

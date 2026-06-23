@@ -62,7 +62,8 @@ window.comparacopaData = {
     GER: { primary: "#111111", secondary: "#d90000", accent: "#ffcc00", text: "#ffffff" },
     POR: { primary: "#da121a", secondary: "#046a38", accent: "#f4c430", text: "#ffffff" },
     URU: { primary: "#5bc2e7", secondary: "#ffffff", accent: "#f6b426", text: "#111111" },
-    SEN: { primary: "#00853f", secondary: "#fdef42", accent: "#e31b23", text: "#ffffff" }
+    SEN: { primary: "#00853f", secondary: "#fdef42", accent: "#e31b23", text: "#ffffff" },
+    CAN: { primary: "#ffffff", secondary: "#ff1493", accent: "#ff007f", text: "#111111" }
   },
   getTeamColors: function(teamId) {
     if (this.teamColors && this.teamColors[teamId]) {
