@@ -2739,9 +2739,9 @@ function showArenaPausePanel(isPause) {
     
     const isFriendly = (arenaRoomId === "LOCAL" || (arenaState && arenaState.mode === "friendly"));
     const currentState = (arenaRoomId === "LOCAL") ? localState.state : (arenaState ? arenaState.state : "");
-    const scA = (arenaRoomId === "LOCAL") ? localState.scoreA : (arenaState ? arenaState.scoreA : 0);
-    const scB = (arenaRoomId === "LOCAL") ? localState.scoreB : (arenaState ? arenaState.scoreB : 0);
-    const isTied = (scA === scB);
+    const scoreValA = (arenaRoomId === "LOCAL") ? localState.scoreA : (arenaState ? arenaState.scoreA : 0);
+    const scoreValB = (arenaRoomId === "LOCAL") ? localState.scoreB : (arenaState ? arenaState.scoreB : 0);
+    const isTied = (scoreValA === scoreValB);
     const isDrawPoint = (currentState === "second_half_2" || currentState === "extra_time_2");
     
     if (drawActions && resumeBtn) {
