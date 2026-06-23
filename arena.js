@@ -2039,21 +2039,23 @@ function runAnimation(simData) {
   }
   arenaIsAnimating = true;
   
-  // Update scoreboard header flags and names for online matches
-  if (arenaState && arenaState.p1 && arenaState.p2) {
+  const activeState = (arenaRoomId === "LOCAL") ? localState : arenaState;
+  
+  // Update scoreboard header flags and names for matches
+  if (activeState && activeState.p1 && activeState.p2) {
     const flagAEl = document.getElementById("arena-flag-a");
-    if (flagAEl) flagAEl.textContent = getTeamFlag(arenaState.p1.team);
+    if (flagAEl) flagAEl.textContent = getTeamFlag(activeState.p1.team);
     const nameAEl = document.getElementById("arena-name-a");
-    if (nameAEl) nameAEl.textContent = getTeamName(arenaState.p1.team).substring(0, 3).toUpperCase();
+    if (nameAEl) nameAEl.textContent = getTeamName(activeState.p1.team).substring(0, 3).toUpperCase();
 
     const flagBEl = document.getElementById("arena-flag-b");
-    if (flagBEl) flagBEl.textContent = getTeamFlag(arenaState.p2.team);
+    if (flagBEl) flagBEl.textContent = getTeamFlag(activeState.p2.team);
     const nameBEl = document.getElementById("arena-name-b");
-    if (nameBEl) nameBEl.textContent = getTeamName(arenaState.p2.team).substring(0, 3).toUpperCase();
+    if (nameBEl) nameBEl.textContent = getTeamName(activeState.p2.team).substring(0, 3).toUpperCase();
   }
   
   // Clear scorers lists at the start of a match
-  if (simData.events.length > 0 && (simData.events[0].time === "00'" || arenaState.state === "starting")) {
+  if (simData.events.length > 0 && (simData.events[0].time === "00'" || (activeState && activeState.state === "starting"))) {
     const scorersA = document.getElementById("arena-scorers-a");
     const scorersB = document.getElementById("arena-scorers-b");
     if (scorersA) scorersA.innerHTML = "";
@@ -2061,7 +2063,7 @@ function runAnimation(simData) {
   }
 
   // Render static pitch nodes
-  arenaRenderPitch(arenaState);
+  arenaRenderPitch(activeState);
   showArenaPausePanel(false);
   
   document.getElementById("arena-pitch-container").style.display = "block";
@@ -2175,7 +2177,7 @@ function runAnimation(simData) {
     };
 
     let targetCoords = null;
-    const isPenalties = (arenaState && (arenaState.state === "penalties" || ev.time === "PÊNALTIS"));
+    const isPenalties = (activeState && (activeState.state === "penalties" || ev.time === "PÊNALTIS"));
 
     if (isPenalties) {
       const shooterRole = ev.anim === "shoot-p2" ? "shoot-p2" : "shoot-p1";
@@ -2537,11 +2539,12 @@ function generateArenaPenalties(stateData) {
 
 function arenaRenderPenaltiesPitch(shooterRole) {
   const container = document.getElementById("arena-pieces-layer");
-  if (!container || !arenaState) return;
+  const activeState = (arenaRoomId === "LOCAL") ? localState : arenaState;
+  if (!container || !activeState) return;
   container.innerHTML = "";
   
-  const colorsP1 = window.comparacopaData.getTeamColors(arenaState.p1.team);
-  const colorsP2 = window.comparacopaData.getTeamColors(arenaState.p2.team);
+  const colorsP1 = window.comparacopaData.getTeamColors(activeState.p1.team);
+  const colorsP2 = window.comparacopaData.getTeamColors(activeState.p2.team);
   
   if (shooterRole === "shoot-p1") {
     // P1 shooter (Left team player shooting on right goal)
@@ -2685,14 +2688,16 @@ function showArenaPausePanel(isPause) {
     const elScoreB = document.getElementById("arena-score-b");
     if (elScoreB) elScoreB.textContent = scB;
     
+    const activeState = (arenaRoomId === "LOCAL") ? localState : arenaState;
+
     const elTeamA = document.getElementById("arena-team-a-name");
-    if (elTeamA) elTeamA.textContent = getTeamName(arenaState.p1.team);
+    if (elTeamA && activeState) elTeamA.textContent = getTeamName(activeState.p1.team);
     const elTeamB = document.getElementById("arena-team-b-name");
-    if (elTeamB) elTeamB.textContent = getTeamName(arenaState.p2.team);
+    if (elTeamB && activeState) elTeamB.textContent = getTeamName(activeState.p2.team);
 
     // Update remaining counters for active player
     const activeRole = (arenaRoomId === "LOCAL") ? localActivePausePlayer : arenaPlayerRole;
-    const pState = arenaState[activeRole];
+    const pState = activeState ? activeState[activeRole] : null;
     if (pState) {
       const subsEl = document.getElementById("arena-subs-left");
       if (subsEl) subsEl.textContent = pState.subsLeft;
@@ -2713,17 +2718,17 @@ function showArenaPausePanel(isPause) {
 
     // Update individual team scoreboard stats
     const subA = document.getElementById("arena-team-a-subs");
-    if (subA) subA.textContent = arenaState.p1.subsLeft;
+    if (subA && activeState) subA.textContent = activeState.p1.subsLeft;
     const tacA = document.getElementById("arena-team-a-tacs");
-    if (tacA) tacA.textContent = arenaState.p1.tacsLeft;
+    if (tacA && activeState) tacA.textContent = activeState.p1.tacsLeft;
 
     const subB = document.getElementById("arena-team-b-subs");
-    if (subB) subB.textContent = arenaState.p2.subsLeft;
+    if (subB && activeState) subB.textContent = activeState.p2.subsLeft;
     const tacB = document.getElementById("arena-team-b-tacs");
-    if (tacB) tacB.textContent = arenaState.p2.tacsLeft;
+    if (tacB && activeState) tacB.textContent = activeState.p2.tacsLeft;
     
     if (!arenaIsAnimating) {
-      arenaRenderPitch(arenaState);
+      arenaRenderPitch(activeState);
     }
     
     // Show/Hide draw actions if it is a draw in friendly match at 90' or 120'
@@ -3022,15 +3027,16 @@ function arenaSetSpeed(mult) {
 
 function arenaShowMatchSummary() {
   const modal = document.getElementById("arena-modal-summary");
-  if (!modal || !arenaState) return;
+  const activeState = (arenaRoomId === "LOCAL") ? localState : arenaState;
+  if (!modal || !activeState) return;
   
-  const scoreA = arenaState.scoreA || 0;
-  const scoreB = arenaState.scoreB || 0;
+  const scoreA = activeState.scoreA || 0;
+  const scoreB = activeState.scoreB || 0;
   
-  const flagA = getTeamFlag(arenaState.p1.team);
-  const nameA = getTeamName(arenaState.p1.team);
-  const flagB = getTeamFlag(arenaState.p2.team);
-  const nameB = getTeamName(arenaState.p2.team);
+  const flagA = getTeamFlag(activeState.p1.team);
+  const nameA = getTeamName(activeState.p1.team);
+  const flagB = getTeamFlag(activeState.p2.team);
+  const nameB = getTeamName(activeState.p2.team);
   
   const labelFlagA = document.getElementById("summary-flag-a");
   if (labelFlagA) labelFlagA.textContent = flagA;
@@ -3044,9 +3050,9 @@ function arenaShowMatchSummary() {
   
   const labelScore = document.getElementById("summary-score");
   if (labelScore) {
-    if (arenaState.simulation && arenaState.simulation.penA !== undefined && arenaState.simulation.penB !== undefined) {
-      const penA = arenaState.simulation.penA;
-      const penB = arenaState.simulation.penB;
+    if (activeState.simulation && activeState.simulation.penA !== undefined && activeState.simulation.penB !== undefined) {
+      const penA = activeState.simulation.penA;
+      const penB = activeState.simulation.penB;
       labelScore.textContent = `${scoreA} (${penA}) - (${penB}) ${scoreB}`;
       labelScore.style.fontSize = "1.8rem";
     } else {
@@ -3058,10 +3064,10 @@ function arenaShowMatchSummary() {
   const scorersAEl = document.getElementById("summary-scorers-a");
   const scorersBEl = document.getElementById("summary-scorers-b");
   if (scorersAEl) {
-    scorersAEl.innerHTML = (arenaState.p1.goals || []).map(g => `<div>${g.scorer} (${g.time})</div>`).join("");
+    scorersAEl.innerHTML = (activeState.p1.goals || []).map(g => `<div>${g.scorer} (${g.time})</div>`).join("");
   }
   if (scorersBEl) {
-    scorersBEl.innerHTML = (arenaState.p2.goals || []).map(g => `<div>${g.scorer} (${g.time})</div>`).join("");
+    scorersBEl.innerHTML = (activeState.p2.goals || []).map(g => `<div>${g.scorer} (${g.time})</div>`).join("");
   }
   
   modal.style.display = "flex";
@@ -3089,12 +3095,12 @@ function arenaShowMatchSummary() {
       
       const btnNewRoom = document.getElementById("btn-summary-new-room");
       if (btnNewRoom) btnNewRoom.style.display = "none";
-    } else if (arenaState && arenaState.mode === "friendly") {
+    } else if (activeState && activeState.mode === "friendly") {
       friendlyBtns.style.display = "flex";
       
       const btnReplay = document.getElementById("btn-summary-replay");
       if (btnReplay) {
-        updateOnlineReplayButtonState(arenaState);
+        updateOnlineReplayButtonState(activeState);
       }
       
       const btnChange = document.getElementById("btn-summary-change-teams");
