@@ -2359,11 +2359,11 @@ function renderTournamentHighlights(matches, topAssistsData = [], topYellowsData
 
   // Rankings reais atualizados conforme dados mais recentes
   const artilheiros = [
+    { flag: "🇦🇷", name: "Lionel Messi", goals: 5 },
+    { flag: "🇳🇴", name: "Erling Haaland", goals: 4 },
+    { flag: "🇫🇷", name: "Kylian Mbappé", goals: 4 },
     { flag: "🇩🇪", name: "Deniz Undav", goals: 3 },
-    { flag: "🇨🇦", name: "Jonathan David", goals: 3 },
-    { flag: "🇦🇷", name: "Lionel Messi", goals: 3 },
-    { flag: "🇯🇵", name: "Ayase Ueda", goals: 2 },
-    { flag: "🇳🇱", name: "Cody Gakpo", goals: 2 }
+    { flag: "🇨🇦", name: "Jonathan David", goals: 3 }
   ];
   
   const assistencias = [
