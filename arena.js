@@ -413,8 +413,20 @@ function arenaLocalNextStep() {
     document.getElementById("btn-play-vs-cpu").style.display = "none";
     
     // Prepare pitch headers
-    document.getElementById("arena-score-a").textContent = "0";
-    document.getElementById("arena-score-b").textContent = "0";
+    const scoreAEl = document.getElementById("arena-score-a");
+    if (scoreAEl) scoreAEl.textContent = "0";
+    const scoreBEl = document.getElementById("arena-score-b");
+    if (scoreBEl) scoreBEl.textContent = "0";
+
+    const flagAEl = document.getElementById("arena-flag-a");
+    if (flagAEl) flagAEl.textContent = getTeamFlag(localState.p1.team);
+    const nameAEl = document.getElementById("arena-name-a");
+    if (nameAEl) nameAEl.textContent = getTeamName(localState.p1.team).substring(0, 3).toUpperCase();
+
+    const flagBEl = document.getElementById("arena-flag-b");
+    if (flagBEl) flagBEl.textContent = getTeamFlag(localState.p2.team);
+    const nameBEl = document.getElementById("arena-name-b");
+    if (nameBEl) nameBEl.textContent = getTeamName(localState.p2.team).substring(0, 3).toUpperCase();
     
     triggerLocalSimulation();
   }

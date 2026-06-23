@@ -616,6 +616,21 @@
             <div id="arena-narrator" style="background: rgba(0,0,0,0.8); color: #0f0; font-family: 'Space Mono', monospace; padding: 15px; border: 3px solid #000; margin-bottom: -15px; position: relative; z-index: 10; font-size: 0.9rem; min-height: 60px; display: flex; align-items: center; justify-content: center; text-align: center;">
               Preparando simulação...
             </div>
+
+            <!-- Placar da Arena -->
+            <div class="sim-scoreboard" style="margin-top: 25px; margin-bottom: 15px;">
+              <div class="scoreboard-team">
+                <span id="arena-flag-a" class="scoreboard-flag">🏳️</span>
+                <span id="arena-name-a" class="scoreboard-name">TIME A</span>
+              </div>
+              <div id="arena-score-a" class="scoreboard-score">0</div>
+              <div class="scoreboard-divider">x</div>
+              <div id="arena-score-b" class="scoreboard-score">0</div>
+              <div class="scoreboard-team">
+                <span id="arena-flag-b" class="scoreboard-flag">🏳️</span>
+                <span id="arena-name-b" class="scoreboard-name">TIME B</span>
+              </div>
+            </div>
             
             <div class="field-ad-wrapper" style="margin-top: 15px;">
               <!-- Banner Publicidade Esquerdo -->
@@ -1106,8 +1121,8 @@
     </div>
   </div>
 
-  <script src="data.js"></script>
-  <script src="app.js"></script>
-  <script src="arena.js"></script>
+  <script src="data.js?v=1.0.2"></script>
+  <script src="app.js?v=1.0.2"></script>
+  <script src="arena.js?v=1.0.2"></script>
 </body>
 </html>
