@@ -260,66 +260,81 @@ function renderLocalSetupField() {
 }
 
 function showLocalPlayerSubModal(player) {
+  console.log("showLocalPlayerSubModal called for", player);
   const activePlayer = localState.step === 1 ? localState.p1 : localState.p2;
+  console.log("activePlayer:", activePlayer);
   const modal = document.getElementById("player-modal");
+  if (!modal) {
+    console.error("player-modal not found!");
+    return;
+  }
   const teamId = activePlayer.team;
   const flag = getTeamFlag(teamId);
 
-  document.getElementById("sticker-flag").textContent = flag;
-  document.getElementById("sticker-name").textContent = player.name;
-  document.getElementById("sticker-club").textContent = `${player.pos || 'MF'} | ${player.club || "Seleção"}`;
-  document.getElementById("sticker-ovr").textContent = player.ovr;
-  
-  document.getElementById("sticker-pac").textContent = player.pac || 50;
-  document.getElementById("sticker-sho").textContent = player.sho || 50;
-  document.getElementById("sticker-pas").textContent = player.pas || 50;
-  document.getElementById("sticker-dri").textContent = player.dri || 50;
-  document.getElementById("sticker-def").textContent = player.def || 50;
-  document.getElementById("sticker-phy").textContent = player.phy || 50;
+  try {
+    document.getElementById("sticker-flag").textContent = flag;
+    document.getElementById("sticker-name").textContent = player.name;
+    document.getElementById("sticker-club").textContent = `${player.pos || 'MF'} | ${player.club || "Seleção"}`;
+    document.getElementById("sticker-ovr").textContent = player.ovr;
+    
+    document.getElementById("sticker-pac").textContent = player.pac || 50;
+    document.getElementById("sticker-sho").textContent = player.sho || 50;
+    document.getElementById("sticker-pas").textContent = player.pas || 50;
+    document.getElementById("sticker-dri").textContent = player.dri || 50;
+    document.getElementById("sticker-def").textContent = player.def || 50;
+    document.getElementById("sticker-phy").textContent = player.phy || 50;
 
-  const selectSub = document.getElementById("select-substitute");
-  selectSub.innerHTML = "";
-  const bench = activePlayer.bench || [];
+    const selectSub = document.getElementById("select-substitute");
+    selectSub.innerHTML = "";
+    const bench = activePlayer.bench || [];
+    console.log("bench players count:", bench.length);
 
-  if (bench.length === 0) {
-    document.getElementById("substitute-section").style.display = "none";
-  } else {
-    document.getElementById("substitute-section").style.display = "block";
-    bench.forEach((benchPlayer, index) => {
-      const opt = document.createElement("option");
-      opt.value = index;
-      opt.textContent = `${benchPlayer.name} (${benchPlayer.pos || 'MF'} - OVR ${benchPlayer.ovr})`;
-      selectSub.appendChild(opt);
-    });
+    if (bench.length === 0) {
+      document.getElementById("substitute-section").style.display = "none";
+    } else {
+      document.getElementById("substitute-section").style.display = "block";
+      bench.forEach((benchPlayer, index) => {
+        const opt = document.createElement("option");
+        opt.value = index;
+        opt.textContent = `${benchPlayer.name} (${benchPlayer.pos || 'MF'} - OVR ${benchPlayer.ovr})`;
+        selectSub.appendChild(opt);
+      });
+    }
+
+    modal.style.display = "flex";
+    console.log("player-modal display is now flex");
+
+    const btnSub = document.getElementById("btn-confirm-sub");
+    btnSub.onclick = () => {
+      const selectedSubIndex = selectSub.value;
+      if (selectedSubIndex === "") return;
+
+      const benchPlayer = bench[selectedSubIndex];
+      const titularIndex = activePlayer.squad.findIndex(p => p.name === player.name);
+      if (titularIndex === -1) {
+        console.error("titularIndex not found for player name:", player.name);
+        return;
+      }
+
+      const targetY = player.y;
+      const targetX = player.x;
+
+      delete player.y;
+      delete player.x;
+
+      benchPlayer.y = targetY;
+      benchPlayer.x = targetX;
+
+      // Direct reference swap in activePlayer
+      activePlayer.squad[titularIndex] = benchPlayer;
+      activePlayer.bench[selectedSubIndex] = player;
+
+      modal.style.display = "none";
+      renderLocalSetupField();
+    };
+  } catch (err) {
+    console.error("Error in showLocalPlayerSubModal:", err);
   }
-
-  modal.style.display = "flex";
-
-  const btnSub = document.getElementById("btn-confirm-sub");
-  btnSub.onclick = () => {
-    const selectedSubIndex = selectSub.value;
-    if (selectedSubIndex === "") return;
-
-    const benchPlayer = bench[selectedSubIndex];
-    const titularIndex = activePlayer.squad.findIndex(p => p.name === player.name);
-    if (titularIndex === -1) return;
-
-    const targetY = player.y;
-    const targetX = player.x;
-
-    delete player.y;
-    delete player.x;
-
-    benchPlayer.y = targetY;
-    benchPlayer.x = targetX;
-
-    // Direct reference swap in activePlayer
-    activePlayer.squad[titularIndex] = benchPlayer;
-    activePlayer.bench[selectedSubIndex] = player;
-
-    modal.style.display = "none";
-    renderLocalSetupField();
-  };
 }
 
 function arenaLocalNextStep() {
