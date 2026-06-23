@@ -133,6 +133,10 @@ function arenaReturnToLobby() {
   document.getElementById("arena-pitch-container").style.display = "none";
   document.getElementById("arena-pause-panel").style.display = "none";
   
+  // Restore lobby card display state
+  const lobbyCard = document.getElementById("arena-lobby-card");
+  if (lobbyCard) lobbyCard.style.display = "block";
+  
   // Show lobby
   document.getElementById("arena-lobby").style.display = "block";
   arenaHideConfig();
@@ -1031,9 +1035,13 @@ function updateArenaUI(data) {
   } else {
     if (configPanel) configPanel.style.display = "none";
     // Hide slots card during active simulation
-    const lobbyCard = document.querySelector("#arena-active > .neo-card");
-    if (lobbyCard && data.status === "playing") {
-      lobbyCard.style.display = "none";
+    const lobbyCard = document.getElementById("arena-lobby-card");
+    if (lobbyCard) {
+      if (data.status === "playing") {
+        lobbyCard.style.display = "none";
+      } else {
+        lobbyCard.style.display = "block";
+      }
     }
   }
 }
