@@ -956,9 +956,9 @@ function listenToRoom(code) {
 
 function updateArenaUI(data) {
   if (data.status === "connected") {
-    // Hide active match container, pitch, and summary
+    // Show active lobby wrapper, hide pitch and summary
     const activeEl = document.getElementById("arena-active");
-    if (activeEl) activeEl.style.display = "none";
+    if (activeEl) activeEl.style.display = "block";
     const pitchEl = document.getElementById("arena-pitch-container");
     if (pitchEl) pitchEl.style.display = "none";
     const pauseEl = document.getElementById("arena-pause-panel");
