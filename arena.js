@@ -918,6 +918,10 @@ function listenToRoom(code) {
     } else if (data.mode === "tournament") {
       updateTournamentUI(data);
       
+      if (data.status === "match_playing" && data.p1.readyToResume && data.p2.readyToResume && arenaPlayerRole === "p1") {
+        advanceOnlinePhase(data);
+      }
+      
       if (data.status === "match_playing" && data.simulation) {
         if (!window.currentArenaPhaseRun || window.currentArenaPhaseRun !== data.state) {
           window.currentArenaPhaseRun = data.state;
@@ -1771,8 +1775,8 @@ async function tournamentStartMatch(roundIdx, matchIdx) {
   await updateDoc(roomRef, {
     status: "match_playing",
     state: "starting",
-    p1: { team: match.teamA, squad: squadA, bench: benchA, formation: "4-3-3", ready: true, readyToResume: false },
-    p2: { team: match.teamB, squad: squadB, bench: benchB, formation: "4-3-3", ready: true, readyToResume: false },
+    p1: { team: match.teamA, squad: squadA, bench: benchA, formation: "4-3-3", ready: true, readyToResume: false, type: match.roleA ? "human" : "cpu" },
+    p2: { team: match.teamB, squad: squadB, bench: benchB, formation: "4-3-3", ready: true, readyToResume: false, type: match.roleB ? "human" : "cpu" },
     scoreA: 0,
     scoreB: 0,
     injuryTime: 0
@@ -2655,11 +2659,21 @@ async function arenaConfirmReadyToResume() {
     const { doc, updateDoc } = window.firebaseAPI;
     const roomRef = doc(window.firebaseDB, "rooms", arenaRoomId);
     
+    const isP1Cpu = arenaState && arenaState.p1 && arenaState.p1.type === "cpu";
+    const isP2Cpu = arenaState && arenaState.p2 && arenaState.p2.type === "cpu";
+    const updates = {};
     if (arenaPlayerRole === "p1") {
-      await updateDoc(roomRef, { "p1.readyToResume": true });
+      updates["p1.readyToResume"] = true;
+      if (isP2Cpu) {
+        updates["p2.readyToResume"] = true;
+      }
     } else {
-      await updateDoc(roomRef, { "p2.readyToResume": true });
+      updates["p2.readyToResume"] = true;
+      if (isP1Cpu) {
+        updates["p1.readyToResume"] = true;
+      }
     }
+    await updateDoc(roomRef, updates);
   }
 }
 
