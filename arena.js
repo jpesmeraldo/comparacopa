@@ -2030,7 +2030,7 @@ function generateArenaPhase(startMin, endMin, stateData) {
       const oppGk = isTeamA ? squadB[0].name : squadA[0].name;
       const shooter = isTeamA ? getOffensivePlayer(squadA) : getOffensivePlayer(squadB);
       const team = isTeamA ? teamAName : teamBName;
-      events.push({ time: min + "'", text: `Quase gol do ${team}! ${shooter} chuta forte mas ${oppGk} faz defense espetacular!`, anim: isTeamA ? "shoot-p1" : "shoot-p2" });
+      events.push({ time: min + "'", text: `Quase gol do ${team}! ${shooter} chuta forte mas ${oppGk} faz defesa espetacular!`, anim: isTeamA ? "shoot-p1" : "shoot-p2" });
     } else if (randomVal < 50) {
       const isTeamA = Math.random() > 0.5;
       const team = isTeamA ? teamAName : teamBName;
