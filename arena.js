@@ -2944,7 +2944,17 @@ function arenaShowMatchSummary() {
   if (labelTeamB) labelTeamB.textContent = nameB;
   
   const labelScore = document.getElementById("summary-score");
-  if (labelScore) labelScore.textContent = `${scoreA} - ${scoreB}`;
+  if (labelScore) {
+    if (arenaState.simulation && arenaState.simulation.penA !== undefined && arenaState.simulation.penB !== undefined) {
+      const penA = arenaState.simulation.penA;
+      const penB = arenaState.simulation.penB;
+      labelScore.textContent = `${scoreA} (${penA}) - (${penB}) ${scoreB}`;
+      labelScore.style.fontSize = "1.8rem";
+    } else {
+      labelScore.textContent = `${scoreA} - ${scoreB}`;
+      labelScore.style.fontSize = "2.2rem";
+    }
+  }
   
   modal.style.display = "flex";
   
