@@ -243,15 +243,15 @@ function renderLocalSetupField() {
     node.style.backgroundColor = colors.primary;
     node.style.color = colors.text || "#ffffff";
     node.style.borderColor = colors.secondary;
-    node.style.transform = "translate(-50%, -50%) scale(0.7)";
+    node.style.transform = "translate(-50%, -50%) scale(0.95)";
     
     const slotPos = coords[index] ? coords[index].pos : (player.pos || player.origPos || 'MF');
     const effectiveOvr = getEffectivePlayerOvr(player, slotPos);
     
     node.innerHTML = `
-      <span class="player-number" style="font-size:0.8rem; line-height:1.2;">${player.no}</span>
-      <div class="player-ovr-tag" style="font-size: 0.55rem; padding: 1px 3px;">${effectiveOvr}</div>
-      <div class="player-name-tag" style="font-size: 0.55rem; padding: 2px 4px; bottom:-12px; width:70px;">${escapeHtml(player.name)}</div>
+      <span class="player-number">${player.no}</span>
+      <div class="player-ovr-tag">${effectiveOvr}</div>
+      <div class="player-name-tag">${escapeHtml(player.name)}</div>
     `;
     
     node.onclick = () => showLocalPlayerSubModal(player, activePlayer);
@@ -1090,15 +1090,15 @@ function arenaRenderSetupField(myData) {
     node.style.backgroundColor = colors.primary;
     node.style.color = colors.text || "#ffffff";
     node.style.borderColor = colors.secondary;
-    node.style.transform = "translate(-50%, -50%) scale(0.7)";
+    node.style.transform = "translate(-50%, -50%) scale(0.95)";
     
     const slotPos = coords[index] ? coords[index].pos : (player.pos || player.origPos || 'MF');
     const effectiveOvr = getEffectivePlayerOvr(player, slotPos);
     
     node.innerHTML = `
-      <span class="player-number" style="font-size:0.8rem; line-height:1.2;">${player.no}</span>
-      <div class="player-ovr-tag" style="font-size: 0.55rem; padding: 1px 3px;">${effectiveOvr}</div>
-      <div class="player-name-tag" style="font-size: 0.55rem; padding: 2px 4px; bottom:-12px; width:70px;">${escapeHtml(player.name)}</div>
+      <span class="player-number">${player.no}</span>
+      <div class="player-ovr-tag">${effectiveOvr}</div>
+      <div class="player-name-tag">${escapeHtml(player.name)}</div>
     `;
     
     node.onclick = () => arenaShowPlayerModal(player, arenaPlayerRole);

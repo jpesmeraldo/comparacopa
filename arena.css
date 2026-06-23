@@ -223,23 +223,24 @@
 
 /* Scaled player nodes on the setup tactical pitch to avoid overlap */
 .tactical-pitch .player-node {
-  width: 32px !important;
-  height: 32px !important;
-  border-width: 2px !important;
+  width: 38px !important;
+  height: 38px !important;
+  border-width: 2.2px !important;
   box-shadow: 2px 2px 0 var(--dark-accent) !important;
-  font-size: 0.7rem !important;
+  font-size: 0.85rem !important;
 }
 
 .tactical-pitch .player-number {
-  font-size: 0.65rem !important;
+  font-size: 0.8rem !important;
+  line-height: 1.2 !important;
 }
 
 .tactical-pitch .player-name-tag {
-  font-size: 0.52rem !important;
-  bottom: -16px !important;
-  padding: 2px 4px !important;
+  font-size: 0.6rem !important;
+  bottom: -18px !important;
+  padding: 2px 5px !important;
   width: auto !important;
-  max-width: 60px !important;
+  max-width: 78px !important;
   white-space: nowrap !important;
   overflow: hidden !important;
   text-overflow: ellipsis !important;
@@ -249,9 +250,9 @@
 }
 
 .tactical-pitch .player-ovr-tag {
-  width: 14px !important;
-  height: 14px !important;
-  font-size: 0.52rem !important;
+  width: 16px !important;
+  height: 16px !important;
+  font-size: 0.58rem !important;
   top: -8px !important;
   right: -8px !important;
   border-width: 1.2px !important;
