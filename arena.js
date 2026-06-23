@@ -2000,6 +2000,14 @@ function runAnimation(simData) {
     if (nameBEl) nameBEl.textContent = getTeamName(arenaState.p2.team).substring(0, 3).toUpperCase();
   }
   
+  // Clear scorers lists at the start of a match
+  if (simData.events.length > 0 && (simData.events[0].time === "00'" || arenaState.state === "starting")) {
+    const scorersA = document.getElementById("arena-scorers-a");
+    const scorersB = document.getElementById("arena-scorers-b");
+    if (scorersA) scorersA.innerHTML = "";
+    if (scorersB) scorersB.innerHTML = "";
+  }
+
   // Render static pitch nodes
   arenaRenderPitch(arenaState);
   showArenaPausePanel(false);
@@ -2064,6 +2072,16 @@ function runAnimation(simData) {
     
     const ev = simData.events[currentEventIndex];
     if (narrator) narrator.textContent = ev.text;
+    
+    if (ev.goal) {
+      const isTeamA = ev.goal.team === "A";
+      const targetEl = document.getElementById(isTeamA ? "arena-scorers-a" : "arena-scorers-b");
+      if (targetEl) {
+        const goalEl = document.createElement("div");
+        goalEl.textContent = `${ev.goal.scorer} (${ev.goal.time})`;
+        targetEl.appendChild(goalEl);
+      }
+    }
     
     const clockEl = document.getElementById("arena-stadium-clock");
     if (clockEl && ev.time) clockEl.textContent = ev.time;
@@ -2334,11 +2352,11 @@ function generateArenaPhase(startMin, endMin, stateData) {
     if (randomVal < chanceGoalA) {
       scoreA++;
       const scorer = getOffensivePlayer(squadA);
-      events.push({ time: min + "'", text: `GOOOOOOOOL do ${teamAName}! ${scorer} estufa as redes! (${scoreA}-${scoreB})`, anim: "shoot-p1", scoreA, scoreB });
+      events.push({ time: min + "'", text: `GOOOOOOOOL do ${teamAName}! ${scorer} estufa as redes! (${scoreA}-${scoreB})`, anim: "shoot-p1", scoreA, scoreB, goal: { team: "A", scorer: scorer.split(" (")[0], time: min + "'" } });
     } else if (randomVal < chanceGoalA + chanceGoalB) {
       scoreB++;
       const scorer = getOffensivePlayer(squadB);
-      events.push({ time: min + "'", text: `GOOOOOOOOL do ${teamBName}! ${scorer} marca um golaço! (${scoreA}-${scoreB})`, anim: "shoot-p2", scoreA, scoreB });
+      events.push({ time: min + "'", text: `GOOOOOOOOL do ${teamBName}! ${scorer} marca um golaço! (${scoreA}-${scoreB})`, anim: "shoot-p2", scoreA, scoreB, goal: { team: "B", scorer: scorer.split(" (")[0], time: min + "'" } });
     } else if (randomVal < 35) {
       const isTeamA = Math.random() > 0.5;
       const oppGk = isTeamA ? squadB[0].name : squadA[0].name;

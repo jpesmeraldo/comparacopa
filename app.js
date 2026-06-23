@@ -1156,6 +1156,12 @@ function startMatchSimulation() {
 
   scoreBoxA.textContent = "0";
   scoreBoxB.textContent = "0";
+  
+  const scorersA = document.getElementById("sim-scorers-a");
+  const scorersB = document.getElementById("sim-scorers-b");
+  if (scorersA) scorersA.innerHTML = "";
+  if (scorersB) scorersB.innerHTML = "";
+  
   consoleBox.innerHTML = `<div class="sim-console-line">&gt; [00'] Transmissão Rádio AM Iniciada: Juiz apita o início do jogo!</div>`;
 
   let scoreA = 0;
@@ -1382,6 +1388,13 @@ function startMatchSimulation() {
       stats.A.shots++;
       const scorer = getOffensivePlayer(squadA);
       logLine = `<span style="color: var(--neon-green); font-weight:800;">&gt; [${minute}'] GOOOOOOOOL do ${activeTeamA}! ${scorer} chuta forte no canto sem chances! (${scoreA}-${scoreB})</span>`;
+      
+      const scorersA = document.getElementById("sim-scorers-a");
+      if (scorersA) {
+        const goalEl = document.createElement("div");
+        goalEl.textContent = `${scorer} (${minute}')`;
+        scorersA.appendChild(goalEl);
+      }
     } else if (randomVal < chanceGoalA + chanceGoalB) {
       // GOL TIME B
       scoreB++;
@@ -1389,6 +1402,13 @@ function startMatchSimulation() {
       stats.B.shots++;
       const scorer = getOffensivePlayer(squadB);
       logLine = `<span style="color: var(--neon-green); font-weight:800;">&gt; [${minute}'] GOOOOOOOOL do ${activeTeamB}! ${scorer} recebe passe açucarado e balança as redes! (${scoreA}-${scoreB})</span>`;
+      
+      const scorersB = document.getElementById("sim-scorers-b");
+      if (scorersB) {
+        const goalEl = document.createElement("div");
+        goalEl.textContent = `${scorer} (${minute}')`;
+        scorersB.appendChild(goalEl);
+      }
     } else if (randomVal < 35) {
       // CHUTE SEM GOL
       const isTeamA = Math.random() > 0.5;
