@@ -393,8 +393,10 @@ function arenaLocalNextStep() {
     document.getElementById("arena-room-code-badge").textContent = "LOCAL";
     document.getElementById("arena-lobby-title").textContent = "AMISTOSO LOCAL";
     document.getElementById("arena-lobby-vacancy-status").textContent = "EM PARTIDA LOCAL";
-    document.getElementById("arena-lobby-meta-diff").textContent = "CLÁSSICO";
-    document.getElementById("arena-lobby-meta-time").textContent = "SEM LIMITE";
+    const diffEl = document.getElementById("arena-lobby-meta-diff");
+    if (diffEl) diffEl.textContent = "CLÁSSICO";
+    const timeEl = document.getElementById("arena-lobby-meta-time");
+    if (timeEl) timeEl.textContent = "SEM LIMITE";
     
     document.getElementById("arena-slot-1-name").textContent = `${localState.p1.name.toUpperCase()} (P1)`;
     document.getElementById("arena-slot-1-status").textContent = "PRONTO ✔";
