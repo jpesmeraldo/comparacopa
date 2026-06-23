@@ -2892,11 +2892,89 @@ function arenaShowMatchSummary() {
   // Hide the pause panel
   showArenaPausePanel(false);
   
-  // Show or hide Local-specific replay buttons
-  const localBtns = document.getElementById("summary-local-buttons");
-  if (localBtns) {
-    localBtns.style.display = (arenaRoomId === "LOCAL") ? "flex" : "none";
+  // Configure and show friendly action buttons (Local/Online)
+  const friendlyBtns = document.getElementById("summary-friendly-buttons");
+  if (friendlyBtns) {
+    if (arenaRoomId === "LOCAL") {
+      friendlyBtns.style.display = "flex";
+      
+      const btnReplay = document.getElementById("btn-summary-replay");
+      if (btnReplay) {
+        btnReplay.textContent = "Jogar de Novo";
+        btnReplay.onclick = arenaLocalReplay;
+      }
+      
+      const btnChange = document.getElementById("btn-summary-change-teams");
+      if (btnChange) {
+        btnChange.textContent = "Trocar Times";
+        btnChange.onclick = arenaLocalChangeTeams;
+      }
+      
+      const btnNewRoom = document.getElementById("btn-summary-new-room");
+      if (btnNewRoom) btnNewRoom.style.display = "none";
+    } else if (arenaState && arenaState.mode === "friendly") {
+      friendlyBtns.style.display = "flex";
+      
+      const btnReplay = document.getElementById("btn-summary-replay");
+      if (btnReplay) {
+        btnReplay.textContent = "Jogar de Novo";
+        btnReplay.onclick = arenaOnlineReplay;
+      }
+      
+      const btnChange = document.getElementById("btn-summary-change-teams");
+      if (btnChange) {
+        btnChange.textContent = "Trocar Times";
+        btnChange.onclick = arenaOnlineChangeTeams;
+      }
+      
+      const btnNewRoom = document.getElementById("btn-summary-new-room");
+      if (btnNewRoom) btnNewRoom.style.display = "block";
+    } else {
+      friendlyBtns.style.display = "none";
+    }
   }
+}
+
+async function arenaOnlineReplay() {
+  if (!arenaRoomId || !window.firebaseDB) return;
+  document.getElementById("arena-modal-summary").style.display = "none";
+  
+  const { doc, updateDoc } = window.firebaseAPI;
+  const roomRef = doc(window.firebaseDB, "rooms", arenaRoomId);
+  
+  await updateDoc(roomRef, {
+    status: "connected",
+    state: "starting",
+    scoreA: 0,
+    scoreB: 0,
+    injuryTime: 0,
+    simulation: null,
+    "p1.ready": true,
+    "p1.readyToResume": false,
+    "p2.ready": true,
+    "p2.readyToResume": false
+  });
+}
+
+async function arenaOnlineChangeTeams() {
+  if (!arenaRoomId || !window.firebaseDB) return;
+  document.getElementById("arena-modal-summary").style.display = "none";
+  
+  const { doc, updateDoc } = window.firebaseAPI;
+  const roomRef = doc(window.firebaseDB, "rooms", arenaRoomId);
+  
+  await updateDoc(roomRef, {
+    status: "connected",
+    state: "lobby",
+    scoreA: 0,
+    scoreB: 0,
+    injuryTime: 0,
+    simulation: null,
+    "p1.ready": false,
+    "p1.readyToResume": false,
+    "p2.ready": false,
+    "p2.readyToResume": false
+  });
 }
 
 function arenaDownloadSummary() {

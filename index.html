@@ -798,14 +798,11 @@
           </button>
         </div>
         
-        <!-- Botões exclusivos do modo Amistoso Local -->
-        <div id="summary-local-buttons" style="display: none; gap: 15px; justify-content: center; margin-top: 15px; flex-wrap: wrap;">
-          <button class="neo-btn btn-yellow" onclick="arenaLocalReplay()" style="font-weight: bold;">
-            Jogar de Novo
-          </button>
-          <button class="neo-btn" style="background: #e2e8f0; color: #1e293b; font-weight: bold;" onclick="arenaLocalChangeTeams()">
-            Trocar Times
-          </button>
+        <!-- Botões de Ação Dinâmicos (Amistoso Local/Online) -->
+        <div id="summary-friendly-buttons" style="display: none; gap: 10px; justify-content: center; margin-top: 15px; flex-wrap: wrap; width: 100%;">
+          <button class="neo-btn btn-yellow" id="btn-summary-replay" style="font-weight: bold; flex: 1 1 calc(50% - 10px); min-width: 140px;"></button>
+          <button class="neo-btn" id="btn-summary-change-teams" style="background: #e2e8f0; color: #1e293b; font-weight: bold; flex: 1 1 calc(50% - 10px); min-width: 140px;"></button>
+          <button class="neo-btn btn-blue" id="btn-summary-new-room" style="font-weight: bold; flex: 1 1 100%;" onclick="arenaReturnToLobby(); document.getElementById('arena-modal-summary').style.display='none';">Criar Nova Sala</button>
         </div>
       </div>
     </div>
