@@ -950,10 +950,10 @@ function updateArenaUI(data) {
     vacancyEl.textContent = hasP2 ? "Inscrições - 0 vagas abertas" : "Inscrições - 1 vaga aberta";
   }
   
-  // Show/Hide Invite button for P1 / P2
+  // Show/Hide Invite button for P1 / P2 (only show if P1 and P2 hasn't joined/CPU chosen yet)
   const inviteBtn = document.getElementById("btn-lobby-invite-p2");
   if (inviteBtn) {
-    inviteBtn.style.display = (arenaPlayerRole === "p1") ? "block" : "none";
+    inviteBtn.style.display = (arenaPlayerRole === "p1" && !hasP2) ? "block" : "none";
   }
   
   // Slots List
