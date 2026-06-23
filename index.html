@@ -514,7 +514,7 @@
         <!-- Ficha Oficial de Inscrição (Neo-Brutalist Lobby Card) -->
         <div class="neo-card" style="max-width: 600px; margin: 0 auto 30px auto; padding: 25px; position: relative;">
           <!-- Retro Sticker Room Code Badge -->
-          <div style="position: absolute; top: -15px; right: 15px; background: var(--retro-yellow); color: var(--dark-accent); border: 3px solid var(--dark-accent); box-shadow: 3px 3px 0 var(--dark-accent); padding: 5px 12px; font-family: 'Bebas Neue', cursive; font-size: 1.6rem; transform: rotate(3deg); z-index: 10;">
+          <div style="position: absolute; top: -20px; right: 15px; background: var(--retro-yellow); color: var(--dark-accent); border: 3px solid var(--dark-accent); box-shadow: 3px 3px 0 var(--dark-accent); padding: 5px 12px; font-family: 'Bebas Neue', cursive; font-size: 1.6rem; transform: rotate(3deg); z-index: 10;">
             SALA: <span id="arena-room-code-badge">----</span>
           </div>
 
@@ -533,7 +533,7 @@
             <div class="lobby-slot-row" style="border: 2px solid var(--dark-accent); padding: 12px; display: flex; justify-content: space-between; align-items: center; background: #fff;">
               <div style="font-family: 'Space Mono', monospace; font-size: 0.95rem; display: flex; align-items: center; gap: 10px;">
                 <span style="font-family: 'Bebas Neue', cursive; font-size: 1.3rem; color: var(--retro-blue);">01</span>
-                <span id="arena-slot-1-name" style="font-weight: bold;">JOGADOR 1 [VOCÊ]</span>
+                <span id="arena-slot-1-name" style="font-weight: bold;">P1 [VOCÊ]</span>
               </div>
               <div id="arena-slot-1-status" style="font-family: 'Space Mono', monospace; font-size: 0.8rem; font-weight: bold; color: var(--retro-red);">AGUARDANDO ESCALAÇÃO...</div>
             </div>
@@ -542,7 +542,7 @@
             <div class="lobby-slot-row" style="border: 2px solid var(--dark-accent); padding: 12px; display: flex; justify-content: space-between; align-items: center; background: #fff;">
               <div style="font-family: 'Space Mono', monospace; font-size: 0.95rem; display: flex; align-items: center; gap: 10px;">
                 <span style="font-family: 'Bebas Neue', cursive; font-size: 1.3rem; color: var(--retro-blue);">02</span>
-                <span id="arena-slot-2-name" style="color: #777;">vaga aberta — chame um amigo</span>
+                <span id="arena-slot-2-name" style="color: #777;">Aguardando P2</span>
               </div>
               <div id="arena-slot-2-status-area">
                 <!-- If empty: JOGAR CONTRA CPU button, otherwise status text -->
@@ -554,7 +554,7 @@
 
           <!-- Lobby Action Panel -->
           <div style="display: flex; gap: 15px;">
-            <button class="neo-btn" onclick="arenaCopyRoomLink()" style="flex: 1; padding: 12px; font-weight: bold; font-family: 'Space Mono', monospace;">COPIAR LINK</button>
+            <button class="neo-btn" onclick="arenaCopyRoomLink()" style="flex: 1; padding: 12px; font-weight: bold; font-family: 'Space Mono', monospace;">CONVIDAR P2</button>
             <button class="neo-btn btn-red" id="btn-lobby-play-now" onclick="arenaLobbyPlayNow()" style="flex: 1.5; padding: 12px; font-weight: bold; font-size: 1.1rem;" disabled>JOGAR AGORA →</button>
           </div>
         </div>
@@ -571,6 +571,17 @@
           <div style="margin-bottom: 15px; width: 100%; text-align: left;">
             <label class="neo-label">Selecione seu Time:</label>
             <select id="arena-team1" class="neo-select" onchange="arenaUpdateTeamSelect(1)"></select>
+          </div>
+
+          <!-- CPU Opponent Selection (Only shown when playing vs CPU) -->
+          <div id="arena-cpu-selection-wrapper" style="display: none; margin-bottom: 15px; width: 100%; text-align: left; border: 2px dashed var(--dark-accent); padding: 12px; background: #fafafa;">
+            <label class="neo-label" style="color: var(--retro-red); font-weight: 800;">SELEÇÃO DO ADVERSÁRIO (CPU):</label>
+            <div style="display: flex; gap: 10px; margin-top: 5px;">
+              <select id="arena-cpu-team-select" class="neo-select" style="flex: 2;" onchange="arenaUpdateCpuTeamSelect(this.value)">
+                <!-- populated dynamically -->
+              </select>
+              <button class="neo-btn btn-green" onclick="arenaDrawCpuTeam()" style="flex: 1; padding: 4px 8px; font-size: 0.8rem; box-shadow: 2px 2px 0 var(--dark-accent);">Sortear adversário</button>
+            </div>
           </div>
 
           <!-- Active Formation Buttons Grid -->

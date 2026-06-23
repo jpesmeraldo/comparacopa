@@ -455,7 +455,7 @@ async function submitOnlineFriendlyConfig() {
     roundTime: onlineFriendlyTime,
     password: password,
     createdAt: new Date().toISOString(),
-    p1: { name: "Host (P1)", team: null, ready: false, style: "bal", formation: "4-3-3" },
+    p1: { name: "P1", team: null, ready: false, style: "bal", formation: "4-3-3" },
     p2: null,
     simulation: null
   };
@@ -473,7 +473,7 @@ async function submitOnlineFriendlyConfig() {
     
     // Set initial values in sessional tactical pitch input fields
     const nameInput = document.getElementById("arena-player-name-input");
-    if (nameInput) nameInput.value = "Host (P1)";
+    if (nameInput) nameInput.value = "P1";
     
     initArenaTeams();
     listenToRoom(code);
@@ -564,6 +564,63 @@ function chooseRandomCpuTeam() {
   if (!teams || teams.length === 0) return null;
   const t = teams[Math.floor(Math.random() * teams.length)];
   return t.id;
+}
+
+function initArenaCpuTeams(selectedCpuTeamId) {
+  const select = document.getElementById("arena-cpu-team-select");
+  if (!select) return;
+  if (select.children.length > 0) {
+    if (selectedCpuTeamId) select.value = selectedCpuTeamId;
+    return;
+  }
+  
+  select.innerHTML = '<option value="">Selecione adversário...</option>';
+  
+  if (window.comparacopaData && window.comparacopaData.groups) {
+    for (const group in window.comparacopaData.groups) {
+      const optgroup = document.createElement("optgroup");
+      optgroup.label = `Grupo ${group}`;
+      window.comparacopaData.groups[group].forEach(team => {
+        const option = document.createElement("option");
+        option.value = team.id;
+        option.textContent = `${team.flag} ${team.name}`;
+        optgroup.appendChild(option);
+      });
+      select.appendChild(optgroup);
+    }
+  }
+  if (selectedCpuTeamId) select.value = selectedCpuTeamId;
+}
+
+async function arenaUpdateCpuTeamSelect(cpuTeamId) {
+  if (!arenaRoomId || !window.firebaseDB || !cpuTeamId) return;
+  
+  if (typeof ensureSquadAndStats === "function") {
+    ensureSquadAndStats(cpuTeamId);
+  }
+  
+  const squadData = window.comparacopaData.squads[cpuTeamId];
+  const cpuSquad = JSON.parse(JSON.stringify(squadData.players));
+  const cpuBench = JSON.parse(JSON.stringify(squadData.bench)).map((p, idx) => ({ ...p, no: p.no || (12 + idx) }));
+  const cpuFormation = squadData.formation || "4-3-3";
+  
+  const { doc, updateDoc } = window.firebaseAPI;
+  const roomRef = doc(window.firebaseDB, "rooms", arenaRoomId);
+  
+  await updateDoc(roomRef, {
+    "p2.team": cpuTeamId,
+    "p2.squad": cpuSquad,
+    "p2.bench": cpuBench,
+    "p2.formation": cpuFormation
+  });
+}
+
+async function arenaDrawCpuTeam() {
+  const cpuTeamId = chooseRandomCpuTeam();
+  if (!cpuTeamId) return;
+  const select = document.getElementById("arena-cpu-team-select");
+  if (select) select.value = cpuTeamId;
+  await arenaUpdateCpuTeamSelect(cpuTeamId);
 }
 
 async function arenaPlayVsCpu() {
@@ -810,7 +867,11 @@ function updateArenaUI(data) {
   // Slots List
   const s1Name = document.getElementById("arena-slot-1-name");
   if (s1Name) {
-    s1Name.textContent = data.p1.name ? `${data.p1.name.toUpperCase()} [P1]` : "JOGADOR 1";
+    let p1DisplayName = "P1";
+    if (data.p1.name && !data.p1.name.includes("Host (P1)")) {
+      p1DisplayName = `${data.p1.name.toUpperCase()} [P1]`;
+    }
+    s1Name.textContent = p1DisplayName;
     if (arenaPlayerRole === "p1") s1Name.textContent += " [VOCÊ]";
   }
   const s1Status = document.getElementById("arena-slot-1-status");
@@ -852,7 +913,7 @@ function updateArenaUI(data) {
     }
   } else {
     if (s2Name) {
-      s2Name.textContent = "vaga aberta — chame um amigo";
+      s2Name.textContent = "Aguardando P2";
       s2Name.style.color = "#777";
     }
     if (s2Status) s2Status.style.display = "none";
@@ -869,9 +930,9 @@ function updateArenaUI(data) {
     playNowBtn.disabled = !canPlay;
   }
   
-  // Render tactical panel
+  // Render tactical panel - Only display to players if P2 has joined (connected state)
   const configPanel = document.getElementById("arena-tactical-config-panel");
-  if (data.status === "waiting" || data.status === "connected") {
+  if (data.status === "connected") {
     if (configPanel) configPanel.style.display = "block";
     const myData = arenaPlayerRole === "p1" ? data.p1 : data.p2;
     if (myData) {
@@ -888,6 +949,17 @@ function updateArenaUI(data) {
         } else {
           confirmReadyBtn.textContent = "CONFIRMAR";
           confirmReadyBtn.className = "neo-btn btn-green";
+        }
+      }
+      
+      // Populate CPU opponent config selector if playing vs CPU as Host
+      const cpuSelectionWrapper = document.getElementById("arena-cpu-selection-wrapper");
+      if (cpuSelectionWrapper) {
+        if (arenaPlayerRole === "p1" && data.p2 && data.p2.type === "cpu") {
+          cpuSelectionWrapper.style.display = "block";
+          initArenaCpuTeams(data.p2.team);
+        } else {
+          cpuSelectionWrapper.style.display = "none";
         }
       }
       
