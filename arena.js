@@ -1941,6 +1941,19 @@ async function triggerSimulation(data) {
 function runAnimation(simData) {
   if (!simData || !simData.events) return;
   
+  // Update scoreboard header flags and names for online matches
+  if (arenaState && arenaState.p1 && arenaState.p2) {
+    const flagAEl = document.getElementById("arena-flag-a");
+    if (flagAEl) flagAEl.textContent = getTeamFlag(arenaState.p1.team);
+    const nameAEl = document.getElementById("arena-name-a");
+    if (nameAEl) nameAEl.textContent = getTeamName(arenaState.p1.team).substring(0, 3).toUpperCase();
+
+    const flagBEl = document.getElementById("arena-flag-b");
+    if (flagBEl) flagBEl.textContent = getTeamFlag(arenaState.p2.team);
+    const nameBEl = document.getElementById("arena-name-b");
+    if (nameBEl) nameBEl.textContent = getTeamName(arenaState.p2.team).substring(0, 3).toUpperCase();
+  }
+  
   // Render static pitch nodes
   arenaRenderPitch(arenaState);
   showArenaPausePanel(false);
