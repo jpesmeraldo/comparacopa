@@ -1783,6 +1783,9 @@ function runAnimation(simData) {
     const ev = simData.events[currentEventIndex];
     if (narrator) narrator.textContent = ev.text;
     
+    const clockEl = document.getElementById("arena-stadium-clock");
+    if (clockEl && ev.time) clockEl.textContent = ev.time;
+    
     let prevScoreA = parseInt(document.getElementById("sim-score-a")?.textContent) || 0;
     let prevScoreB = parseInt(document.getElementById("sim-score-b")?.textContent) || 0;
 
