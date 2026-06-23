@@ -1821,40 +1821,63 @@ function runAnimation(simData) {
     };
 
     let targetCoords = null;
+    const isPenalties = (arenaState && (arenaState.state === "penalties" || ev.time === "PÊNALTIS"));
 
-    if (ev.anim === "start") {
-      targetCoords = { left: "50%", top: "50%" };
-    } else if (ev.anim === "shoot-p1") {
-      const coin = Math.random();
-      if (coin < 0.6) {
-        targetCoords = getPieceCoords('.p1-piece');
+    if (isPenalties) {
+      const shooterRole = ev.anim === "shoot-p2" ? "shoot-p2" : "shoot-p1";
+      arenaRenderPenaltiesPitch(shooterRole);
+      
+      // Let's set ball position sequence
+      if (shooterRole === "shoot-p1") {
+        ball.style.left = "78%";
+        ball.style.top = "50%";
+        setTimeout(() => {
+          ball.style.left = "96%";
+          ball.style.top = (45 + Math.random() * 10) + "%";
+        }, 100);
       } else {
-        // Move to P2's goal (right side of the field)
-        targetCoords = { left: "93%", top: "50%" };
+        ball.style.left = "22%";
+        ball.style.top = "50%";
+        setTimeout(() => {
+          ball.style.left = "4%";
+          ball.style.top = (45 + Math.random() * 10) + "%";
+        }, 100);
       }
-      p1Pieces.forEach(el => el.style.transform = "scale(1.3)");
-    } else if (ev.anim === "shoot-p2") {
-      const coin = Math.random();
-      if (coin < 0.6) {
-        targetCoords = getPieceCoords('.p2-piece');
-      } else {
-        // Move to P1's goal (left side of the field)
-        targetCoords = { left: "7%", top: "50%" };
+    } else {
+      if (ev.anim === "start") {
+        targetCoords = { left: "50%", top: "50%" };
+      } else if (ev.anim === "shoot-p1") {
+        const coin = Math.random();
+        if (coin < 0.6) {
+          targetCoords = getPieceCoords('.p1-piece');
+        } else {
+          // Move to P2's goal (right side of the field)
+          targetCoords = { left: "93%", top: "50%" };
+        }
+        p1Pieces.forEach(el => el.style.transform = "scale(1.3)");
+      } else if (ev.anim === "shoot-p2") {
+        const coin = Math.random();
+        if (coin < 0.6) {
+          targetCoords = getPieceCoords('.p2-piece');
+        } else {
+          // Move to P1's goal (left side of the field)
+          targetCoords = { left: "7%", top: "50%" };
+        }
+        p2Pieces.forEach(el => el.style.transform = "scale(1.3)");
+      } else if (ev.anim === "mid") {
+        // Pick a random piece on the field
+        targetCoords = getPieceCoords('.arena-piece');
+        if (!targetCoords) {
+          targetCoords = { left: (40 + Math.random() * 20) + "%", top: (30 + Math.random() * 40) + "%" };
+        }
+      } else if (ev.anim === "reset") {
+        targetCoords = { left: "50%", top: "50%" };
       }
-      p2Pieces.forEach(el => el.style.transform = "scale(1.3)");
-    } else if (ev.anim === "mid") {
-      // Pick a random piece on the field
-      targetCoords = getPieceCoords('.arena-piece');
-      if (!targetCoords) {
-        targetCoords = { left: (40 + Math.random() * 20) + "%", top: (30 + Math.random() * 40) + "%" };
-      }
-    } else if (ev.anim === "reset") {
-      targetCoords = { left: "50%", top: "50%" };
-    }
 
-    if (targetCoords) {
-      ball.style.left = targetCoords.left;
-      ball.style.top = targetCoords.top;
+      if (targetCoords) {
+        ball.style.left = targetCoords.left;
+        ball.style.top = targetCoords.top;
+      }
     }
     
     currentEventIndex++;
@@ -1898,6 +1921,12 @@ function triggerArenaFireworks(side) {
     
     setTimeout(() => style.remove(), 1000);
   }
+
+  // Clear and hide fireworks container after 2 seconds
+  setTimeout(() => {
+    container.innerHTML = "";
+    container.style.display = "none";
+  }, 2000);
 }
 
 // Generate logs and simulation stats
@@ -2144,6 +2173,65 @@ function generateArenaPenalties(stateData) {
   }
   
   return { events };
+}
+
+function arenaRenderPenaltiesPitch(shooterRole) {
+  const container = document.getElementById("arena-pieces-layer");
+  if (!container || !arenaState) return;
+  container.innerHTML = "";
+  
+  const colorsP1 = window.comparacopaData.getTeamColors(arenaState.p1.team);
+  const colorsP2 = window.comparacopaData.getTeamColors(arenaState.p2.team);
+  
+  if (shooterRole === "shoot-p1") {
+    // P1 shooter (Left team player shooting on right goal)
+    const shooter = document.createElement("div");
+    shooter.className = "arena-piece p1-piece";
+    shooter.style.left = "78%";
+    shooter.style.top = "50%";
+    shooter.style.backgroundColor = colorsP1.primary;
+    shooter.style.color = colorsP1.text || "#ffffff";
+    shooter.style.borderColor = colorsP1.secondary;
+    shooter.style.transform = "translate(-50%, -50%)";
+    shooter.innerHTML = `<span>10</span>`;
+    container.appendChild(shooter);
+    
+    // P2 goalie (Right team goalkeeper)
+    const goalie = document.createElement("div");
+    goalie.className = "arena-piece p2-piece";
+    goalie.style.left = "96%";
+    goalie.style.top = "50%";
+    goalie.style.backgroundColor = colorsP2.primary;
+    goalie.style.color = colorsP2.text || "#ffffff";
+    goalie.style.borderColor = colorsP2.secondary;
+    goalie.style.transform = "translate(-50%, -50%)";
+    goalie.innerHTML = `<span>GK</span>`;
+    container.appendChild(goalie);
+  } else {
+    // P2 shooter (Right team player shooting on left goal)
+    const shooter = document.createElement("div");
+    shooter.className = "arena-piece p2-piece";
+    shooter.style.left = "22%";
+    shooter.style.top = "50%";
+    shooter.style.backgroundColor = colorsP2.primary;
+    shooter.style.color = colorsP2.text || "#ffffff";
+    shooter.style.borderColor = colorsP2.secondary;
+    shooter.style.transform = "translate(-50%, -50%)";
+    shooter.innerHTML = `<span>10</span>`;
+    container.appendChild(shooter);
+    
+    // P1 goalie (Left team goalkeeper)
+    const goalie = document.createElement("div");
+    goalie.className = "arena-piece p1-piece";
+    goalie.style.left = "4%";
+    goalie.style.top = "50%";
+    goalie.style.backgroundColor = colorsP1.primary;
+    goalie.style.color = colorsP1.text || "#ffffff";
+    goalie.style.borderColor = colorsP1.secondary;
+    goalie.style.transform = "translate(-50%, -50%)";
+    goalie.innerHTML = `<span>GK</span>`;
+    container.appendChild(goalie);
+  }
 }
 
 function arenaRenderPitch(data) {
@@ -2593,14 +2681,8 @@ function arenaShareSummary() {
 
 function arenaLocalReplay() {
   document.getElementById("arena-modal-summary").style.display = "none";
-  document.getElementById("arena-active").style.display = "none";
-  document.getElementById("arena-local-setup").style.display = "block";
   
-  // Hide difficulty container (since it's a replay, configuration remains similar but editor is active)
-  const diffContainer = document.getElementById("local-difficulty-container");
-  if (diffContainer) diffContainer.style.display = "none";
-  
-  localState.step = 1;
+  localState.step = 3;
   localState.scoreA = 0;
   localState.scoreB = 0;
   localState.injuryTime = 0;
@@ -2612,17 +2694,9 @@ function arenaLocalReplay() {
   localState.p2.subsLeft = 4;
   localState.p2.tacsLeft = 2;
   
-  document.getElementById("local-setup-title").textContent = "ESCALAÇÃO JOGADOR 1";
-  document.getElementById("arena-local-player-name").value = localState.p1.name;
-  
-  const select = document.getElementById("arena-local-team-select");
-  if (select) {
-    select.value = localState.p1.team;
-  }
-  
-  arenaLocalTeamChanged();
-  
-  document.getElementById("btn-arena-local-next").textContent = "Confirmar Jogador 1";
+  // Re-initialize original lineups/formations if saved, or just keep edited configurations and run a fresh sim!
+  // To keep it simple and clean, just start simulation directly!
+  triggerLocalSimulation();
 }
 
 function arenaLocalChangeTeams() {
