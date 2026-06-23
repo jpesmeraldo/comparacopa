@@ -613,7 +613,7 @@
             <div id="arena-fireworks" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 50; display: none;"></div>
             
             <!-- Texto da narração sobreposto -->
-            <div id="arena-narrator" style="background: rgba(0,0,0,0.9); color: #0f0; font-family: 'Space Mono', monospace; padding: 20px 30px; border: 3px solid #000; margin-bottom: -15px; position: relative; z-index: 10; font-size: clamp(1.1rem, 2.5vw, 1.6rem); font-weight: bold; min-height: 95px; display: flex; align-items: center; justify-content: center; text-align: center; line-height: 1.4;">
+            <div id="arena-narrator" style="background: rgba(0,0,0,0.9); color: #0f0; font-family: 'Space Mono', monospace; padding: 15px 30px; border: 3px solid #000; margin-bottom: -15px; position: relative; z-index: 10; font-size: clamp(1.1rem, 2.5vw, 1.6rem); font-weight: bold; height: 95px; min-height: 95px; max-height: 95px; box-sizing: border-box; overflow: hidden; display: flex; align-items: center; justify-content: center; text-align: center; line-height: 1.4;">
               Preparando simulação...
             </div>
 
@@ -699,10 +699,11 @@
         <h3 style="color: var(--retro-red); margin-bottom: 10px; font-family: 'Space Mono', monospace;">
           TEMPO RESTANTE: <span id="arena-pause-timer">60</span>s
         </h3>
-        <div id="arena-pause-turn-label" style="display: none; color: var(--retro-yellow); font-family: 'Space Mono', monospace; font-weight: bold; font-size: 1rem; margin-bottom: 10px; text-transform: uppercase; border: 2px dashed var(--retro-yellow); padding: 5px 10px; display: inline-block;"></div>
-        <p style="font-size: 0.85rem; margin-bottom: 15px; color: #aaa;">
-          Substituições: <span id="arena-subs-left">4</span> restantes | Táticas: <span id="arena-tactics-left">2</span> restantes
-        </p>
+        <div id="arena-pause-turn-label" style="display: none; color: var(--retro-yellow); font-family: 'Space Mono', monospace; font-weight: bold; font-size: 1rem; margin-bottom: 15px; text-transform: uppercase; border: 2px dashed var(--retro-yellow); padding: 5px 10px; display: inline-block;"></div>
+        <div style="display: none;">
+          <span id="arena-subs-left"></span>
+          <span id="arena-tactics-left"></span>
+        </div>
         <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
           <button class="neo-btn" id="btn-arena-sub" onclick="arenaOpenSubModal()" style="font-size: 0.9rem;">Fazer Substituição</button>
           <button class="neo-btn" id="btn-arena-tac" onclick="arenaOpenTacModal()" style="font-size: 0.9rem;">Mudar Tática</button>

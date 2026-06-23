@@ -2253,7 +2253,7 @@ function showArenaPausePanel(isPause) {
     const turnLabel = document.getElementById("arena-pause-turn-label");
     if (turnLabel) {
       if (arenaRoomId === "LOCAL" && pState) {
-        turnLabel.textContent = `VEZ DE: ${pState.name.toUpperCase()} (JOGADOR ${activeRole === "p1" ? "1" : "2"})`;
+        turnLabel.textContent = `VEZ DE: JOGADOR ${activeRole === "p1" ? "1" : "2"}`;
         turnLabel.style.display = "inline-block";
       } else {
         turnLabel.style.display = "none";
@@ -2301,7 +2301,7 @@ async function arenaConfirmReadyToResume() {
       const pState = arenaState["p2"];
       const turnLabel = document.getElementById("arena-pause-turn-label");
       if (turnLabel && pState) {
-        turnLabel.textContent = `VEZ DE: ${pState.name.toUpperCase()} (JOGADOR 2)`;
+        turnLabel.textContent = "VEZ DE: JOGADOR 2";
       }
       const subsEl = document.getElementById("arena-subs-left");
       if (subsEl && pState) subsEl.textContent = pState.subsLeft;
