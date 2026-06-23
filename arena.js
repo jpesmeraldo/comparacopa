@@ -254,12 +254,13 @@ function renderLocalSetupField() {
       <div class="player-name-tag">${escapeHtml(player.name)}</div>
     `;
     
-    node.onclick = () => showLocalPlayerSubModal(player, activePlayer);
+    node.onclick = () => showLocalPlayerSubModal(player);
     container.appendChild(node);
   });
 }
 
-function showLocalPlayerSubModal(player, activePlayer) {
+function showLocalPlayerSubModal(player) {
+  const activePlayer = localState.step === 1 ? localState.p1 : localState.p2;
   const modal = document.getElementById("player-modal");
   const teamId = activePlayer.team;
   const flag = getTeamFlag(teamId);
@@ -1104,6 +1105,78 @@ function arenaRenderSetupField(myData) {
     node.onclick = () => arenaShowPlayerModal(player, arenaPlayerRole);
     container.appendChild(node);
   });
+}
+
+function arenaShowPlayerModal(player, role) {
+  const modal = document.getElementById("player-modal");
+  const myData = arenaState[role];
+  if (!myData) return;
+  const teamId = myData.team;
+  const flag = getTeamFlag(teamId);
+
+  document.getElementById("sticker-flag").textContent = flag;
+  document.getElementById("sticker-name").textContent = player.name;
+  document.getElementById("sticker-club").textContent = `${player.pos || 'MF'} | ${player.club || "Seleção"}`;
+  document.getElementById("sticker-ovr").textContent = player.ovr;
+  
+  document.getElementById("sticker-pac").textContent = player.pac || 50;
+  document.getElementById("sticker-sho").textContent = player.sho || 50;
+  document.getElementById("sticker-pas").textContent = player.pas || 50;
+  document.getElementById("sticker-dri").textContent = player.dri || 50;
+  document.getElementById("sticker-def").textContent = player.def || 50;
+  document.getElementById("sticker-phy").textContent = player.phy || 50;
+
+  const selectSub = document.getElementById("select-substitute");
+  selectSub.innerHTML = "";
+  const bench = myData.bench || [];
+
+  if (bench.length === 0) {
+    document.getElementById("substitute-section").style.display = "none";
+  } else {
+    document.getElementById("substitute-section").style.display = "block";
+    bench.forEach((benchPlayer, index) => {
+      const opt = document.createElement("option");
+      opt.value = index;
+      opt.textContent = `${benchPlayer.name} (${benchPlayer.pos || 'MF'} - OVR ${benchPlayer.ovr})`;
+      selectSub.appendChild(opt);
+    });
+  }
+
+  modal.style.display = "flex";
+
+  const btnSub = document.getElementById("btn-confirm-sub");
+  btnSub.onclick = async () => {
+    const selectedSubIndex = selectSub.value;
+    if (selectedSubIndex === "") return;
+
+    const benchPlayer = bench[selectedSubIndex];
+    const squadPlayers = JSON.parse(JSON.stringify(myData.squad));
+    const benchPlayers = JSON.parse(JSON.stringify(myData.bench));
+
+    const titularIndex = squadPlayers.findIndex(p => p.name === player.name);
+    if (titularIndex === -1) return;
+
+    const targetY = player.y;
+    const targetX = player.x;
+
+    delete player.y;
+    delete player.x;
+
+    benchPlayer.y = targetY;
+    benchPlayer.x = targetX;
+
+    squadPlayers[titularIndex] = benchPlayer;
+    benchPlayers[selectedSubIndex] = player;
+
+    modal.style.display = "none";
+
+    const { doc, updateDoc } = window.firebaseAPI;
+    const roomRef = doc(window.firebaseDB, "rooms", arenaRoomId);
+    const updateObj = {};
+    updateObj[`${role}.squad`] = squadPlayers;
+    updateObj[`${role}.bench`] = benchPlayers;
+    await updateDoc(roomRef, updateObj);
+  };
 }
 
 async function arenaChangeFormation(newFormation) {
