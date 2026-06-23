@@ -512,7 +512,7 @@
 
       <div class="arena-active-container" id="arena-active" style="display: none;">
         <!-- Ficha Oficial de Inscrição (Neo-Brutalist Lobby Card) -->
-        <div class="neo-card" style="max-width: 600px; margin: 0 auto 30px auto; padding: 25px; position: relative;">
+        <div class="neo-card" id="arena-lobby-card" style="max-width: 600px; margin: 0 auto 30px auto; padding: 25px; position: relative; overflow: visible;">
           <!-- Retro Sticker Room Code Badge -->
           <div style="position: absolute; top: -20px; right: 15px; background: var(--retro-yellow); color: var(--dark-accent); border: 3px solid var(--dark-accent); box-shadow: 3px 3px 0 var(--dark-accent); padding: 5px 12px; font-family: 'Bebas Neue', cursive; font-size: 1.6rem; transform: rotate(3deg); z-index: 10;">
             SALA: <span id="arena-room-code-badge">----</span>
@@ -617,18 +617,44 @@
               Preparando simulação...
             </div>
             
-            <div id="arena-pitch" class="arena-pitch">
-              <!-- Linhas do campo -->
-              <div class="pitch-lines"></div>
-            <div class="pitch-center-circle"></div>
-            <div class="pitch-center-line"></div>
-            <div class="pitch-penalty-area left"></div>
-            <div class="pitch-penalty-area right"></div>
-            
-            <!-- Botões / Peças -->
-            <div id="arena-pieces-layer" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></div>
-            <div id="arena-ball" class="arena-ball">⚽</div>
-          </div>
+            <div class="field-ad-wrapper" style="margin-top: 15px;">
+              <!-- Banner Publicidade Esquerdo -->
+              <div class="ad-side-skyscraper">
+                <span class="ad-label">Publicidade</span>
+                <ins class="adsbygoogle"
+                     style="display:inline-block;width:120px;height:300px"
+                     data-ad-client="ca-pub-3265573685840385"
+                     data-ad-slot="0000000000"></ins>
+                <script>
+                     (adsbygoogle = window.adsbygoogle || []).push({});
+                </script>
+              </div>
+
+              <div id="arena-pitch" class="arena-pitch">
+                <!-- Linhas do campo -->
+                <div class="pitch-lines"></div>
+                <div class="pitch-center-circle"></div>
+                <div class="pitch-center-line"></div>
+                <div class="pitch-penalty-area left"></div>
+                <div class="pitch-penalty-area right"></div>
+                
+                <!-- Botões / Peças -->
+                <div id="arena-pieces-layer" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></div>
+                <div id="arena-ball" class="arena-ball">⚽</div>
+              </div>
+
+              <!-- Banner Publicidade Direito -->
+              <div class="ad-side-skyscraper">
+                <span class="ad-label">Publicidade</span>
+                <ins class="adsbygoogle"
+                     style="display:inline-block;width:120px;height:300px"
+                     data-ad-client="ca-pub-3265573685840385"
+                     data-ad-slot="0000000000"></ins>
+                <script>
+                     (adsbygoogle = window.adsbygoogle || []).push({});
+                </script>
+              </div>
+            </div>
           
           <!-- Controles de Velocidade da Animação -->
           <div style="text-align: center; margin-top: 10px;">

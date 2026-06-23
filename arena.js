@@ -377,6 +377,12 @@ function arenaLocalNextStep() {
     document.getElementById("arena-local-setup").style.display = "none";
     document.getElementById("arena-active").style.display = "block";
     
+    // Hide lobby card and tactical panel in local simulation
+    const lobbyCard = document.getElementById("arena-lobby-card");
+    if (lobbyCard) lobbyCard.style.display = "none";
+    const configPanel = document.getElementById("arena-tactical-config-panel");
+    if (configPanel) configPanel.style.display = "none";
+    
     // Mimic Firebase structures for local state
     arenaState = localState;
     arenaState.difficulty = "classic"; // Save selected difficulty!
