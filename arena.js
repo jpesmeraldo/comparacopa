@@ -40,14 +40,28 @@ let localStyle = "bal"; // bal, def, off
 // Helper to safely get Team Name and Flag
 function getTeamName(teamId) {
   if (!teamId) return "Time";
-  const t = window.comparacopaData.teams.find(x => x.id === teamId);
-  return t ? t.name : teamId;
+  if (window.comparacopaData && window.comparacopaData.groups) {
+    for (const grp in window.comparacopaData.groups) {
+      const team = window.comparacopaData.groups[grp].find(t => t.id === teamId);
+      if (team) return team.name;
+    }
+  }
+  return teamId;
 }
 
 function getTeamFlag(teamId) {
   if (!teamId) return "🏳️";
-  const t = window.comparacopaData.teams.find(x => x.id === teamId);
-  return t ? t.flag : "🏳️";
+  if (window.comparacopaData && window.comparacopaData.groups) {
+    for (const grp in window.comparacopaData.groups) {
+      const team = window.comparacopaData.groups[grp].find(t => t.id === teamId);
+      if (team) return team.flag;
+    }
+  }
+  const fallbacks = {
+    BRA: "🇧🇷", ARG: "🇦🇷", FRA: "🇫🇷", ESP: "🇪🇸",
+    ENG: "🏴", GER: "🇩🇪", POR: "🇵🇹", URU: "🇺🇾"
+  };
+  return fallbacks[teamId] || "🏳️";
 }
 
 // Select Arena Mode from Lobby
