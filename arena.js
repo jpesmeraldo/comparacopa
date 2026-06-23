@@ -625,9 +625,17 @@ async function submitTournamentConfig() {
 }
 
 function chooseRandomCpuTeam() {
-  const teams = window.comparacopaData.teams;
-  if (!teams || teams.length === 0) return null;
-  const t = teams[Math.floor(Math.random() * teams.length)];
+  if (!window.comparacopaData || !window.comparacopaData.groups) return null;
+  const allTeams = [];
+  for (const group in window.comparacopaData.groups) {
+    window.comparacopaData.groups[group].forEach(t => {
+      if (!allTeams.some(existing => existing.id === t.id)) {
+        allTeams.push(t);
+      }
+    });
+  }
+  if (allTeams.length === 0) return null;
+  const t = allTeams[Math.floor(Math.random() * allTeams.length)];
   return t.id;
 }
 
@@ -932,9 +940,9 @@ function updateArenaUI(data) {
   // Slots List
   const s1Name = document.getElementById("arena-slot-1-name");
   if (s1Name) {
-    let p1DisplayName = "P1";
-    if (data.p1.name && !data.p1.name.includes("Host (P1)")) {
-      p1DisplayName = `${data.p1.name.toUpperCase()} [P1]`;
+    let p1DisplayName = "JOGADOR 1";
+    if (data.p1.name && data.p1.name !== "P1" && data.p1.name !== "Host (P1)") {
+      p1DisplayName = data.p1.name.toUpperCase();
     }
     s1Name.textContent = p1DisplayName;
     if (arenaPlayerRole === "p1") s1Name.textContent += " [VOCÊ]";
@@ -942,7 +950,10 @@ function updateArenaUI(data) {
   const s1Status = document.getElementById("arena-slot-1-status");
   if (s1Status) {
     if (data.p1.ready) {
-      s1Status.textContent = "PRONTO ✔";
+      const flag = getTeamFlag(data.p1.team);
+      const name = getTeamName(data.p1.team).toUpperCase();
+      const form = data.p1.formation || "4-3-3";
+      s1Status.textContent = `CONFIRMADO: ${flag} ${name} [${form}]`;
       s1Status.style.color = "green";
     } else {
       s1Status.textContent = data.p1.team ? "ESCALANDO TIME..." : "AGUARDANDO ESCALAÇÃO...";
@@ -959,17 +970,23 @@ function updateArenaUI(data) {
     if (playVsCpuBtn) playVsCpuBtn.style.display = "none";
     if (s2Status) s2Status.style.display = "block";
     
-    let p2DisplayName = data.p2.name || "JOGADOR 2";
+    let p2DisplayName = "JOGADOR 2";
+    if (data.p2.name && data.p2.name !== "Jogador B" && data.p2.name !== "P2" && data.p2.name !== "JOGADOR 2") {
+      p2DisplayName = data.p2.name.toUpperCase();
+    }
     if (data.p2.type === "cpu") p2DisplayName = "CPU";
     if (s2Name) {
-      s2Name.textContent = `${p2DisplayName.toUpperCase()} [P2]`;
+      s2Name.textContent = p2DisplayName;
       if (arenaPlayerRole === "p2") s2Name.textContent += " [VOCÊ]";
       s2Name.style.color = "#000";
     }
     
     if (s2Status) {
       if (data.p2.ready) {
-        s2Status.textContent = "PRONTO ✔";
+        const flag = getTeamFlag(data.p2.team);
+        const name = getTeamName(data.p2.team).toUpperCase();
+        const form = data.p2.formation || "4-3-3";
+        s2Status.textContent = `CONFIRMADO: ${flag} ${name} [${form}]`;
         s2Status.style.color = "green";
       } else {
         s2Status.textContent = data.p2.team ? "ESCALANDO TIME..." : "AGUARDANDO ESCALAÇÃO...";
