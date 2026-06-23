@@ -137,6 +137,11 @@ function arenaReturnToLobby() {
   const lobbyCard = document.getElementById("arena-lobby-card");
   if (lobbyCard) lobbyCard.style.display = "block";
   
+  if (window.arenaLobbyInterval) {
+    clearInterval(window.arenaLobbyInterval);
+    window.arenaLobbyInterval = null;
+  }
+  
   // Show lobby
   document.getElementById("arena-lobby").style.display = "block";
   arenaHideConfig();
@@ -892,6 +897,11 @@ function listenToRoom(code) {
     if (data.mode === "friendly") {
       updateArenaUI(data);
       
+      // Auto play when both players are ready in the lobby!
+      if (data.status === "connected" && data.p1.ready && data.p2 && data.p2.ready && arenaPlayerRole === "p1") {
+        triggerSimulation(data);
+      }
+      
       if (data.status === "playing" && data.p1.readyToResume && data.p2.readyToResume && arenaPlayerRole === "p1") {
         advanceOnlinePhase(data);
       }
@@ -1017,20 +1027,88 @@ function updateArenaUI(data) {
   if (data.status === "connected") {
     if (configPanel) configPanel.style.display = "block";
     const myData = arenaPlayerRole === "p1" ? data.p1 : data.p2;
+    const opponentData = arenaPlayerRole === "p1" ? data.p2 : data.p1;
+    
     if (myData) {
       const nameInput = document.getElementById("arena-player-name-input");
       if (nameInput && document.activeElement !== nameInput) {
         nameInput.value = myData.name || "";
       }
       
-      const confirmReadyBtn = document.getElementById("btn-arena-confirm-ready");
-      if (confirmReadyBtn) {
-        if (myData.ready) {
-          confirmReadyBtn.textContent = "CANCELAR CONFIRMAÇÃO";
-          confirmReadyBtn.className = "neo-btn btn-red";
+      // Handle countdown timer if one player is ready
+      const timerWarning = document.getElementById("arena-timer-warning");
+      const confirmBtn = document.getElementById("btn-arena-confirm-ready");
+      
+      if (window.arenaLobbyInterval) {
+        clearInterval(window.arenaLobbyInterval);
+        window.arenaLobbyInterval = null;
+      }
+      
+      if (data.firstConfirmTime) {
+        const elapsed = Math.floor((Date.now() - new Date(data.firstConfirmTime).getTime()) / 1000);
+        const timeLeft = Math.max(0, 30 - elapsed);
+        
+        if (!myData.ready) {
+          if (timerWarning) {
+            timerWarning.style.display = "block";
+            timerWarning.textContent = `⚠️ O ADVERSÁRIO CONFIRMOU! CONFIRME SEU TIME EM ${timeLeft}s OU SERÁ SELECIONADO UM TIME ALEATÓRIO!`;
+          }
+          if (confirmBtn) {
+            confirmBtn.textContent = `CONFIRMAR (${timeLeft}s)`;
+            confirmBtn.disabled = false;
+            confirmBtn.className = "neo-btn btn-green";
+          }
+        } else if (myData.ready && opponentData && !opponentData.ready) {
+          if (timerWarning) {
+            timerWarning.style.display = "block";
+            timerWarning.textContent = `AGUARDANDO O ADVERSÁRIO CONFIRMAR... TEMPO RESTANTE: ${timeLeft}s`;
+          }
+          if (confirmBtn) {
+            confirmBtn.textContent = "AGUARDANDO ADVERSÁRIO...";
+            confirmBtn.disabled = true;
+            confirmBtn.className = "neo-btn";
+          }
         } else {
-          confirmReadyBtn.textContent = "CONFIRMAR";
-          confirmReadyBtn.className = "neo-btn btn-green";
+          if (timerWarning) timerWarning.style.display = "none";
+        }
+        
+        // Start local ticker interval
+        window.arenaLobbyInterval = setInterval(() => {
+          const freshElapsed = Math.floor((Date.now() - new Date(data.firstConfirmTime).getTime()) / 1000);
+          const freshTimeLeft = Math.max(0, 30 - freshElapsed);
+          
+          if (!myData.ready) {
+            if (timerWarning) {
+              timerWarning.style.display = "block";
+              timerWarning.textContent = `⚠️ O ADVERSÁRIO CONFIRMOU! CONFIRME SEU TIME EM ${freshTimeLeft}s OU SERÁ SELECIONADO UM TIME ALEATÓRIO!`;
+            }
+            if (confirmBtn) {
+              confirmBtn.textContent = `CONFIRMAR (${freshTimeLeft}s)`;
+            }
+          } else if (myData.ready && opponentData && !opponentData.ready) {
+            if (timerWarning) {
+              timerWarning.style.display = "block";
+              timerWarning.textContent = `AGUARDANDO O ADVERSÁRIO CONFIRMAR... TEMPO RESTANTE: ${freshTimeLeft}s`;
+            }
+          }
+          
+          if (freshTimeLeft <= 0) {
+            clearInterval(window.arenaLobbyInterval);
+            triggerAutoReady(data);
+          }
+        }, 1000);
+      } else {
+        if (timerWarning) timerWarning.style.display = "none";
+        if (confirmBtn) {
+          if (myData.ready) {
+            confirmBtn.textContent = "AGUARDANDO ADVERSÁRIO...";
+            confirmBtn.disabled = true;
+            confirmBtn.className = "neo-btn";
+          } else {
+            confirmBtn.textContent = "CONFIRMAR";
+            confirmBtn.disabled = false;
+            confirmBtn.className = "neo-btn btn-green";
+          }
         }
       }
       
@@ -1051,6 +1129,12 @@ function updateArenaUI(data) {
     }
   } else {
     if (configPanel) configPanel.style.display = "none";
+    const timerWarning = document.getElementById("arena-timer-warning");
+    if (timerWarning) timerWarning.style.display = "none";
+    if (window.arenaLobbyInterval) {
+      clearInterval(window.arenaLobbyInterval);
+      window.arenaLobbyInterval = null;
+    }
     // Hide slots card during active simulation
     const lobbyCard = document.getElementById("arena-lobby-card");
     if (lobbyCard) {
@@ -1123,16 +1207,79 @@ async function arenaToggleReady(playerNum) {
   const val = document.getElementById("arena-team1").value;
   if (!val) return alert("Selecione um time primeiro!");
   
-  document.getElementById("btn-arena-ready-p1").disabled = true;
-  document.getElementById("btn-arena-ready-p1").textContent = "AGUARDANDO ADVERSÁRIO...";
+  const btn = document.getElementById("btn-arena-confirm-ready");
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = "AGUARDANDO ADVERSÁRIO...";
+  }
   
   const { doc, updateDoc } = window.firebaseAPI;
   const roomRef = doc(window.firebaseDB, "rooms", arenaRoomId);
   
+  const nowStr = new Date().toISOString();
+  const data = arenaState;
+  
   if (arenaPlayerRole === "p1") {
-    await updateDoc(roomRef, { "p1.ready": true });
+    const updates = { "p1.ready": true };
+    if (!data.p2 || !data.p2.ready) {
+      updates.firstConfirmTime = nowStr;
+      updates.firstConfirmRole = "p1";
+    }
+    await updateDoc(roomRef, updates);
   } else {
-    await updateDoc(roomRef, { "p2.ready": true });
+    const updates = { "p2.ready": true };
+    if (!data.p1 || !data.p1.ready) {
+      updates.firstConfirmTime = nowStr;
+      updates.firstConfirmRole = "p2";
+    }
+    await updateDoc(roomRef, updates);
+  }
+}
+
+async function triggerAutoReady(data) {
+  if (window.isAutoConfirming) return;
+  window.isAutoConfirming = true;
+  
+  const { doc, updateDoc } = window.firebaseAPI;
+  const roomRef = doc(window.firebaseDB, "rooms", data.id);
+  const updates = {};
+  
+  if (!data.p1.ready) {
+    const randomTeam = chooseRandomCpuTeam();
+    if (typeof ensureSquadAndStats === "function") {
+      ensureSquadAndStats(randomTeam);
+    }
+    const squadData = window.comparacopaData.squads[randomTeam];
+    updates["p1.team"] = randomTeam;
+    updates["p1.squad"] = JSON.parse(JSON.stringify(squadData.players));
+    updates["p1.bench"] = JSON.parse(JSON.stringify(squadData.bench)).map((p, idx) => ({ ...p, no: p.no || (12 + idx) }));
+    updates["p1.formation"] = squadData.formation || "4-3-3";
+    updates["p1.ready"] = true;
+  }
+  
+  if (!data.p2 || !data.p2.ready) {
+    const randomTeam = chooseRandomCpuTeam();
+    if (typeof ensureSquadAndStats === "function") {
+      ensureSquadAndStats(randomTeam);
+    }
+    const squadData = window.comparacopaData.squads[randomTeam];
+    updates["p2.team"] = randomTeam;
+    updates["p2.squad"] = JSON.parse(JSON.stringify(squadData.players));
+    updates["p2.bench"] = JSON.parse(JSON.stringify(squadData.bench)).map((p, idx) => ({ ...p, no: p.no || (12 + idx) }));
+    updates["p2.formation"] = squadData.formation || "4-3-3";
+    updates["p2.ready"] = true;
+    if (!data.p2) {
+      updates["p2.name"] = "JOGADOR 2";
+      updates["p2.style"] = "bal";
+    }
+  }
+  
+  try {
+    await updateDoc(roomRef, updates);
+  } catch (err) {
+    console.error("Erro ao auto-confirmar:", err);
+  } finally {
+    window.isAutoConfirming = false;
   }
 }
 

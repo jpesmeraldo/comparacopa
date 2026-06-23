@@ -554,8 +554,8 @@
 
           <!-- Lobby Action Panel -->
           <div style="display: flex; gap: 15px;">
-            <button class="neo-btn" onclick="arenaCopyRoomLink()" style="flex: 1; padding: 12px; font-weight: bold; font-family: 'Space Mono', monospace;">CONVIDAR P2</button>
-            <button class="neo-btn btn-red" id="btn-lobby-play-now" onclick="arenaLobbyPlayNow()" style="flex: 1.5; padding: 12px; font-weight: bold; font-size: 1.1rem;" disabled>JOGAR AGORA →</button>
+            <button class="neo-btn" onclick="arenaCopyRoomLink()" style="width: 100%; padding: 12px; font-weight: bold; font-family: 'Space Mono', monospace;">CONVIDAR P2</button>
+            <button class="neo-btn btn-red" id="btn-lobby-play-now" onclick="arenaLobbyPlayNow()" style="display: none;" disabled>JOGAR AGORA →</button>
           </div>
         </div>
 
@@ -601,6 +601,9 @@
               <div id="arena-setup-player-nodes" style="position: absolute; inset: 0;"></div>
             </div>
           </div>
+
+          <!-- Aviso de Timer -->
+          <div id="arena-timer-warning" style="display: none; background: var(--retro-yellow); color: var(--dark-accent); border: 2px solid var(--dark-accent); box-shadow: 2px 2px 0 var(--dark-accent); padding: 10px; font-weight: bold; margin-bottom: 15px; font-family: 'Space Mono', monospace; font-size: 0.85rem; text-align: center;"></div>
 
           <!-- Confirm button -->
           <button class="neo-btn btn-green" id="btn-arena-confirm-ready" onclick="arenaToggleReady(1)" style="width: 100%; padding: 15px; font-weight: bold; font-size: 1.1rem; text-transform: uppercase;">CONFIRMAR</button>
