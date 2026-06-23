@@ -2574,7 +2574,7 @@ function arenaShareSummary() {
   const flagB = getTeamFlag(arenaState.p2.team);
   const nameB = getTeamName(arenaState.p2.team);
   
-  const text = `🏆 FIM DE JOGO na Comparacopa Arena!\n\n${flagA} ${nameA} ${scoreA} x ${scoreB} ${nameB} ${flagB}\n\nDesafie seus amigos e monte a sua seleção!`;
+  const text = `🏆 FIM DE JOGO na Comparacopa Arena!\n\n${flagA} ${nameA} ${scoreA} x ${scoreB} ${nameB} ${flagB}\n\nDesafie seus amigos e monte a sua seleção!\n👉 Acesse: https://www.comparacopa.com.br`;
   
   if (navigator.share) {
     navigator.share({
