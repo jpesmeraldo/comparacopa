@@ -2983,7 +2983,7 @@ async function arenaOnlineReplay() {
   const { doc, updateDoc } = window.firebaseAPI;
   const roomRef = doc(window.firebaseDB, "rooms", arenaRoomId);
   
-  await updateDoc(roomRef, {
+  const updates = {
     status: "connected",
     state: "starting",
     scoreA: 0,
@@ -2994,9 +2994,28 @@ async function arenaOnlineReplay() {
     firstConfirmRole: null,
     "p1.ready": true,
     "p1.readyToResume": false,
+    "p1.subsLeft": 4,
+    "p1.tacsLeft": 2,
     "p2.ready": true,
-    "p2.readyToResume": false
-  });
+    "p2.readyToResume": false,
+    "p2.subsLeft": 4,
+    "p2.tacsLeft": 2
+  };
+  
+  if (arenaState.p1.team && window.comparacopaData && window.comparacopaData.squads[arenaState.p1.team]) {
+    const squadData1 = window.comparacopaData.squads[arenaState.p1.team];
+    updates["p1.squad"] = JSON.parse(JSON.stringify(squadData1.players));
+    updates["p1.bench"] = JSON.parse(JSON.stringify(squadData1.bench)).map((p, idx) => ({ ...p, no: p.no || (12 + idx) }));
+    updates["p1.formation"] = squadData1.formation || "4-3-3";
+  }
+  if (arenaState.p2.team && window.comparacopaData && window.comparacopaData.squads[arenaState.p2.team]) {
+    const squadData2 = window.comparacopaData.squads[arenaState.p2.team];
+    updates["p2.squad"] = JSON.parse(JSON.stringify(squadData2.players));
+    updates["p2.bench"] = JSON.parse(JSON.stringify(squadData2.bench)).map((p, idx) => ({ ...p, no: p.no || (12 + idx) }));
+    updates["p2.formation"] = squadData2.formation || "4-3-3";
+  }
+  
+  await updateDoc(roomRef, updates);
 }
 
 async function arenaOnlineChangeTeams() {
