@@ -137,6 +137,9 @@ function arenaReturnToLobby() {
   const lobbyCard = document.getElementById("arena-lobby-card");
   if (lobbyCard) lobbyCard.style.display = "block";
   
+  const inviteBtn = document.getElementById("btn-lobby-invite-p2");
+  if (inviteBtn) inviteBtn.style.display = "block";
+  
   if (window.arenaLobbyInterval) {
     clearInterval(window.arenaLobbyInterval);
     window.arenaLobbyInterval = null;
@@ -945,6 +948,12 @@ function updateArenaUI(data) {
   const hasP2 = !!(data.p2 && (data.p2.team || data.p2.name || data.p2.type === "cpu"));
   if (vacancyEl) {
     vacancyEl.textContent = hasP2 ? "Inscrições - 0 vagas abertas" : "Inscrições - 1 vaga aberta";
+  }
+  
+  // Show/Hide Invite button for P1 / P2
+  const inviteBtn = document.getElementById("btn-lobby-invite-p2");
+  if (inviteBtn) {
+    inviteBtn.style.display = (arenaPlayerRole === "p1") ? "block" : "none";
   }
   
   // Slots List
