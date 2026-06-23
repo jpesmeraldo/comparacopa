@@ -900,7 +900,7 @@ function renderTacticalField() {
   document.getElementById("coach-display").textContent = `Técnico: ${coachName} (${formation})`;
   
   // Obter cores do time
-  const colors = window.comparacopaData.teamColors[teamId] || { primary: "#222", secondary: "#fff" };
+  const colors = window.comparacopaData.getTeamColors(teamId);
 
   // Renderizar o seletor de formação correspondente ao time atual
   renderFormationSelector(squad.formation || "4-3-3");

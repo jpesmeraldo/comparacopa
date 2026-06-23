@@ -441,6 +441,19 @@ function triggerLocalSimulation() {
   localState.p1.tacsLeft = 2;
   localState.p2.subsLeft = 4;
   localState.p2.tacsLeft = 2;
+  delete localState.penA;
+  delete localState.penB;
+  
+  // Reset scoreboard DOM stats counters
+  const subA = document.getElementById("arena-team-a-subs");
+  if (subA) subA.textContent = 4;
+  const tacA = document.getElementById("arena-team-a-tacs");
+  if (tacA) tacA.textContent = 2;
+
+  const subB = document.getElementById("arena-team-b-subs");
+  if (subB) subB.textContent = 4;
+  const tacB = document.getElementById("arena-team-b-tacs");
+  if (tacB) tacB.textContent = 2;
   
   localState.state = "first_half_1";
   arenaStartLocalPhase("first_half_1");
@@ -460,6 +473,8 @@ function arenaStartLocalPhase(phaseName) {
   let simData;
   if (phaseName === "penalties") {
     simData = generateArenaPenalties(localState);
+    localState.penA = simData.penA;
+    localState.penB = simData.penB;
   } else {
     const phaseDef = phases[phaseName];
     if (!phaseDef) return;
@@ -2172,7 +2187,7 @@ function generateArenaPenalties(stateData) {
     }
   }
   
-  return { events };
+  return { events, penA, penB };
 }
 
 function arenaRenderPenaltiesPitch(shooterRole) {
@@ -2694,8 +2709,20 @@ function arenaLocalReplay() {
   localState.p2.subsLeft = 4;
   localState.p2.tacsLeft = 2;
   
-  // Re-initialize original lineups/formations if saved, or just keep edited configurations and run a fresh sim!
-  // To keep it simple and clean, just start simulation directly!
+  // Re-initialize original lineups/formations
+  if (localState.p1.team && window.comparacopaData && window.comparacopaData.squads[localState.p1.team]) {
+    const squadData1 = window.comparacopaData.squads[localState.p1.team];
+    localState.p1.squad = JSON.parse(JSON.stringify(squadData1.players));
+    localState.p1.bench = JSON.parse(JSON.stringify(squadData1.bench)).map((p, idx) => ({ ...p, no: p.no || (12 + idx) }));
+    localState.p1.formation = squadData1.formation || "4-3-3";
+  }
+  if (localState.p2.team && window.comparacopaData && window.comparacopaData.squads[localState.p2.team]) {
+    const squadData2 = window.comparacopaData.squads[localState.p2.team];
+    localState.p2.squad = JSON.parse(JSON.stringify(squadData2.players));
+    localState.p2.bench = JSON.parse(JSON.stringify(squadData2.bench)).map((p, idx) => ({ ...p, no: p.no || (12 + idx) }));
+    localState.p2.formation = squadData2.formation || "4-3-3";
+  }
+  
   triggerLocalSimulation();
 }
 
