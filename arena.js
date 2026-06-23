@@ -59,8 +59,30 @@ function getTeamFlag(teamId) {
     }
   }
   const fallbacks = {
-    BRA: "🇧🇷", ARG: "🇦🇷", FRA: "🇫🇷", ESP: "🇪🇸",
-    ENG: "🏴", GER: "🇩🇪", POR: "🇵🇹", URU: "🇺🇾"
+    // Grupo A
+    MEX: "🇲🇽", RSA: "🇿🇦", KOR: "🇰🇷", CZE: "🇨🇿",
+    // Grupo B
+    CAN: "🇨🇦", SUI: "🇨🇭", QAT: "🇶🇦", BIH: "🇧🇦",
+    // Grupo C
+    BRA: "🇧🇷", MAR: "🇲🇦", SCO: "🏴󠁧󠁢󠁳󠁣󠁴󠁿", HAI: "🇭🇹",
+    // Grupo D
+    USA: "🇺🇸", AUS: "🇦🇺", TUR: "🇹🇷", PAR: "🇵🇾",
+    // Grupo E
+    GER: "🇩🇪", CIV: "🇨🇮", ECU: "🇪🇨", CUW: "🇨🇼",
+    // Grupo F
+    SWE: "🇸🇪", JPN: "🇯🇵", NED: "🇳🇱", TUN: "🇹🇳",
+    // Grupo G
+    NZL: "🇳🇿", IRN: "🇮🇷", BEL: "🇧🇪", EGY: "🇪🇬",
+    // Grupo H
+    URU: "🇺🇾", KSA: "🇸🇦", ESP: "🇪🇸", CPV: "🇨🇻",
+    // Grupo I
+    FRA: "🇫🇷", NOR: "🇳🇴", SEN: "🇸🇳", IRQ: "🇮🇶",
+    // Grupo J
+    POR: "🇵🇹", NGA: "🇳🇬", UKR: "🇺🇦", HON: "🇭🇳",
+    // Grupo K
+    COL: "🇨🇴", GHA: "🇬🇭", POL: "🇵🇱", ENG: "🏴󠁧󠁢󠁥󠁮󠁧󠁿",
+    // Grupo L
+    ARG: "🇦🇷", ALG: "🇩🇿", CRO: "🇭🇷", PAN: "🇵🇦"
   };
   return fallbacks[teamId] || "🏳️";
 }
