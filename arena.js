@@ -955,7 +955,12 @@ function updateArenaUI(data) {
       p1DisplayName = data.p1.name.toUpperCase();
     }
     s1Name.textContent = p1DisplayName;
-    if (arenaPlayerRole === "p1") s1Name.textContent += " [VOCÊ]";
+    if (arenaPlayerRole === "p1") {
+      s1Name.textContent += " [VOCÊ]";
+      s1Name.style.fontWeight = "bold";
+    } else {
+      s1Name.style.fontWeight = "normal";
+    }
   }
   const s1Status = document.getElementById("arena-slot-1-status");
   if (s1Status) {
@@ -987,7 +992,12 @@ function updateArenaUI(data) {
     if (data.p2.type === "cpu") p2DisplayName = "CPU";
     if (s2Name) {
       s2Name.textContent = p2DisplayName;
-      if (arenaPlayerRole === "p2") s2Name.textContent += " [VOCÊ]";
+      if (arenaPlayerRole === "p2") {
+        s2Name.textContent += " [VOCÊ]";
+        s2Name.style.fontWeight = "bold";
+      } else {
+        s2Name.style.fontWeight = "normal";
+      }
       s2Name.style.color = "#000";
     }
     
