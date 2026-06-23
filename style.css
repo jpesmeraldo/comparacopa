@@ -826,7 +826,7 @@ select.neo-select:focus {
   margin: 15px auto 25px auto;
   max-width: 728px;
   min-height: 90px;
-  background: var(--off-white);
+  background: #ffffff;
   border: var(--border-size) dashed var(--dark-accent);
   box-shadow: var(--neo-shadow);
   display: flex;
@@ -842,7 +842,7 @@ select.neo-select:focus {
   margin: 30px auto;
   max-width: 728px;
   min-height: 90px;
-  background: var(--off-white);
+  background: #ffffff;
   border: var(--border-size) dashed var(--dark-accent);
   box-shadow: var(--neo-shadow);
   display: flex;
@@ -873,7 +873,7 @@ select.neo-select:focus {
   display: none;
   align-self: stretch;
   min-height: 300px;
-  background: var(--off-white);
+  background: #ffffff;
   border: var(--border-size) dashed var(--dark-accent);
   box-shadow: var(--neo-shadow);
   align-items: center;

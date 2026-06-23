@@ -23,6 +23,7 @@ let localState = {
 
 // Speed control
 let arenaAnimSpeed = 1.0;
+let localActivePausePlayer = "p1";
 
 // Config state tracking
 let onlineFriendlyTime = 30;
@@ -212,7 +213,7 @@ function renderLocalSetupField() {
   
   const activePlayer = localState.step === 1 ? localState.p1 : localState.p2;
   const teamId = activePlayer.team;
-  const colors = window.comparacopaData.teamColors[teamId] || { primary: "#222", secondary: "#fff" };
+  const colors = window.comparacopaData.getTeamColors(teamId);
   
   // Render formation buttons
   const grid = document.getElementById("arena-local-formation-btn-grid");
@@ -1116,7 +1117,7 @@ function arenaRenderSetupField(myData) {
   }
   
   const teamId = myData.team;
-  const colors = window.comparacopaData.teamColors[teamId] || { primary: "#222", secondary: "#fff" };
+  const colors = window.comparacopaData.getTeamColors(teamId);
   const coords = formationsCoordinates[myData.formation || "4-3-3"];
   
   myData.squad.forEach((player, index) => {
@@ -1752,7 +1753,26 @@ function runAnimation(simData) {
   const playNext = () => {
     if (currentEventIndex >= simData.events.length) {
       // Finished phase
-      if (arenaState.state === "finished") {
+      let isGameFinished = false;
+      if (arenaRoomId === "LOCAL") {
+        const currentState = localState.state;
+        if (currentState === "penalties") {
+          isGameFinished = true;
+        } else if (currentState === "second_half_2" && localState.scoreA !== localState.scoreB) {
+          isGameFinished = true;
+        } else if (currentState === "extra_time_2" && localState.scoreA !== localState.scoreB) {
+          isGameFinished = true;
+        }
+      } else {
+        if (arenaState.state === "finished") {
+          isGameFinished = true;
+        }
+      }
+
+      if (isGameFinished) {
+        if (arenaRoomId === "LOCAL") {
+          localState.state = "finished";
+        }
         arenaShowMatchSummary();
       } else {
         showArenaPausePanel(true);
@@ -1788,23 +1808,50 @@ function runAnimation(simData) {
     p1Pieces.forEach(el => el.style.transform = "scale(1)");
     p2Pieces.forEach(el => el.style.transform = "scale(1)");
 
+    const getPieceCoords = (selector) => {
+      const pieces = document.querySelectorAll(selector);
+      if (pieces.length > 0) {
+        const p = pieces[Math.floor(Math.random() * pieces.length)];
+        return { left: p.style.left, top: p.style.top };
+      }
+      return null;
+    };
+
+    let targetCoords = null;
+
     if (ev.anim === "start") {
-      ball.style.left = "50%";
-      ball.style.top = "50%";
+      targetCoords = { left: "50%", top: "50%" };
     } else if (ev.anim === "shoot-p1") {
-      ball.style.left = "90%";
-      ball.style.top = "50%";
+      const coin = Math.random();
+      if (coin < 0.6) {
+        targetCoords = getPieceCoords('.p1-piece');
+      } else {
+        // Move to P2's goal (right side of the field)
+        targetCoords = { left: "93%", top: "50%" };
+      }
       p1Pieces.forEach(el => el.style.transform = "scale(1.3)");
     } else if (ev.anim === "shoot-p2") {
-      ball.style.left = "10%";
-      ball.style.top = "50%";
+      const coin = Math.random();
+      if (coin < 0.6) {
+        targetCoords = getPieceCoords('.p2-piece');
+      } else {
+        // Move to P1's goal (left side of the field)
+        targetCoords = { left: "7%", top: "50%" };
+      }
       p2Pieces.forEach(el => el.style.transform = "scale(1.3)");
     } else if (ev.anim === "mid") {
-      ball.style.left = (40 + Math.random() * 20) + "%";
-      ball.style.top = (30 + Math.random() * 40) + "%";
+      // Pick a random piece on the field
+      targetCoords = getPieceCoords('.arena-piece');
+      if (!targetCoords) {
+        targetCoords = { left: (40 + Math.random() * 20) + "%", top: (30 + Math.random() * 40) + "%" };
+      }
     } else if (ev.anim === "reset") {
-      ball.style.left = "50%";
-      ball.style.top = "50%";
+      targetCoords = { left: "50%", top: "50%" };
+    }
+
+    if (targetCoords) {
+      ball.style.left = targetCoords.left;
+      ball.style.top = targetCoords.top;
     }
     
     currentEventIndex++;
@@ -1934,8 +1981,8 @@ function generateArenaPhase(startMin, endMin, stateData) {
   const totalPower = attackPowerA + attackPowerB;
   const posA = Math.round((attackPowerA / totalPower) * 100);
 
-  let chanceGoalA = 4.0 + (attackPowerA - defensePowerB) * 1.5;
-  let chanceGoalB = 4.0 + (attackPowerB - defensePowerA) * 1.5;
+  let chanceGoalA = (4.0 + (attackPowerA - defensePowerB) * 1.5) / 2.5;
+  let chanceGoalB = (4.0 + (attackPowerB - defensePowerA) * 1.5) / 2.5;
 
   // Apply Difficulty mode: "classic" vs "almanac" (random variance)
   const diff = stateData.difficulty || "classic";
@@ -1965,7 +2012,7 @@ function generateArenaPhase(startMin, endMin, stateData) {
   if (min === 106) events.push({ time: "106'", text: "Últimos 15 minutos de prorrogação!", anim: "start" });
 
   while(min < endMin) {
-    min += Math.floor(Math.random() * 5) + 3;
+    min += Math.floor(Math.random() * 3) + 1;
     if (min >= endMin) min = endMin;
     
     const randomVal = Math.random() * 100;
@@ -2106,8 +2153,8 @@ function arenaRenderPitch(data) {
   const coordsP1 = typeof formationsCoordinates !== "undefined" ? formationsCoordinates[data.p1.formation || "4-3-3"] : null;
   const coordsP2 = typeof formationsCoordinates !== "undefined" ? formationsCoordinates[data.p2.formation || "4-3-3"] : null;
   
-  const colorsP1 = window.comparacopaData.teamColors[data.p1.team] || { primary: "#222", secondary: "#fff" };
-  const colorsP2 = window.comparacopaData.teamColors[data.p2.team] || { primary: "#222", secondary: "#fff" };
+  const colorsP1 = window.comparacopaData.getTeamColors(data.p1.team);
+  const colorsP2 = window.comparacopaData.getTeamColors(data.p2.team);
   
   // Render Player 1 Pieces (Left)
   data.p1.squad.forEach((player, index) => {
@@ -2167,6 +2214,9 @@ function startArenaPauseTimer(seconds) {
 
 function showArenaPausePanel(isPause) {
   if (isPause) {
+    if (arenaRoomId === "LOCAL") {
+      localActivePausePlayer = "p1";
+    }
     document.getElementById("arena-pause-panel").style.display = "block";
     const btn = document.getElementById("btn-arena-resume");
     if (btn) {
@@ -2188,12 +2238,44 @@ function showArenaPausePanel(isPause) {
     if (elTeamA) elTeamA.textContent = getTeamName(arenaState.p1.team);
     const elTeamB = document.getElementById("arena-team-b-name");
     if (elTeamB) elTeamB.textContent = getTeamName(arenaState.p2.team);
+
+    // Update remaining counters for active player
+    const activeRole = (arenaRoomId === "LOCAL") ? localActivePausePlayer : arenaPlayerRole;
+    const pState = arenaState[activeRole];
+    if (pState) {
+      const subsEl = document.getElementById("arena-subs-left");
+      if (subsEl) subsEl.textContent = pState.subsLeft;
+      const tacsEl = document.getElementById("arena-tactics-left");
+      if (tacsEl) tacsEl.textContent = pState.tacsLeft;
+    }
+
+    // Update active turn badge
+    const turnLabel = document.getElementById("arena-pause-turn-label");
+    if (turnLabel) {
+      if (arenaRoomId === "LOCAL" && pState) {
+        turnLabel.textContent = `VEZ DE: ${pState.name.toUpperCase()} (JOGADOR ${activeRole === "p1" ? "1" : "2"})`;
+        turnLabel.style.display = "inline-block";
+      } else {
+        turnLabel.style.display = "none";
+      }
+    }
+
+    // Update individual team scoreboard stats
+    const subA = document.getElementById("arena-team-a-subs");
+    if (subA) subA.textContent = arenaState.p1.subsLeft;
+    const tacA = document.getElementById("arena-team-a-tacs");
+    if (tacA) tacA.textContent = arenaState.p1.tacsLeft;
+
+    const subB = document.getElementById("arena-team-b-subs");
+    if (subB) subB.textContent = arenaState.p2.subsLeft;
+    const tacB = document.getElementById("arena-team-b-tacs");
+    if (tacB) tacB.textContent = arenaState.p2.tacsLeft;
     
     if (!isAnimating) {
       arenaRenderPitch(arenaState);
     }
     
-    startArenaPauseTimer(30);
+    startArenaPauseTimer(60);
   } else {
     document.getElementById("arena-pause-panel").style.display = "none";
     clearInterval(arenaPauseTimerInterval);
@@ -2206,11 +2288,32 @@ async function arenaConfirmReadyToResume() {
     btn.disabled = true;
     btn.textContent = "AGUARDANDO...";
   }
-  const wait = document.getElementById("arena-pause-waiting");
-  if (wait) wait.style.display = "block";
   
   if (arenaRoomId === "LOCAL") {
-    // Mode local handles itself
+    if (localActivePausePlayer === "p1") {
+      // Switch to Player 2
+      localActivePausePlayer = "p2";
+      if (btn) {
+        btn.disabled = false;
+        btn.textContent = "Pular / Estou Pronto";
+      }
+      
+      const pState = arenaState["p2"];
+      const turnLabel = document.getElementById("arena-pause-turn-label");
+      if (turnLabel && pState) {
+        turnLabel.textContent = `VEZ DE: ${pState.name.toUpperCase()} (JOGADOR 2)`;
+      }
+      const subsEl = document.getElementById("arena-subs-left");
+      if (subsEl && pState) subsEl.textContent = pState.subsLeft;
+      const tacsEl = document.getElementById("arena-tactics-left");
+      if (tacsEl && pState) tacsEl.textContent = pState.tacsLeft;
+      return;
+    } else {
+      localActivePausePlayer = "p1"; // reset
+      const wait = document.getElementById("arena-pause-waiting");
+      if (wait) wait.style.display = "none";
+    }
+    
     const currentState = localState.state;
     const phases = {
       "first_half_1": "first_half_2",
@@ -2218,7 +2321,8 @@ async function arenaConfirmReadyToResume() {
       "second_half_1": "second_half_2",
       "second_half_2": "extra_time_1",
       "extra_time_1": "extra_time_2",
-      "extra_time_2": "penalties"
+      "extra_time_2": "penalties",
+      "penalties": "finished"
     };
     
     let nextPhase = phases[currentState];
@@ -2230,12 +2334,14 @@ async function arenaConfirmReadyToResume() {
     }
     
     if (nextPhase === "finished") {
+      localState.state = "finished";
       arenaShowMatchSummary();
     } else if (nextPhase) {
       arenaStartLocalPhase(nextPhase);
     }
   } else {
-    // Firebase flow
+    const wait = document.getElementById("arena-pause-waiting");
+    if (wait) wait.style.display = "block";
     const { doc, updateDoc } = window.firebaseAPI;
     const roomRef = doc(window.firebaseDB, "rooms", arenaRoomId);
     
@@ -2253,7 +2359,8 @@ async function arenaConfirmReadyToResume() {
 
 function arenaOpenSubModal() {
   if (!arenaState) return;
-  const pState = arenaState[arenaPlayerRole];
+  const activeRole = (arenaRoomId === "LOCAL") ? localActivePausePlayer : arenaPlayerRole;
+  const pState = arenaState[activeRole];
   if (!pState) return;
   
   if (pState.subsLeft <= 0) {
@@ -2279,7 +2386,8 @@ function arenaOpenSubModal() {
 }
 
 async function arenaConfirmSub() {
-  const pState = arenaState[arenaPlayerRole];
+  const activeRole = (arenaRoomId === "LOCAL") ? localActivePausePlayer : arenaPlayerRole;
+  const pState = arenaState[activeRole];
   if (!pState || pState.subsLeft <= 0) return;
 
   const idxOut = document.getElementById("arena-sub-out").value;
@@ -2307,6 +2415,16 @@ async function arenaConfirmSub() {
     pState.bench = bench;
     pState.subsLeft--;
     localState.injuryTime++;
+    
+    // Update individual team scoreboard stats
+    const subA = document.getElementById("arena-team-a-subs");
+    if (subA) subA.textContent = localState.p1.subsLeft;
+    const subB = document.getElementById("arena-team-b-subs");
+    if (subB) subB.textContent = localState.p2.subsLeft;
+
+    const subsEl = document.getElementById("arena-subs-left");
+    if (subsEl) subsEl.textContent = pState.subsLeft;
+    
     alert(`Substituição feita! ${playerIn.name} entrou no lugar de ${playerOut.name}. (+1 min de acréscimo)`);
     document.getElementById("arena-modal-sub").style.display = "none";
     arenaRenderPitch(localState);
@@ -2329,7 +2447,8 @@ async function arenaConfirmSub() {
 
 function arenaOpenTacModal() {
   if (!arenaState) return;
-  const pState = arenaState[arenaPlayerRole];
+  const activeRole = (arenaRoomId === "LOCAL") ? localActivePausePlayer : arenaPlayerRole;
+  const pState = arenaState[activeRole];
   if (!pState) return;
   
   if (pState.tacsLeft <= 0) {
@@ -2344,7 +2463,8 @@ function arenaOpenTacModal() {
 }
 
 async function arenaConfirmTac() {
-  const pState = arenaState[arenaPlayerRole];
+  const activeRole = (arenaRoomId === "LOCAL") ? localActivePausePlayer : arenaPlayerRole;
+  const pState = arenaState[activeRole];
   if (!pState || pState.tacsLeft <= 0) return;
   
   const selectForm = document.getElementById("arena-tac-select");
@@ -2355,8 +2475,19 @@ async function arenaConfirmTac() {
   if (arenaRoomId === "LOCAL") {
     pState.formation = newFormation;
     pState.tacsLeft--;
+    
+    // Update individual team scoreboard stats
+    const tacA = document.getElementById("arena-team-a-tacs");
+    if (tacA) tacA.textContent = localState.p1.tacsLeft;
+    const tacB = document.getElementById("arena-team-b-tacs");
+    if (tacB) tacB.textContent = localState.p2.tacsLeft;
+
+    const tacsEl = document.getElementById("arena-tactics-left");
+    if (tacsEl) tacsEl.textContent = pState.tacsLeft;
+    
     alert(`Tática alterada para ${newFormation}!`);
     document.getElementById("arena-modal-tac").style.display = "none";
+    arenaRenderPitch(localState);
   } else {
     const { doc, updateDoc } = window.firebaseAPI;
     const roomRef = doc(window.firebaseDB, "rooms", arenaRoomId);
@@ -2409,6 +2540,15 @@ function arenaShowMatchSummary() {
   if (labelScore) labelScore.textContent = `${scoreA} - ${scoreB}`;
   
   modal.style.display = "flex";
+  
+  // Hide the pause panel
+  showArenaPausePanel(false);
+  
+  // Show or hide Local-specific replay buttons
+  const localBtns = document.getElementById("summary-local-buttons");
+  if (localBtns) {
+    localBtns.style.display = (arenaRoomId === "LOCAL") ? "flex" : "none";
+  }
 }
 
 function arenaDownloadSummary() {
@@ -2446,4 +2586,44 @@ function arenaShareSummary() {
       alert("Resultado copiado para a área de transferência! Compartilhe nas redes.");
     });
   }
+}
+
+function arenaLocalReplay() {
+  document.getElementById("arena-modal-summary").style.display = "none";
+  document.getElementById("arena-active").style.display = "none";
+  document.getElementById("arena-local-setup").style.display = "block";
+  
+  // Hide difficulty container (since it's a replay, configuration remains similar but editor is active)
+  const diffContainer = document.getElementById("local-difficulty-container");
+  if (diffContainer) diffContainer.style.display = "none";
+  
+  localState.step = 1;
+  localState.scoreA = 0;
+  localState.scoreB = 0;
+  localState.injuryTime = 0;
+  localState.status = "playing";
+  localState.state = "starting";
+  
+  localState.p1.subsLeft = 4;
+  localState.p1.tacsLeft = 2;
+  localState.p2.subsLeft = 4;
+  localState.p2.tacsLeft = 2;
+  
+  document.getElementById("local-setup-title").textContent = "ESCALAÇÃO JOGADOR 1";
+  document.getElementById("arena-local-player-name").value = localState.p1.name;
+  
+  const select = document.getElementById("arena-local-team-select");
+  if (select) {
+    select.value = localState.p1.team;
+  }
+  
+  arenaLocalTeamChanged();
+  
+  document.getElementById("btn-arena-local-next").textContent = "Confirmar Jogador 1";
+}
+
+function arenaLocalChangeTeams() {
+  document.getElementById("arena-modal-summary").style.display = "none";
+  document.getElementById("arena-active").style.display = "none";
+  arenaSelectMode("local");
 }

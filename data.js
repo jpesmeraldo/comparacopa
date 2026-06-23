@@ -64,6 +64,24 @@ window.comparacopaData = {
     URU: { primary: "#5bc2e7", secondary: "#ffffff", accent: "#f6b426", text: "#111111" },
     SEN: { primary: "#00853f", secondary: "#fdef42", accent: "#e31b23", text: "#ffffff" }
   },
+  getTeamColors: function(teamId) {
+    if (this.teamColors && this.teamColors[teamId]) {
+      return this.teamColors[teamId];
+    }
+    // Simple deterministic hash to get a unique, nice-looking theme color
+    let hash = 0;
+    if (teamId) {
+      for (let i = 0; i < teamId.length; i++) {
+        hash = teamId.charCodeAt(i) + ((hash << 5) - hash);
+      }
+    }
+    const h = Math.abs(hash) % 360;
+    return {
+      primary: `hsl(${h}, 70%, 35%)`,
+      secondary: `hsl(${(h + 120) % 360}, 80%, 60%)`,
+      text: "#ffffff"
+    };
+  },
 
   // 12 Grupos Customizados da Copa de 2026 (48 seleções)
   groups: {
