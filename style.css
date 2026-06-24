@@ -601,24 +601,47 @@ select.neo-select:focus {
 /* Chaveamento do Mata-Mata (Brackets) */
 .bracket-wrapper {
   overflow-x: auto;
-  padding: 20px 0;
+  padding: 20px 10px;
   display: flex;
   flex-direction: column;
 }
 
 .bracket-container {
   display: flex;
-  gap: 40px;
-  align-items: center;
-  min-width: 1000px;
+  gap: 30px;
+  align-items: stretch;
+  justify-content: space-between;
+  min-width: 1050px;
+  padding: 10px;
 }
 
 .bracket-column {
   display: flex;
   flex-direction: column;
-  justify-content: space-around;
-  height: 500px;
-  gap: 20px;
+  height: 680px;
+  width: 190px;
+}
+
+.bracket-column h3 {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.8rem;
+  text-align: center;
+  color: var(--dark-accent);
+  background: var(--retro-yellow);
+  padding: 6px 10px;
+  border: var(--border-size) solid var(--dark-accent);
+  box-shadow: 3px 3px 0 var(--dark-accent);
+  text-transform: uppercase;
+  font-weight: 800;
+  margin: 0 0 15px 0;
+}
+
+#bracket-r32-col, #bracket-r16-col, #bracket-r8-col, #bracket-r4-col, #bracket-final {
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: space-around !important;
+  flex: 1 !important;
+  gap: 0 !important;
 }
 
 .bracket-match {
@@ -626,16 +649,40 @@ select.neo-select:focus {
   border: var(--border-size) solid var(--dark-accent);
   box-shadow: 4px 4px 0 var(--dark-accent);
   padding: 8px 12px;
-  width: 180px;
+  width: 100%;
   display: flex;
   flex-direction: column;
   gap: 6px;
   cursor: pointer;
-  transition: transform 0.1s;
+  transition: all 0.15s ease;
 }
 
-.bracket-match:hover {
-  transform: scale(1.03);
+.bracket-match.placeholder {
+  background: #eaeae0;
+  border: 2px dashed #999;
+  box-shadow: none;
+  cursor: default;
+  opacity: 0.85;
+}
+
+.bracket-match.placeholder.final {
+  border-color: var(--retro-blue);
+  background: rgba(0, 39, 118, 0.05);
+}
+
+.bracket-match.placeholder .bracket-team-row {
+  color: #666;
+  font-weight: 500;
+}
+
+.bracket-match.placeholder .bracket-match-date {
+  color: #888;
+  border-top: 1px dashed #bbb;
+}
+
+.bracket-match.active:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0 var(--neon-green);
 }
 
 .bracket-team-row {
@@ -643,7 +690,8 @@ select.neo-select:focus {
   justify-content: space-between;
   align-items: center;
   font-weight: 700;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
+  color: var(--dark-accent);
 }
 
 .bracket-team-row.winner {
@@ -654,7 +702,7 @@ select.neo-select:focus {
 .bracket-match-date {
   font-family: 'Space Mono', monospace;
   font-size: 0.65rem;
-  color: #777;
+  color: #666;
   text-align: center;
   border-top: 1px dashed var(--dark-accent);
   padding-top: 4px;

@@ -1672,12 +1672,9 @@ function renderBrackets() {
     const detailsB = m.teamB ? getTeamNameAndFlag(m.teamB) : { name: "A confirmar", flag: "🏳️" };
 
     const matchCard = document.createElement("div");
-    matchCard.className = "bracket-match";
+    matchCard.className = isDefined ? "bracket-match active" : "bracket-match placeholder";
     if (isDefined) {
       matchCard.onclick = () => loadBracketMatchToSim(m.teamA, m.teamB);
-    } else {
-      matchCard.style.cursor = "default";
-      matchCard.style.opacity = "0.8";
     }
 
     matchCard.innerHTML = `
@@ -1698,18 +1695,17 @@ function renderBrackets() {
   const octavesData = window.comparacopaData.brackets.octaves;
   octavesData.forEach((m, idx) => {
     const card = document.createElement("div");
-    card.className = "bracket-match";
-    card.style.opacity = "0.75";
+    card.className = "bracket-match placeholder";
     card.innerHTML = `
-      <div class="bracket-team-row" style="color: var(--dark-accent); font-weight: 600;">
+      <div class="bracket-team-row">
         <span>Vencedor M${idx*2 + 1}</span>
         <span>-</span>
       </div>
-      <div class="bracket-team-row" style="color: var(--dark-accent); font-weight: 600;">
+      <div class="bracket-team-row">
         <span>Vencedor M${idx*2 + 2}</span>
         <span>-</span>
       </div>
-      <div class="bracket-match-date" style="color: #444; border-top-color: #ddd;">${m.date}</div>
+      <div class="bracket-match-date">${m.date}</div>
     `;
     r16Col.appendChild(card);
   });
@@ -1717,18 +1713,17 @@ function renderBrackets() {
   const quartersData = window.comparacopaData.brackets.quarters;
   quartersData.forEach((m, idx) => {
     const card = document.createElement("div");
-    card.className = "bracket-match";
-    card.style.opacity = "0.6";
+    card.className = "bracket-match placeholder";
     card.innerHTML = `
-      <div class="bracket-team-row" style="color: var(--dark-accent); font-weight: 600;">
+      <div class="bracket-team-row">
         <span>Vencedor Q${idx*2 + 1}</span>
         <span>-</span>
       </div>
-      <div class="bracket-team-row" style="color: var(--dark-accent); font-weight: 600;">
+      <div class="bracket-team-row">
         <span>Vencedor Q${idx*2 + 2}</span>
         <span>-</span>
       </div>
-      <div class="bracket-match-date" style="color: #444; border-top-color: #ddd;">${m.date}</div>
+      <div class="bracket-match-date">${m.date}</div>
     `;
     r8Col.appendChild(card);
   });
@@ -1736,37 +1731,34 @@ function renderBrackets() {
   const semisData = window.comparacopaData.brackets.semis;
   semisData.forEach((m, idx) => {
     const card = document.createElement("div");
-    card.className = "bracket-match";
-    card.style.opacity = "0.5";
+    card.className = "bracket-match placeholder";
     card.innerHTML = `
-      <div class="bracket-team-row" style="color: var(--dark-accent); font-weight: 600;">
+      <div class="bracket-team-row">
         <span>Vencedor S1</span>
         <span>-</span>
       </div>
-      <div class="bracket-team-row" style="color: var(--dark-accent); font-weight: 600;">
+      <div class="bracket-team-row">
         <span>Vencedor S2</span>
         <span>-</span>
       </div>
-      <div class="bracket-match-date" style="color: #444; border-top-color: #ddd;">${m.date}</div>
+      <div class="bracket-match-date">${m.date}</div>
     `;
     r4Col.appendChild(card);
   });
 
   const finalData = window.comparacopaData.brackets.final;
   const finalCard = document.createElement("div");
-  finalCard.className = "bracket-match";
-  finalCard.style.opacity = "0.45";
-  finalCard.style.boxShadow = "6px 6px 0 var(--retro-blue)";
+  finalCard.className = "bracket-match placeholder final";
   finalCard.innerHTML = `
-    <div class="bracket-team-row" style="color: var(--dark-accent); font-weight: 700;">
+    <div class="bracket-team-row">
       <span>Vencedor Semifinal 1</span>
       <span>-</span>
     </div>
-    <div class="bracket-team-row" style="color: var(--dark-accent); font-weight: 700;">
+    <div class="bracket-team-row">
       <span>Vencedor Semifinal 2</span>
       <span>-</span>
     </div>
-    <div class="bracket-match-date" style="border-top-color: var(--retro-blue); color: var(--retro-blue); font-weight: 800;">${finalData.date}</div>
+    <div class="bracket-match-date">${finalData.date}</div>
   `;
   rFinalCol.appendChild(finalCard);
 }
