@@ -620,7 +620,7 @@ function setTournamentSize(size) {
     for (let i = 1; i <= size; i++) {
       const opt = document.createElement("option");
       opt.value = i;
-      opt.textContent = `${i} ${i === 1 ? 'Humano' : 'Humanos'} (Host + ${i - 1})`;
+      opt.textContent = `${i} ${i === 1 ? 'Jogador' : 'Jogadores'} (${i === 1 ? 'Só você' : 'Você + ' + (i - 1)})`;
       select.appendChild(opt);
     }
     if (prevVal <= size) {
@@ -655,7 +655,7 @@ async function submitTournamentConfig() {
   const numHumans = parseInt(document.getElementById("tournament-human-slots")?.value) || 1;
   
   const slots = [];
-  slots.push({ team: null, type: "human", name: "Host (P1)", ready: false, role: "p1" });
+  slots.push({ team: null, type: "human", name: "Você (P1)", ready: false, role: "p1" });
   for (let i = 2; i <= numHumans; i++) {
     slots.push({ team: null, type: "human", name: `Jogador ${i}`, ready: false });
   }
@@ -1581,11 +1581,12 @@ function updateTournamentUI(data) {
         slotTypeSelector = `
           <select class="neo-select" style="font-size:0.8rem; padding:4px; margin-bottom:8px;" onchange="tournamentChangeSlotType(${idx}, this.value)">
             <option value="cpu" ${slot.type === "cpu" ? 'selected' : ''}>CPU</option>
-            <option value="human" ${slot.type === "human" ? 'selected' : ''}>Humano (Aberto)</option>
+            <option value="human" ${slot.type === "human" ? 'selected' : ''}>Jogador (Aberto)</option>
           </select>
         `;
       } else {
-        slotTypeSelector = `<span class="badge" style="background:#ddd; color:#333; font-size:0.75rem; padding:2px 6px; border-radius:4px;">${slot.type.toUpperCase()}</span>`;
+        const displayType = slot.type === "human" ? "Jogador" : "CPU";
+        slotTypeSelector = `<span class="badge" style="background:#ddd; color:#333; font-size:0.75rem; padding:2px 6px; border-radius:4px;">${displayType.toUpperCase()}</span>`;
       }
       
       let teamSelector = "";

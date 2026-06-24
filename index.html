@@ -392,7 +392,7 @@
             <h3 style="font-family: 'Bebas Neue', cursive; font-size: 2rem; color: var(--dark-accent); margin: 0;">03 MATA-MATA DE COPA</h3>
             <button class="neo-btn btn-red" onclick="arenaHideConfig()" style="font-size: 0.8rem; padding: 5px 10px;">Voltar</button>
           </div>
-          <p style="font-size: 0.85rem; color: #555; margin-bottom: 20px;">Bracket de 4 ou 8 times — humanos e CPU.</p>
+          <p style="font-size: 0.85rem; color: #555; margin-bottom: 20px;">Bracket de 4 ou 8 times — jogadores e CPU.</p>
 
           <div style="margin-bottom: 15px; text-align: left;">
             <label class="neo-label">Tamanho da Chave:</label>
@@ -403,16 +403,16 @@
           </div>
 
           <div style="margin-bottom: 15px; text-align: left;">
-            <label class="neo-label">Vagas para Humanos (incluindo você):</label>
+            <label class="neo-label">Vagas para Jogadores (incluindo você):</label>
             <select id="tournament-human-slots" class="neo-select" style="background:#fff;">
-              <option value="1">1 Humano (Só o Host)</option>
-              <option value="2">2 Humanos (Host + 1)</option>
-              <option value="3">3 Humanos (Host + 2)</option>
-              <option value="4">4 Humanos (Host + 3)</option>
-              <option value="5">5 Humanos (Host + 4)</option>
-              <option value="6">6 Humanos (Host + 5)</option>
-              <option value="7">7 Humanos (Host + 6)</option>
-              <option value="8" selected>8 Humanos (Host + 7)</option>
+              <option value="1">1 Jogador (Só você)</option>
+              <option value="2">2 Jogadores (Você + 1)</option>
+              <option value="3">3 Jogadores (Você + 2)</option>
+              <option value="4">4 Jogadores (Você + 3)</option>
+              <option value="5">5 Jogadores (Você + 4)</option>
+              <option value="6">6 Jogadores (Você + 5)</option>
+              <option value="7">7 Jogadores (Você + 6)</option>
+              <option value="8" selected>8 Jogadores (Você + 7)</option>
             </select>
           </div>
 
@@ -471,7 +471,7 @@
       <div id="arena-tournament-lobby" style="display: none;">
         <div class="neo-card" style="max-width: 800px; margin: 0 auto; padding: 25px;">
           <h2 style="font-family: 'Bebas Neue', cursive; font-size: 2.2rem; text-align: center; color: var(--dark-accent);">TORNEIO ON-LINE: <span id="tournament-room-code" style="color: var(--retro-red);">----</span></h2>
-          <p style="text-align: center; font-size: 0.9rem; color: #666; margin-bottom: 20px;">Compartilhe o código para seus amigos entrarem. O Host define quem controla cada vaga (Humano ou CPU).</p>
+          <p style="text-align: center; font-size: 0.9rem; color: #666; margin-bottom: 20px;">Compartilhe o código para seus amigos entrarem. Você define quem controla cada vaga (Jogador ou CPU).</p>
           
           <div id="tournament-slots-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; margin-bottom: 25px;">
             <!-- Slots carregados via JS -->
