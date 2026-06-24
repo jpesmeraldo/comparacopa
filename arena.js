@@ -187,24 +187,43 @@ function arenaReturnToLobby() {
    AMISTOSO LOCAL (1x1 Same Device)
    ========================================================================== */
 
-function initLocalSetup() {
+function updateLocalTeamSelect() {
   const select = document.getElementById("arena-local-team-select");
   if (!select) return;
+  const currentVal = select.value;
   select.innerHTML = '<option value="">Selecione...</option>';
+  
+  const takenTeam = (localState.step === 2) ? localState.p1.team : null;
   
   if (window.comparacopaData && window.comparacopaData.groups) {
     for (const group in window.comparacopaData.groups) {
       const optgroup = document.createElement("optgroup");
       optgroup.label = `Grupo ${group}`;
+      let groupHasAvailableTeams = false;
+      
       window.comparacopaData.groups[group].forEach(team => {
-        const option = document.createElement("option");
-        option.value = team.id;
-        option.textContent = `${team.flag} ${team.name}`;
-        optgroup.appendChild(option);
+        if (team.id !== takenTeam) {
+          const option = document.createElement("option");
+          option.value = team.id;
+          option.textContent = `${team.flag} ${team.name}`;
+          optgroup.appendChild(option);
+          groupHasAvailableTeams = true;
+        }
       });
-      select.appendChild(optgroup);
+      
+      if (groupHasAvailableTeams) {
+        select.appendChild(optgroup);
+      }
     }
   }
+  select.value = currentVal;
+}
+
+function initLocalSetup() {
+  const select = document.getElementById("arena-local-team-select");
+  if (!select) return;
+  
+  updateLocalTeamSelect();
   
   document.getElementById("local-setup-title").textContent = "ESCALAÇÃO JOGADOR 1";
   document.getElementById("arena-local-player-name").value = "Jogador A";
@@ -408,6 +427,7 @@ function arenaLocalNextStep() {
     localState.step = 2;
     document.getElementById("local-setup-title").textContent = "ESCALAÇÃO JOGADOR 2";
     document.getElementById("arena-local-team-select").value = "";
+    updateLocalTeamSelect();
     document.getElementById("arena-local-player-name").value = "Jogador B";
     
     document.getElementById("arena-local-tactical-editor").style.display = "none";
@@ -1158,6 +1178,7 @@ function updateArenaUI(data) {
   const configPanel = document.getElementById("arena-tactical-config-panel");
   if (data.status === "connected") {
     if (configPanel) configPanel.style.display = "block";
+    updateArenaFriendlyTeamSelect(data);
     const myData = arenaPlayerRole === "p1" ? data.p1 : data.p2;
     const opponentData = arenaPlayerRole === "p1" ? data.p2 : data.p1;
     
@@ -1249,7 +1270,7 @@ function updateArenaUI(data) {
       if (cpuSelectionWrapper) {
         if (arenaPlayerRole === "p1" && data.p2 && data.p2.type === "cpu") {
           cpuSelectionWrapper.style.display = "block";
-          initArenaCpuTeams(data.p2.team);
+          updateArenaFriendlyCpuSelect(data);
         } else {
           cpuSelectionWrapper.style.display = "none";
         }
@@ -1280,6 +1301,77 @@ function updateArenaUI(data) {
 }
 
 // Dropdowns de times
+function updateArenaFriendlyTeamSelect(data) {
+  const select = document.getElementById("arena-team1");
+  if (!select) return;
+  const currentVal = select.value || (arenaPlayerRole === "p1" ? (data.p1 ? data.p1.team : "") : (data.p2 ? data.p2.team : ""));
+  
+  // Opponent's team
+  let opponentTeam = null;
+  if (arenaPlayerRole === "p1") {
+    opponentTeam = (data.p2 && data.p2.type === "cpu") ? data.cpuTeamId : (data.p2 ? data.p2.team : null);
+  } else if (arenaPlayerRole === "p2") {
+    opponentTeam = data.p1 ? data.p1.team : null;
+  }
+  
+  select.innerHTML = '<option value="">Selecione...</option>';
+  
+  if (window.comparacopaData && window.comparacopaData.groups) {
+    for (const group in window.comparacopaData.groups) {
+      const optgroup = document.createElement("optgroup");
+      optgroup.label = `Grupo ${group}`;
+      let groupHasAvailableTeams = false;
+      
+      window.comparacopaData.groups[group].forEach(team => {
+        if (team.id !== opponentTeam) {
+          const option = document.createElement("option");
+          option.value = team.id;
+          option.textContent = `${team.flag} ${team.name}`;
+          optgroup.appendChild(option);
+          groupHasAvailableTeams = true;
+        }
+      });
+      
+      if (groupHasAvailableTeams) {
+        select.appendChild(optgroup);
+      }
+    }
+  }
+  select.value = currentVal || "";
+}
+
+function updateArenaFriendlyCpuSelect(data) {
+  const select = document.getElementById("arena-cpu-team-select");
+  if (!select) return;
+  const currentVal = select.value || data.cpuTeamId || "";
+  
+  const myTeam = data.p1 ? data.p1.team : null;
+  
+  select.innerHTML = '<option value="">Selecione adversário...</option>';
+  if (window.comparacopaData && window.comparacopaData.groups) {
+    for (const group in window.comparacopaData.groups) {
+      const optgroup = document.createElement("optgroup");
+      optgroup.label = `Grupo ${group}`;
+      let groupHasAvailableTeams = false;
+      
+      window.comparacopaData.groups[group].forEach(team => {
+        if (team.id !== myTeam) {
+          const option = document.createElement("option");
+          option.value = team.id;
+          option.textContent = `${team.flag} ${team.name}`;
+          optgroup.appendChild(option);
+          groupHasAvailableTeams = true;
+        }
+      });
+      
+      if (groupHasAvailableTeams) {
+        select.appendChild(optgroup);
+      }
+    }
+  }
+  select.value = currentVal;
+}
+
 function initArenaTeams() {
   const select = document.getElementById("arena-team1");
   if (!select) return;
@@ -1623,16 +1715,26 @@ function updateTournamentUI(data) {
     
     const isHost = arenaPlayerRole === "p1";
     
-    // Load teams for slot selection
-    let optionsHtml = '<option value="">Escolher Time...</option>';
-    if (window.comparacopaData && window.comparacopaData.teams) {
-      window.comparacopaData.teams.forEach(t => {
-        optionsHtml += `<option value="${t.id}">${t.flag} ${t.name}</option>`;
-      });
+    // Helper to filter options to avoid duplicates
+    function getTournamentTeamOptions(slotIdx, currentTeam, lobbyData) {
+      const takenTeams = lobbyData.slots
+        .map((s, sIdx) => sIdx === slotIdx ? null : s.team)
+        .filter(t => t !== null && t !== undefined && t !== "");
+        
+      let html = '<option value="">Escolher Time...</option>';
+      if (window.comparacopaData && window.comparacopaData.teams) {
+        window.comparacopaData.teams.forEach(t => {
+          if (!takenTeams.includes(t.id)) {
+            html += `<option value="${t.id}">${t.flag} ${t.name}</option>`;
+          }
+        });
+      }
+      return html;
     }
     
     data.slots.forEach((slot, idx) => {
       const isMySlot = slot.role === arenaPlayerRole;
+      const isCpuSlot = slot.type === "cpu";
       const card = document.createElement("div");
       card.className = "neo-card";
       card.style.padding = "15px";
@@ -1652,10 +1754,21 @@ function updateTournamentUI(data) {
       
       let teamSelector = "";
       if (isMySlot) {
+        const myOptions = getTournamentTeamOptions(idx, slot.team, data);
         teamSelector = `
           <select class="neo-select" style="margin-top:10px;" onchange="tournamentSelectTeam(${idx}, this.value)">
-            ${optionsHtml}
+            ${myOptions}
           </select>
+        `;
+      } else if (isCpuSlot && isHost) {
+        const cpuOptions = getTournamentTeamOptions(idx, slot.team, data);
+        teamSelector = `
+          <div style="margin-top:10px; display:flex; gap:5px; align-items:center;">
+            <select class="neo-select" style="flex:1;" onchange="tournamentSelectCPUTeam(${idx}, this.value)">
+              ${cpuOptions}
+            </select>
+            <button class="neo-btn" style="padding:10px 8px; font-size:0.8rem;" onclick="tournamentRandomizeCPUSlot(${idx})">🎲 Aleatório</button>
+          </div>
         `;
       } else if (slot.team) {
         teamSelector = `<div style="font-size:1.1rem; font-weight:bold; margin-top:10px;">${getTeamFlag(slot.team)} ${getTeamName(slot.team)}</div>`;
@@ -1687,10 +1800,10 @@ function updateTournamentUI(data) {
       
       grid.appendChild(card);
       
-      // Auto select value in selector if my slot
-      if (isMySlot) {
-        const sel = card.querySelector("select.neo-select");
-        if (sel) sel.value = slot.team || "";
+      // Auto select value in selector if my slot or CPU slot managed by Host
+      if (isMySlot || (isCpuSlot && isHost)) {
+        const teamSel = card.querySelector(`select[onchange^="tournamentSelectTeam"], select[onchange^="tournamentSelectCPUTeam"]`);
+        if (teamSel) teamSel.value = slot.team || "";
       }
     });
     
@@ -1748,6 +1861,55 @@ function updateTournamentUI(data) {
       activeMatchPanel.style.display = "none";
     }
   }
+}
+
+async function tournamentSelectCPUTeam(idx, teamId) {
+  if (!teamId) return;
+  const { doc, updateDoc } = window.firebaseAPI;
+  const roomRef = doc(window.firebaseDB, "rooms", arenaRoomId);
+  const newSlots = [...arenaState.slots];
+  
+  if (typeof ensureSquadAndStats === "function") {
+    ensureSquadAndStats(teamId);
+  }
+  
+  const squadData = window.comparacopaData.squads[teamId] || { players: [], bench: [], formation: "4-3-3" };
+  newSlots[idx] = {
+    ...newSlots[idx],
+    team: teamId,
+    ready: true,
+    squad: JSON.parse(JSON.stringify(squadData.players)),
+    bench: JSON.parse(JSON.stringify(squadData.bench)).map((p, pIdx) => ({ ...p, no: p.no || (12 + pIdx) })),
+    formation: squadData.formation || "4-3-3"
+  };
+  
+  await updateDoc(roomRef, { slots: newSlots });
+}
+
+async function tournamentRandomizeCPUSlot(idx) {
+  const { doc, updateDoc } = window.firebaseAPI;
+  const roomRef = doc(window.firebaseDB, "rooms", arenaRoomId);
+  const newSlots = [...arenaState.slots];
+  
+  const takenTeams = newSlots.map((s, sIdx) => sIdx === idx ? null : s.team).filter(t => t !== null && t !== undefined && t !== "");
+  const cpuTeam = chooseRandomAvailableTeam(takenTeams);
+  if (!cpuTeam) return;
+  
+  if (typeof ensureSquadAndStats === "function") {
+    ensureSquadAndStats(cpuTeam);
+  }
+  
+  const squadData = window.comparacopaData.squads[cpuTeam] || { players: [], bench: [], formation: "4-3-3" };
+  newSlots[idx] = {
+    ...newSlots[idx],
+    team: cpuTeam,
+    ready: true,
+    squad: JSON.parse(JSON.stringify(squadData.players)),
+    bench: JSON.parse(JSON.stringify(squadData.bench)).map((p, pIdx) => ({ ...p, no: p.no || (12 + pIdx) })),
+    formation: squadData.formation || "4-3-3"
+  };
+  
+  await updateDoc(roomRef, { slots: newSlots });
 }
 
 async function tournamentChangeSlotType(idx, val) {

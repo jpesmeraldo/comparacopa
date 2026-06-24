@@ -76,6 +76,10 @@ function switchSection(sectionId) {
 function initSelectors() {
   const selectA = document.getElementById("select-team-a");
   const selectB = document.getElementById("select-team-b");
+  if (!selectA || !selectB) return;
+  
+  const currentA = selectA.value || activeTeamA;
+  const currentB = selectB.value || activeTeamB;
   
   selectA.innerHTML = "";
   selectB.innerHTML = "";
@@ -95,17 +99,21 @@ function initSelectors() {
   allTeams.sort((a, b) => a.name.localeCompare(b.name, "pt-BR"));
 
   allTeams.forEach(team => {
-    const optA = document.createElement("option");
-    optA.value = team.id;
-    optA.textContent = `${team.flag} ${team.name}`;
-    if (team.id === activeTeamA) optA.selected = true;
-    selectA.appendChild(optA);
+    if (team.id !== currentB) {
+      const optA = document.createElement("option");
+      optA.value = team.id;
+      optA.textContent = `${team.flag} ${team.name}`;
+      if (team.id === currentA) optA.selected = true;
+      selectA.appendChild(optA);
+    }
 
-    const optB = document.createElement("option");
-    optB.value = team.id;
-    optB.textContent = `${team.flag} ${team.name}`;
-    if (team.id === activeTeamB) optB.selected = true;
-    selectB.appendChild(optB);
+    if (team.id !== currentA) {
+      const optB = document.createElement("option");
+      optB.value = team.id;
+      optB.textContent = `${team.flag} ${team.name}`;
+      if (team.id === currentB) optB.selected = true;
+      selectB.appendChild(optB);
+    }
   });
 }
 
@@ -699,6 +707,8 @@ function loadComparison() {
     alert("Por favor, selecione duas seleções diferentes!");
     return;
   }
+  
+  initSelectors();
 
   // Garantir existência de dados e elencos antes de carregar
   ensureSquadAndStats(activeTeamA);
