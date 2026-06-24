@@ -814,6 +814,10 @@
           <button class="neo-btn" id="btn-summary-change-teams" style="background: #e2e8f0; color: #1e293b; font-weight: bold; flex: 1 1 calc(50% - 10px); min-width: 140px;"></button>
           <button class="neo-btn btn-blue" id="btn-summary-new-room" style="font-weight: bold; flex: 1 1 100%;" onclick="arenaReturnToLobby(); document.getElementById('arena-modal-summary').style.display='none';">Criar Nova Sala</button>
         </div>
+
+        <button class="neo-btn btn-yellow" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: 800; font-size: 0.9rem; margin-top: 15px;" onclick="arenaReturnToLobby(); document.getElementById('arena-modal-summary').style.display='none'; switchSection('compare'); window.scrollTo({top: 0, behavior: 'smooth'});">
+          <i data-lucide="arrow-left" style="width: 18px; height: 18px;"></i> Voltar para o Início
+        </button>
       </div>
     </div>
 
@@ -1125,6 +1129,9 @@
         </button>
         <button class="neo-btn" style="background: var(--off-white); color: var(--dark-accent); display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: 800; font-size: 0.9rem;" onclick="copySimLink()">
           <i data-lucide="copy" style="width: 18px; height: 18px;"></i> Copiar Link do Comparacopa
+        </button>
+        <button class="neo-btn btn-yellow" style="display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: 800; font-size: 0.9rem; margin-top: 5px;" onclick="closeSummaryModal(); switchSection('compare'); window.scrollTo({top: 0, behavior: 'smooth'});">
+          <i data-lucide="arrow-left" style="width: 18px; height: 18px;"></i> Voltar para o Início
         </button>
       </div>
     </div>
