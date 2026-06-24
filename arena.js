@@ -943,6 +943,19 @@ function listenToRoom(code) {
     const data = snap.data();
     arenaState = data;
     
+    if (data.status === "inactive") {
+      if (window.arenaReplayInterval) {
+        clearInterval(window.arenaReplayInterval);
+        window.arenaReplayInterval = null;
+      }
+      alert(`A sala foi encerrada devido à inatividade de ${data.inactivePlayerName || "um participante"}.`);
+      arenaReturnToLobby();
+      if (typeof switchSection === "function") {
+        switchSection("compare");
+      }
+      return;
+    }
+    
     if (data.mode === "friendly") {
       updateArenaUI(data);
       updateOnlineReplayButtonState(data);
@@ -3409,3 +3422,72 @@ async function arenaContinueWithDraw() {
     arenaStartPhase(nextPhase);
   }
 }
+
+// Global Inactivity Tracking for online friendly/tournament
+window.lastUserInteractionTime = Date.now();
+
+function resetInactivityTimer() {
+  window.lastUserInteractionTime = Date.now();
+  const warningBanner = document.getElementById("arena-inactivity-warning");
+  if (warningBanner) {
+    warningBanner.style.display = "none";
+  }
+}
+
+window.addEventListener('mousemove', resetInactivityTimer);
+window.addEventListener('keydown', resetInactivityTimer);
+window.addEventListener('click', resetInactivityTimer);
+window.addEventListener('touchstart', resetInactivityTimer);
+window.addEventListener('scroll', resetInactivityTimer);
+
+setInterval(async () => {
+  if (!arenaRoomId || arenaRoomId === "LOCAL") {
+    const warningBanner = document.getElementById("arena-inactivity-warning");
+    if (warningBanner) warningBanner.style.display = "none";
+    return;
+  }
+  
+  const elapsed = Math.floor((Date.now() - window.lastUserInteractionTime) / 1000);
+  
+  // Warning at 8 minutes (480 seconds)
+  if (elapsed >= 480 && elapsed < 600) {
+    let warningBanner = document.getElementById("arena-inactivity-warning");
+    if (!warningBanner) {
+      warningBanner = document.createElement("div");
+      warningBanner.id = "arena-inactivity-warning";
+      warningBanner.style.cssText = "position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: #e11d48; color: white; padding: 15px 25px; border: 3px solid black; box-shadow: 4px 4px 0px black; font-family: 'Space Mono', monospace; font-weight: bold; z-index: 10000; text-align: center; max-width: 90%;";
+      document.body.appendChild(warningBanner);
+    }
+    warningBanner.textContent = "Se você permanecer inativo por mais 2 minutos, a sala será encerrada automaticamente";
+    warningBanner.style.display = "block";
+  } else if (elapsed < 480) {
+    const warningBanner = document.getElementById("arena-inactivity-warning");
+    if (warningBanner) warningBanner.style.display = "none";
+  }
+  
+  // Timeout at 10 minutes (600 seconds)
+  if (elapsed >= 600) {
+    const warningBanner = document.getElementById("arena-inactivity-warning");
+    if (warningBanner) warningBanner.style.display = "none";
+    
+    if (window.firebaseDB && window.firebaseAPI) {
+      try {
+        const { doc, updateDoc } = window.firebaseAPI;
+        const roomRef = doc(window.firebaseDB, "rooms", arenaRoomId);
+        
+        let myName = "Um participante";
+        if (arenaState) {
+          const myData = arenaPlayerRole === "p1" ? arenaState.p1 : arenaState.p2;
+          if (myData && myData.name) myName = myData.name;
+        }
+        
+        await updateDoc(roomRef, {
+          status: "inactive",
+          inactivePlayerName: myName
+        });
+      } catch (err) {
+        console.error("Error closing room due to inactivity:", err);
+      }
+    }
+  }
+}, 5000);
