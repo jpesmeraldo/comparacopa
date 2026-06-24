@@ -392,15 +392,28 @@
             <h3 style="font-family: 'Bebas Neue', cursive; font-size: 2rem; color: var(--dark-accent); margin: 0;">03 MATA-MATA DE COPA</h3>
             <button class="neo-btn btn-red" onclick="arenaHideConfig()" style="font-size: 0.8rem; padding: 5px 10px;">Voltar</button>
           </div>
-          <p style="font-size: 0.85rem; color: #555; margin-bottom: 20px;">Bracket de 4 a 16 times — humanos e CPU.</p>
+          <p style="font-size: 0.85rem; color: #555; margin-bottom: 20px;">Bracket de 4 ou 8 times — humanos e CPU.</p>
 
           <div style="margin-bottom: 15px; text-align: left;">
             <label class="neo-label">Tamanho da Chave:</label>
             <div style="display: flex; gap: 10px;">
               <button class="neo-btn" id="btn-tournament-size-4" onclick="setTournamentSize(4)" style="flex:1; font-size:0.85rem; padding:10px 5px;">Copa 4 times</button>
               <button class="neo-btn active" id="btn-tournament-size-8" onclick="setTournamentSize(8)" style="flex:1; font-size:0.85rem; padding:10px 5px;">Copa 8 times</button>
-              <button class="neo-btn" id="btn-tournament-size-16" onclick="setTournamentSize(16)" style="flex:1; font-size:0.85rem; padding:10px 5px;">Copa 16 times</button>
             </div>
+          </div>
+
+          <div style="margin-bottom: 15px; text-align: left;">
+            <label class="neo-label">Vagas para Humanos (incluindo você):</label>
+            <select id="tournament-human-slots" class="neo-select" style="background:#fff;">
+              <option value="1">1 Humano (Só o Host)</option>
+              <option value="2">2 Humanos (Host + 1)</option>
+              <option value="3">3 Humanos (Host + 2)</option>
+              <option value="4">4 Humanos (Host + 3)</option>
+              <option value="5">5 Humanos (Host + 4)</option>
+              <option value="6">6 Humanos (Host + 5)</option>
+              <option value="7">7 Humanos (Host + 6)</option>
+              <option value="8" selected>8 Humanos (Host + 7)</option>
+            </select>
           </div>
 
           <div style="margin-bottom: 15px; text-align: left;">

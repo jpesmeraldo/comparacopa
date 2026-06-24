@@ -612,7 +612,23 @@ function setTournamentSize(size) {
   tournamentSize = size;
   document.getElementById("btn-tournament-size-4")?.classList.toggle("active", size === 4);
   document.getElementById("btn-tournament-size-8")?.classList.toggle("active", size === 8);
-  document.getElementById("btn-tournament-size-16")?.classList.toggle("active", size === 16);
+  
+  const select = document.getElementById("tournament-human-slots");
+  if (select) {
+    const prevVal = parseInt(select.value) || size;
+    select.innerHTML = "";
+    for (let i = 1; i <= size; i++) {
+      const opt = document.createElement("option");
+      opt.value = i;
+      opt.textContent = `${i} ${i === 1 ? 'Humano' : 'Humanos'} (Host + ${i - 1})`;
+      select.appendChild(opt);
+    }
+    if (prevVal <= size) {
+      select.value = prevVal;
+    } else {
+      select.value = size;
+    }
+  }
 }
 
 function setTournamentDraft(draft) {
@@ -636,11 +652,15 @@ async function submitTournamentConfig() {
   
   const code = Math.random().toString(36).substring(2, 6).toUpperCase();
   const password = document.getElementById("tournament-pass")?.value.trim() || "";
+  const numHumans = parseInt(document.getElementById("tournament-human-slots")?.value) || 1;
   
   const slots = [];
   slots.push({ team: null, type: "human", name: "Host (P1)", ready: false, role: "p1" });
-  for (let i = 1; i < tournamentSize; i++) {
-    slots.push({ team: null, type: "cpu", name: `CPU ${i}`, ready: true });
+  for (let i = 2; i <= numHumans; i++) {
+    slots.push({ team: null, type: "human", name: `Jogador ${i}`, ready: false });
+  }
+  for (let i = numHumans + 1; i <= tournamentSize; i++) {
+    slots.push({ team: null, type: "cpu", name: `CPU ${i - numHumans}`, ready: true });
   }
   
   const roomData = {
@@ -892,16 +912,6 @@ async function arenaJoinRoomByCode() {
         if (data.slots[i].type === "human" && !data.slots[i].role && i > 0) {
           freeSlotIdx = i;
           break;
-        }
-      }
-      
-      if (freeSlotIdx === -1) {
-        // Se não houver humanos abertos, tentar converter o primeiro slot CPU aberto para humano
-        for (let i = 0; i < data.slots.length; i++) {
-          if (data.slots[i].type === "cpu" && i > 0) {
-            freeSlotIdx = i;
-            break;
-          }
         }
       }
       
