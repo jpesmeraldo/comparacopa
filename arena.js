@@ -173,6 +173,10 @@ function arenaReturnToLobby() {
     clearInterval(window.arenaLobbyInterval);
     window.arenaLobbyInterval = null;
   }
+  if (window.arenaTournamentLobbyInterval) {
+    clearInterval(window.arenaTournamentLobbyInterval);
+    window.arenaTournamentLobbyInterval = null;
+  }
   
   // Show lobby
   document.getElementById("arena-lobby").style.display = "block";
@@ -631,10 +635,12 @@ function setTournamentSize(size) {
   }
 }
 
-function setTournamentDraft(draft) {
-  tournamentDraft = draft;
-  document.getElementById("btn-tournament-draft-turns")?.classList.toggle("active", draft === "turns");
-  document.getElementById("btn-tournament-draft-together")?.classList.toggle("active", draft === "together");
+function chooseRandomAvailableTeam(takenList) {
+  if (!window.comparacopaData || !window.comparacopaData.teams) return "BRA";
+  const allTeams = window.comparacopaData.teams.map(t => t.id);
+  const available = allTeams.filter(id => !takenList.includes(id));
+  if (available.length === 0) return allTeams[Math.floor(Math.random() * allTeams.length)];
+  return available[Math.floor(Math.random() * available.length)];
 }
 
 function setTournamentTime(time) {
@@ -654,13 +660,30 @@ async function submitTournamentConfig() {
   const password = document.getElementById("tournament-pass")?.value.trim() || "";
   const numHumans = parseInt(document.getElementById("tournament-human-slots")?.value) || 1;
   
+  const takenTeams = [];
   const slots = [];
   slots.push({ team: null, type: "human", name: "Você (P1)", ready: false, role: "p1" });
   for (let i = 2; i <= numHumans; i++) {
     slots.push({ team: null, type: "human", name: `Jogador ${i}`, ready: false });
   }
   for (let i = numHumans + 1; i <= tournamentSize; i++) {
-    slots.push({ team: null, type: "cpu", name: `CPU ${i - numHumans}`, ready: true });
+    const cpuTeam = chooseRandomAvailableTeam(takenTeams);
+    takenTeams.push(cpuTeam);
+    
+    if (typeof ensureSquadAndStats === "function") {
+      ensureSquadAndStats(cpuTeam);
+    }
+    const squadData = window.comparacopaData.squads[cpuTeam] || { players: [], bench: [], formation: "4-3-3" };
+    
+    slots.push({
+      team: cpuTeam,
+      type: "cpu",
+      name: `CPU ${i - numHumans}`,
+      ready: true,
+      squad: JSON.parse(JSON.stringify(squadData.players)),
+      bench: JSON.parse(JSON.stringify(squadData.bench)).map((p, pIdx) => ({ ...p, no: p.no || (12 + pIdx) })),
+      formation: squadData.formation || "4-3-3"
+    });
   }
   
   const roomData = {
@@ -1556,6 +1579,44 @@ function updateTournamentUI(data) {
     document.getElementById("arena-tournament-lobby").style.display = "block";
     document.getElementById("arena-tournament-bracket-screen").style.display = "none";
     document.getElementById("arena-active").style.display = "none";
+
+    // Lógica do Timer de Escolha de Time (Torneio)
+    const timerWarning = document.getElementById("tournament-timer-warning");
+    
+    if (window.arenaTournamentLobbyInterval) {
+      clearInterval(window.arenaTournamentLobbyInterval);
+      window.arenaTournamentLobbyInterval = null;
+    }
+    
+    if (data.firstSelectTime) {
+      const elapsed = Math.floor((Date.now() - new Date(data.firstSelectTime).getTime()) / 1000);
+      const timeLeft = Math.max(0, 180 - elapsed);
+      
+      if (timeLeft > 0) {
+        if (timerWarning) {
+          timerWarning.style.display = "block";
+          timerWarning.textContent = `⚠️ O PRIMEIRO JOGADOR ESCOLHEU O TIME! TODOS OS JOGADORES DEVEM CONCLUIR SUAS ESCOLHAS EM ${timeLeft}s OU OS TIMES FALTANTES SERÃO SELECIONADOS ALEATORIAMENTE!`;
+        }
+        
+        window.arenaTournamentLobbyInterval = setInterval(() => {
+          const freshElapsed = Math.floor((Date.now() - new Date(data.firstSelectTime).getTime()) / 1000);
+          const freshTimeLeft = Math.max(0, 180 - freshElapsed);
+          
+          if (timerWarning) {
+            timerWarning.textContent = `⚠️ O PRIMEIRO JOGADOR ESCOLHEU O TIME! TODOS OS JOGADORES DEVEM CONCLUIR SUAS ESCOLHAS EM ${freshTimeLeft}s OU OS TIMES FALTANTES SERÃO SELECIONADOS ALEATORIAMENTE!`;
+          }
+          
+          if (freshTimeLeft <= 0) {
+            clearInterval(window.arenaTournamentLobbyInterval);
+            triggerTournamentAutoSelect(data);
+          }
+        }, 1000);
+      } else {
+        triggerTournamentAutoSelect(data);
+      }
+    } else {
+      if (timerWarning) timerWarning.style.display = "none";
+    }
     
     const grid = document.getElementById("tournament-slots-grid");
     grid.innerHTML = "";
@@ -1695,11 +1756,20 @@ async function tournamentChangeSlotType(idx, val) {
   const newSlots = [...arenaState.slots];
   
   if (val === "cpu") {
+    const takenTeams = newSlots.map((s, sIdx) => sIdx === idx ? null : s.team).filter(t => t !== null);
+    const cpuTeam = chooseRandomAvailableTeam(takenTeams);
+    if (typeof ensureSquadAndStats === "function") {
+      ensureSquadAndStats(cpuTeam);
+    }
+    const squadData = window.comparacopaData.squads[cpuTeam] || { players: [], bench: [], formation: "4-3-3" };
     newSlots[idx] = {
-      team: null,
+      team: cpuTeam,
       type: "cpu",
       name: `CPU ${idx}`,
-      ready: true
+      ready: true,
+      squad: JSON.parse(JSON.stringify(squadData.players)),
+      bench: JSON.parse(JSON.stringify(squadData.bench)).map((p, pIdx) => ({ ...p, no: p.no || (12 + pIdx) })),
+      formation: squadData.formation || "4-3-3"
     };
   } else {
     newSlots[idx] = {
@@ -1722,7 +1792,13 @@ async function tournamentSelectTeam(idx, val) {
   newSlots[idx].team = val;
   newSlots[idx].ready = false;
   
-  await updateDoc(roomRef, { slots: newSlots });
+  const updates = { slots: newSlots };
+  
+  if (!arenaState.firstSelectTime && val) {
+    updates.firstSelectTime = new Date().toISOString();
+  }
+  
+  await updateDoc(roomRef, updates);
 }
 
 async function tournamentToggleReady(idx) {
@@ -1733,6 +1809,53 @@ async function tournamentToggleReady(idx) {
   newSlots[idx].ready = !newSlots[idx].ready;
   
   await updateDoc(roomRef, { slots: newSlots });
+}
+
+async function triggerTournamentAutoSelect(data) {
+  if (window.isTournamentAutoSelecting) return;
+  window.isTournamentAutoSelecting = true;
+  
+  const { doc, updateDoc } = window.firebaseAPI;
+  const roomRef = doc(window.firebaseDB, "rooms", data.id);
+  const newSlots = [...data.slots];
+  
+  const takenTeams = newSlots.map(s => s.team).filter(t => t !== null);
+  
+  newSlots.forEach((slot, idx) => {
+    if ((slot.type === "human" || slot.type === "cpu") && !slot.team) {
+      const randomTeam = chooseRandomAvailableTeam(takenTeams);
+      takenTeams.push(randomTeam);
+      
+      if (typeof ensureSquadAndStats === "function") {
+        ensureSquadAndStats(randomTeam);
+      }
+      const squadData = window.comparacopaData.squads[randomTeam] || { players: [], bench: [], formation: "4-3-3" };
+      slot.team = randomTeam;
+      slot.squad = JSON.parse(JSON.stringify(squadData.players));
+      slot.bench = JSON.parse(JSON.stringify(squadData.bench)).map((p, pIdx) => ({ ...p, no: p.no || (12 + pIdx) }));
+      slot.formation = squadData.formation || "4-3-3";
+      slot.ready = true;
+    } else if (slot.type === "human" && slot.team && !slot.ready) {
+      slot.ready = true;
+      if (!slot.squad) {
+        if (typeof ensureSquadAndStats === "function") {
+          ensureSquadAndStats(slot.team);
+        }
+        const squadData = window.comparacopaData.squads[slot.team] || { players: [], bench: [], formation: "4-3-3" };
+        slot.squad = JSON.parse(JSON.stringify(squadData.players));
+        slot.bench = JSON.parse(JSON.stringify(squadData.bench)).map((p, pIdx) => ({ ...p, no: p.no || (12 + pIdx) }));
+        slot.formation = squadData.formation || "4-3-3";
+      }
+    }
+  });
+  
+  try {
+    await updateDoc(roomRef, { slots: newSlots });
+  } catch (err) {
+    console.error("Erro ao auto-selecionar times no torneio:", err);
+  } finally {
+    window.isTournamentAutoSelecting = false;
+  }
 }
 
 async function arenaStartTournamentMatchmaking() {
