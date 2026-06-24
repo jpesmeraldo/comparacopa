@@ -1233,8 +1233,8 @@ function startMatchSimulation() {
   const defensePowerB = secB.def * formFactorsB.def;
 
   let stats = {
-    A: { shots: 0, corners: 0, fouls: 0, yellow: 0, red: 0, possession: 50 },
-    B: { shots: 0, corners: 0, fouls: 0, yellow: 0, red: 0, possession: 50 }
+    A: { shots: 0, corners: 0, fouls: 0, yellow: 0, red: 0, possession: 50, goals: [] },
+    B: { shots: 0, corners: 0, fouls: 0, yellow: 0, red: 0, possession: 50, goals: [] }
   };
 
   // Calcular posse de bola baseada no meio de campo e ataque
@@ -1387,6 +1387,7 @@ function startMatchSimulation() {
       scoreBoxA.textContent = scoreA;
       stats.A.shots++;
       const scorer = getOffensivePlayer(squadA);
+      stats.A.goals.push({ scorer: scorer, minute: minute });
       logLine = `<span style="color: var(--neon-green); font-weight:800;">&gt; [${minute}'] GOOOOOOOOL do ${activeTeamA}! ${scorer} chuta forte no canto sem chances! (${scoreA}-${scoreB})</span>`;
       
       const scorersA = document.getElementById("sim-scorers-a");
@@ -1401,6 +1402,7 @@ function startMatchSimulation() {
       scoreBoxB.textContent = scoreB;
       stats.B.shots++;
       const scorer = getOffensivePlayer(squadB);
+      stats.B.goals.push({ scorer: scorer, minute: minute });
       logLine = `<span style="color: var(--neon-green); font-weight:800;">&gt; [${minute}'] GOOOOOOOOL do ${activeTeamB}! ${scorer} recebe passe açucarado e balança as redes! (${scoreA}-${scoreB})</span>`;
       
       const scorersB = document.getElementById("sim-scorers-b");
