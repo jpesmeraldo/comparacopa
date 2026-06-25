@@ -1045,6 +1045,17 @@ function listenToRoom(code) {
     } else if (data.mode === "tournament") {
       updateTournamentUI(data);
       
+      if (data.status === "match_playing" && data.state === "lineup") {
+        const p1Ready = data.p1 && data.p1.ready;
+        const p2Ready = data.p2 && data.p2.ready;
+        if (p1Ready && p2Ready && arenaPlayerRole === "p1") {
+          const { doc, updateDoc } = window.firebaseAPI;
+          const roomRef = doc(window.firebaseDB, "rooms", code);
+          updateDoc(roomRef, { state: "starting" });
+          setTimeout(() => arenaStartPhase("first_half_1"), 1000);
+        }
+      }
+      
       if (data.status === "match_playing" && data.p1.readyToResume && data.p2.readyToResume && arenaPlayerRole === "p1") {
         advanceOnlinePhase(data);
       }
@@ -1843,13 +1854,90 @@ function updateTournamentUI(data) {
     document.getElementById("arena-tournament-lobby").style.display = "none";
     
     if (data.status === "match_playing") {
-      document.getElementById("arena-tournament-bracket-screen").style.display = "none";
-      document.getElementById("arena-active").style.display = "block";
-      
-      const lobbyCard = document.getElementById("arena-lobby-card");
-      if (lobbyCard) lobbyCard.style.display = "none";
-      const configPanel = document.getElementById("arena-tactical-config-panel");
-      if (configPanel) configPanel.style.display = "none";
+      if (data.state === "lineup") {
+        document.getElementById("arena-tournament-bracket-screen").style.display = "none";
+        document.getElementById("arena-active").style.display = "block";
+        
+        const lobbyCard = document.getElementById("arena-lobby-card");
+        if (lobbyCard) lobbyCard.style.display = "none";
+        
+        const configPanel = document.getElementById("arena-tactical-config-panel");
+        if (configPanel) {
+          configPanel.style.display = "flex";
+          
+          // Hide input fields that are not needed
+          const nameInputWrapper = configPanel.querySelector("div:has(#arena-player-name-input)");
+          if (nameInputWrapper) nameInputWrapper.style.display = "none";
+          const teamWrapper = configPanel.querySelector("div:has(#arena-team1)");
+          if (teamWrapper) teamWrapper.style.display = "none";
+          const cpuWrapper = document.getElementById("arena-cpu-selection-wrapper");
+          if (cpuWrapper) cpuWrapper.style.display = "none";
+          
+          // Determine if I am playing in this match!
+          const isPlayer1 = data.p1 && data.p1.role === arenaPlayerRole;
+          const isPlayer2 = data.p2 && data.p2.role === arenaPlayerRole;
+          const myData = isPlayer1 ? data.p1 : (isPlayer2 ? data.p2 : null);
+          
+          if (myData) {
+            // Update Title
+            const title = configPanel.querySelector("h3");
+            if (title) title.textContent = `ESCALAÇÃO E TÁTICA - ${getTeamName(myData.team)}`;
+            
+            // Render setup field
+            const pitchSetup = document.getElementById("arena-setup-pitch");
+            if (pitchSetup) pitchSetup.style.display = "block";
+            
+            arenaRenderSetupField(myData);
+            
+            // Handle confirm button
+            const confirmBtn = document.getElementById("btn-arena-confirm-ready");
+            if (confirmBtn) {
+              confirmBtn.style.display = "block";
+              if (myData.ready) {
+                confirmBtn.disabled = true;
+                confirmBtn.textContent = "TÁTICA CONFIRMADA! AGUARDANDO ADVERSÁRIO...";
+                confirmBtn.className = "neo-btn";
+              } else {
+                confirmBtn.disabled = false;
+                confirmBtn.textContent = "CONFIRMAR TÁTICA E JOGAR";
+                confirmBtn.className = "neo-btn btn-green";
+                confirmBtn.onclick = async () => {
+                  const { doc, updateDoc } = window.firebaseAPI;
+                  const roomRef = doc(window.firebaseDB, "rooms", arenaRoomId);
+                  const updateObj = {};
+                  const fieldPrefix = isPlayer1 ? "p1" : "p2";
+                  updateObj[`${fieldPrefix}.ready`] = true;
+                  await updateDoc(roomRef, updateObj);
+                };
+              }
+            }
+          } else {
+            // Spectator
+            const title = configPanel.querySelector("h3");
+            if (title) title.textContent = `PREPARAÇÃO DOS JOGADORES`;
+            
+            const pitchSetup = document.getElementById("arena-setup-pitch");
+            if (pitchSetup) pitchSetup.style.display = "none";
+            const confirmBtn = document.getElementById("btn-arena-confirm-ready");
+            if (confirmBtn) confirmBtn.style.display = "none";
+            
+            const grid = document.getElementById("arena-formation-btn-grid");
+            if (grid) {
+              grid.innerHTML = `<p style="font-family:'Space Mono', monospace; font-size:1rem; font-weight:bold; color:var(--retro-red); text-align:center;">Aguardando os jogadores definirem as escalações...</p>`;
+            }
+          }
+        }
+        
+        document.getElementById("arena-pitch-container").style.display = "none";
+      } else {
+        document.getElementById("arena-tournament-bracket-screen").style.display = "none";
+        document.getElementById("arena-active").style.display = "block";
+        
+        const lobbyCard = document.getElementById("arena-lobby-card");
+        if (lobbyCard) lobbyCard.style.display = "none";
+        const configPanel = document.getElementById("arena-tactical-config-panel");
+        if (configPanel) configPanel.style.display = "none";
+      }
     } else {
       document.getElementById("arena-tournament-bracket-screen").style.display = "block";
       document.getElementById("arena-active").style.display = "none";
@@ -2248,18 +2336,13 @@ async function tournamentStartMatch(roundIdx, matchIdx) {
   // Set up active room match states
   await updateDoc(roomRef, {
     status: "match_playing",
-    state: "starting",
-    p1: { team: match.teamA, squad: squadA, bench: benchA, formation: "4-3-3", ready: true, readyToResume: false, type: match.roleA ? "human" : "cpu", goals: [] },
-    p2: { team: match.teamB, squad: squadB, bench: benchB, formation: "4-3-3", ready: true, readyToResume: false, type: match.roleB ? "human" : "cpu", goals: [] },
+    state: "lineup",
+    p1: { team: match.teamA, squad: squadA, bench: benchA, formation: "4-3-3", ready: match.roleA ? false : true, readyToResume: false, type: match.roleA ? "human" : "cpu", role: match.roleA || "", goals: [] },
+    p2: { team: match.teamB, squad: squadB, bench: benchB, formation: "4-3-3", ready: match.roleB ? false : true, readyToResume: false, type: match.roleB ? "human" : "cpu", role: match.roleB || "", goals: [] },
     scoreA: 0,
     scoreB: 0,
     injuryTime: 0
   });
-  
-  // Se for simulador automático CPU vs CPU ou CPU vs player humano mas coordenado pelo host
-  if (arenaPlayerRole === "p1") {
-    setTimeout(() => arenaStartPhase("first_half_1"), 2000);
-  }
 }
 
 /* ==========================================================================
