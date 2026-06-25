@@ -1,7 +1,19 @@
 export default async function handler(req, res) {
   // CORS Headers
+  const origin = req.headers.origin;
+  const allowedOrigins = ['https://comparacopa.com.br', 'https://www.comparacopa.com.br'];
+  
+  let corsOrigin = 'https://comparacopa.com.br';
+  if (origin) {
+    const isLocal = origin.includes('localhost') || origin.includes('127.0.0.1');
+    const isProd = allowedOrigins.includes(origin);
+    if (isLocal || isProd) {
+      corsOrigin = origin;
+    }
+  }
+  
   res.setHeader('Access-Control-Allow-Credentials', true);
-  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Origin', corsOrigin);
   res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS');
   res.setHeader(
     'Access-Control-Allow-Headers',
