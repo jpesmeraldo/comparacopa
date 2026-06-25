@@ -1966,10 +1966,18 @@ function updateTournamentUI(data) {
         
         controls.innerHTML = "";
         if (isMyTurn) {
-          const btnText = nextMatch.type === "cpu-cpu" ? "Simular CPU vs CPU" : "Iniciar Minha Partida";
-          controls.innerHTML = `
-            <button class="neo-btn btn-green" onclick="tournamentStartMatch(${nextMatch.roundIdx}, ${nextMatch.matchIdx})">${btnText}</button>
-          `;
+          if (nextMatch.type === "cpu-cpu") {
+            controls.innerHTML = `
+              <div style="display:flex; gap:10px; justify-content:center;">
+                <button class="neo-btn btn-green" onclick="tournamentStartMatch(${nextMatch.roundIdx}, ${nextMatch.matchIdx})">Assistir Completo</button>
+                <button class="neo-btn btn-yellow" onclick="tournamentSimulateMatchInstantly(${nextMatch.roundIdx}, ${nextMatch.matchIdx})">Resumo Direto</button>
+              </div>
+            `;
+          } else {
+            controls.innerHTML = `
+              <button class="neo-btn btn-green" onclick="tournamentStartMatch(${nextMatch.roundIdx}, ${nextMatch.matchIdx})">Iniciar Minha Partida</button>
+            `;
+          }
         } else {
           controls.innerHTML = `<p style="color:#666; font-style:italic;">Aguardando jogadores iniciarem a partida...</p>`;
         }
@@ -2343,6 +2351,84 @@ async function tournamentStartMatch(roundIdx, matchIdx) {
     scoreB: 0,
     injuryTime: 0
   });
+}
+
+function simulateMatchInstantly(teamA, teamB) {
+  if (typeof ensureSquadAndStats === "function") {
+    ensureSquadAndStats(teamA);
+    ensureSquadAndStats(teamB);
+  }
+  
+  const sqA = window.comparacopaData.squads[teamA];
+  const sqB = window.comparacopaData.squads[teamB];
+  
+  const tempState = {
+    scoreA: 0,
+    scoreB: 0,
+    p1: { team: teamA, squad: sqA.players, formation: sqA.formation || "4-3-3", style: "bal" },
+    p2: { team: teamB, squad: sqB.players, formation: sqB.formation || "4-3-3", style: "bal" }
+  };
+  
+  // Phase 1 (0 to 22)
+  const p1 = generateArenaPhase(0, 22, tempState);
+  tempState.scoreA = p1.scoreA;
+  tempState.scoreB = p1.scoreB;
+  
+  // Phase 2 (22 to 45)
+  const p2 = generateArenaPhase(22, 45, tempState);
+  tempState.scoreA = p2.scoreA;
+  tempState.scoreB = p2.scoreB;
+  
+  // Phase 3 (45 to 67)
+  const p3 = generateArenaPhase(45, 67, tempState);
+  tempState.scoreA = p3.scoreA;
+  tempState.scoreB = p3.scoreB;
+  
+  // Phase 4 (67 to 90)
+  const p4 = generateArenaPhase(67, 90, tempState);
+  tempState.scoreA = p4.scoreA;
+  tempState.scoreB = p4.scoreB;
+  
+  // If it is a draw in a tournament, we must simulate extra time or penalties!
+  if (tempState.scoreA === tempState.scoreB) {
+    // Extra time Phase 1 (90 to 105)
+    const et1 = generateArenaPhase(90, 105, tempState);
+    tempState.scoreA = et1.scoreA;
+    tempState.scoreB = et1.scoreB;
+    
+    // Extra time Phase 2 (105 to 120)
+    const et2 = generateArenaPhase(105, 120, tempState);
+    tempState.scoreA = et2.scoreA;
+    tempState.scoreB = et2.scoreB;
+    
+    // If still a draw, simulate penalties!
+    if (tempState.scoreA === tempState.scoreB) {
+      let penA = 0;
+      let penB = 0;
+      for (let r = 0; r < 5; r++) {
+        if (Math.random() < 0.75) penA++;
+        if (Math.random() < 0.75) penB++;
+      }
+      while (penA === penB) {
+        if (Math.random() < 0.75) penA++;
+        if (Math.random() < 0.75) penB++;
+      }
+      
+      if (penA > penB) {
+        return { scoreA: tempState.scoreA + 1, scoreB: tempState.scoreB };
+      } else {
+        return { scoreA: tempState.scoreA, scoreB: tempState.scoreB + 1 };
+      }
+    }
+  }
+  
+  return { scoreA: tempState.scoreA, scoreB: tempState.scoreB };
+}
+
+async function tournamentSimulateMatchInstantly(roundIdx, matchIdx) {
+  const match = arenaState.bracket.rounds[roundIdx].matches[matchIdx];
+  const result = simulateMatchInstantly(match.teamA, match.teamB);
+  await saveTournamentMatchResult(result.scoreA, result.scoreB);
 }
 
 /* ==========================================================================
