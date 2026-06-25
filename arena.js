@@ -2025,35 +2025,57 @@ async function arenaStartTournamentMatchmaking() {
   const roomRef = doc(window.firebaseDB, "rooms", arenaRoomId);
   
   const slots = arenaState.slots;
+  const isSize4 = slots.length === 4;
   
-  // Create round of 8
-  const bracket = {
-    winner: null,
-    rounds: [
-      {
-        name: "Quartas de Final",
-        matches: [
-          { teamA: slots[0].team, teamB: slots[1].team, scoreA: null, scoreB: null, winner: null, roleA: slots[0].role || null, roleB: slots[1].role || null, type: getMatchType(slots[0], slots[1]) },
-          { teamA: slots[2].team, teamB: slots[3].team, scoreA: null, scoreB: null, winner: null, roleA: slots[2].role || null, roleB: slots[3].role || null, type: getMatchType(slots[2], slots[3]) },
-          { teamA: slots[4].team, teamB: slots[5].team, scoreA: null, scoreB: null, winner: null, roleA: slots[4].role || null, roleB: slots[5].role || null, type: getMatchType(slots[4], slots[5]) },
-          { teamA: slots[6].team, teamB: slots[7].team, scoreA: null, scoreB: null, winner: null, roleA: slots[6].role || null, roleB: slots[7].role || null, type: getMatchType(slots[6], slots[7]) }
-        ]
-      },
-      {
-        name: "Semifinal",
-        matches: [
-          { teamA: null, teamB: null, scoreA: null, scoreB: null, winner: null, roleA: null, roleB: null },
-          { teamA: null, teamB: null, scoreA: null, scoreB: null, winner: null, roleA: null, roleB: null }
-        ]
-      },
-      {
-        name: "Final",
-        matches: [
-          { teamA: null, teamB: null, scoreA: null, scoreB: null, winner: null, roleA: null, roleB: null }
-        ]
-      }
-    ]
-  };
+  let bracket;
+  if (isSize4) {
+    bracket = {
+      winner: null,
+      rounds: [
+        {
+          name: "Semifinal",
+          matches: [
+            { teamA: slots[0].team, teamB: slots[1].team, scoreA: null, scoreB: null, winner: null, roleA: slots[0].role || null, roleB: slots[1].role || null, type: getMatchType(slots[0], slots[1]) },
+            { teamA: slots[2].team, teamB: slots[3].team, scoreA: null, scoreB: null, winner: null, roleA: slots[2].role || null, roleB: slots[3].role || null, type: getMatchType(slots[2], slots[3]) }
+          ]
+        },
+        {
+          name: "Final",
+          matches: [
+            { teamA: null, teamB: null, scoreA: null, scoreB: null, winner: null, roleA: null, roleB: null }
+          ]
+        }
+      ]
+    };
+  } else {
+    bracket = {
+      winner: null,
+      rounds: [
+        {
+          name: "Quartas de Final",
+          matches: [
+            { teamA: slots[0].team, teamB: slots[1].team, scoreA: null, scoreB: null, winner: null, roleA: slots[0].role || null, roleB: slots[1].role || null, type: getMatchType(slots[0], slots[1]) },
+            { teamA: slots[2].team, teamB: slots[3].team, scoreA: null, scoreB: null, winner: null, roleA: slots[2].role || null, roleB: slots[3].role || null, type: getMatchType(slots[2], slots[3]) },
+            { teamA: slots[4].team, teamB: slots[5].team, scoreA: null, scoreB: null, winner: null, roleA: slots[4].role || null, roleB: slots[5].role || null, type: getMatchType(slots[4], slots[5]) },
+            { teamA: slots[6].team, teamB: slots[7].team, scoreA: null, scoreB: null, winner: null, roleA: slots[6].role || null, roleB: slots[7].role || null, type: getMatchType(slots[6], slots[7]) }
+          ]
+        },
+        {
+          name: "Semifinal",
+          matches: [
+            { teamA: null, teamB: null, scoreA: null, scoreB: null, winner: null, roleA: null, roleB: null },
+            { teamA: null, teamB: null, scoreA: null, scoreB: null, winner: null, roleA: null, roleB: null }
+          ]
+        },
+        {
+          name: "Final",
+          matches: [
+            { teamA: null, teamB: null, scoreA: null, scoreB: null, winner: null, roleA: null, roleB: null }
+          ]
+        }
+      ]
+    };
+  }
   
   await updateDoc(roomRef, {
     status: "bracket",
@@ -2073,6 +2095,7 @@ function renderBrackets(bracket) {
   const qfDiv = document.getElementById("bracket-qf");
   const sfDiv = document.getElementById("bracket-sf");
   const fDiv = document.getElementById("bracket-f");
+  const qfCol = document.getElementById("bracket-qf-col");
   
   qfDiv.innerHTML = "";
   sfDiv.innerHTML = "";
@@ -2105,31 +2128,70 @@ function renderBrackets(bracket) {
     return el;
   };
   
-  bracket.rounds[0].matches.forEach(m => qfDiv.appendChild(renderMatchBox(m)));
-  bracket.rounds[1].matches.forEach(m => sfDiv.appendChild(renderMatchBox(m)));
-  bracket.rounds[2].matches.forEach(m => fDiv.appendChild(renderMatchBox(m)));
+  const isSize4 = bracket.rounds.length === 2;
+  
+  if (isSize4) {
+    if (qfCol) qfCol.style.display = "none";
+    bracket.rounds[0].matches.forEach(m => sfDiv.appendChild(renderMatchBox(m)));
+    bracket.rounds[1].matches.forEach(m => fDiv.appendChild(renderMatchBox(m)));
+  } else {
+    if (qfCol) qfCol.style.display = "block";
+    bracket.rounds[0].matches.forEach(m => qfDiv.appendChild(renderMatchBox(m)));
+    bracket.rounds[1].matches.forEach(m => sfDiv.appendChild(renderMatchBox(m)));
+    if (bracket.rounds[2]) {
+      bracket.rounds[2].matches.forEach(m => fDiv.appendChild(renderMatchBox(m)));
+    }
+  }
 }
 
 function findNextActiveMatch(bracket) {
   if (!bracket) return null;
-  // Quartas
-  for (let idx = 0; idx < bracket.rounds[0].matches.length; idx++) {
-    const m = bracket.rounds[0].matches[idx];
-    if (m.winner === null) {
-      return { ...m, roundIdx: 0, matchIdx: idx };
+  const isSize4 = bracket.rounds.length === 2;
+  
+  const processMatch = (m, roundIdx, matchIdx) => {
+    return {
+      ...m,
+      roundIdx,
+      matchIdx,
+      type: (m.roleA && m.roleB) ? "human-human" : ((!m.roleA && !m.roleB) ? "cpu-cpu" : "human-cpu")
+    };
+  };
+  
+  if (isSize4) {
+    // Semis
+    for (let idx = 0; idx < bracket.rounds[0].matches.length; idx++) {
+      const m = bracket.rounds[0].matches[idx];
+      if (m.winner === null) {
+        return processMatch(m, 0, idx);
+      }
     }
-  }
-  // Semis
-  for (let idx = 0; idx < bracket.rounds[1].matches.length; idx++) {
-    const m = bracket.rounds[1].matches[idx];
-    if (m.winner === null) {
-      return { ...m, roundIdx: 1, matchIdx: idx };
+    // Final
+    const fm = bracket.rounds[1].matches[0];
+    if (fm.winner === null) {
+      return processMatch(fm, 1, 0);
     }
-  }
-  // Final
-  const fm = bracket.rounds[2].matches[0];
-  if (fm.winner === null) {
-    return { ...fm, roundIdx: 2, matchIdx: 0 };
+  } else {
+    // Quartas
+    for (let idx = 0; idx < bracket.rounds[0].matches.length; idx++) {
+      const m = bracket.rounds[0].matches[idx];
+      if (m.winner === null) {
+        return processMatch(m, 0, idx);
+      }
+    }
+    // Semis
+    for (let idx = 0; idx < bracket.rounds[1].matches.length; idx++) {
+      const m = bracket.rounds[1].matches[idx];
+      if (m.winner === null) {
+        return processMatch(m, 1, idx);
+      }
+    }
+    // Final
+    if (bracket.rounds[2]) {
+      const fm = bracket.rounds[2].matches[0];
+      if (fm.winner === null) {
+        return processMatch(fm, 2, 0);
+      }
+    }
   }
   return null;
 }
