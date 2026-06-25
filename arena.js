@@ -656,7 +656,19 @@ function setTournamentSize(size) {
 }
 
 function chooseRandomAvailableTeam(takenList) {
-  if (!window.comparacopaData || !window.comparacopaData.teams) return "BRA";
+  if (!window.comparacopaData) return "BRA";
+  if (!window.comparacopaData.teams) {
+    const allTeamsList = [];
+    for (const grp in window.comparacopaData.groups) {
+      window.comparacopaData.groups[grp].forEach(t => {
+        if (!allTeamsList.some(existing => existing.id === t.id)) {
+          allTeamsList.push(t);
+        }
+      });
+    }
+    allTeamsList.sort((a, b) => a.name.localeCompare(b.name, "pt-BR"));
+    window.comparacopaData.teams = allTeamsList;
+  }
   const allTeams = window.comparacopaData.teams.map(t => t.id);
   const available = allTeams.filter(id => !takenList.includes(id));
   if (available.length === 0) return allTeams[Math.floor(Math.random() * allTeams.length)];
@@ -1720,6 +1732,19 @@ function updateTournamentUI(data) {
       const takenTeams = lobbyData.slots
         .map((s, sIdx) => sIdx === slotIdx ? null : s.team)
         .filter(t => t !== null && t !== undefined && t !== "");
+        
+      if (window.comparacopaData && !window.comparacopaData.teams) {
+        const allTeamsList = [];
+        for (const grp in window.comparacopaData.groups) {
+          window.comparacopaData.groups[grp].forEach(t => {
+            if (!allTeamsList.some(existing => existing.id === t.id)) {
+              allTeamsList.push(t);
+            }
+          });
+        }
+        allTeamsList.sort((a, b) => a.name.localeCompare(b.name, "pt-BR"));
+        window.comparacopaData.teams = allTeamsList;
+      }
         
       let html = '<option value="">Escolher Time...</option>';
       if (window.comparacopaData && window.comparacopaData.teams) {
