@@ -2395,24 +2395,24 @@ function renderTournamentHighlights(matches, topAssistsData = [], topYellowsData
     { flag: "🇦🇷", name: "Lionel Messi", goals: 5 },
     { flag: "🇳🇴", name: "Erling Haaland", goals: 4 },
     { flag: "🇫🇷", name: "Kylian Mbappé", goals: 4 },
-    { flag: "🇩🇪", name: "Deniz Undav", goals: 3 },
-    { flag: "🇨🇦", name: "Jonathan David", goals: 3 }
+    { flag: "🇧🇷", name: "Vinicius Júnior", goals: 4 },
+    { flag: "🇩🇪", name: "Deniz Undav", goals: 3 }
   ];
   
   const assistencias = [
     { flag: "🇸🇪", name: "Alexander Isak", assists: 3 },
+    { flag: "🇧🇷", name: "Bruno Guimarães", assists: 3 },
+    { flag: "🇫🇷", name: "Michael Olise", assists: 3 },
     { flag: "🇲🇦", name: "Brahim Díaz", assists: 2 },
-    { flag: "🇳🇿", name: "Chris Wood", assists: 2 },
-    { flag: "🇩🇪", name: "Deniz Undav", assists: 2 },
-    { flag: "🇳🇱", name: "Denzel Dumfries", assists: 2 }
+    { flag: "🇨🇭", name: "Breel Embolo", assists: 2 }
   ];
 
   const cartoesAmarelos = [
+    { flag: "🇶🇦", name: "Ahmed Fathi", yellow: 2 },
     { flag: "🇨🇻", name: "Sidny Lopes Cabral", yellow: 2 },
     { flag: "🇿🇦", name: "Teboho Mokoena", yellow: 2 },
     { flag: "🇺🇸", name: "Antonee Robinson", yellow: 1 },
-    { flag: "🇧🇷", name: "Carlos Henrique Casemiro", yellow: 1 },
-    { flag: "🇨🇦", name: "Derek Cornelius", yellow: 1 }
+    { flag: "🇿🇦", name: "Aubrey Modiba", yellow: 1 }
   ];
 
   const cartoesVermelhos = [
