@@ -1,4 +1,4 @@
-// Comparacopa 2026 - Base de Dados Retro Anos 80
+// Comparacopa - Base de Dados Retro Anos 80
 window.comparacopaData = {
   // Técnicos Oficiais das Seleções para a Copa de 2026
   coaches: {

@@ -1,4 +1,4 @@
-// Comparacopa 2026 - Lógica da Aplicação
+// Comparacopa - Lógica da Aplicação
 // A integração com a API-Football agora é feita via Serverless Proxy (Vercel)
 // na rota /api/football-proxy para garantir a segurança da chave.
 
