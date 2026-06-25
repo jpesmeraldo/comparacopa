@@ -2337,8 +2337,8 @@ async function tournamentStartMatch(roundIdx, matchIdx) {
   await updateDoc(roomRef, {
     status: "match_playing",
     state: "lineup",
-    p1: { team: match.teamA, squad: squadA, bench: benchA, formation: "4-3-3", ready: match.roleA ? false : true, readyToResume: false, type: match.roleA ? "human" : "cpu", role: match.roleA || "", goals: [] },
-    p2: { team: match.teamB, squad: squadB, bench: benchB, formation: "4-3-3", ready: match.roleB ? false : true, readyToResume: false, type: match.roleB ? "human" : "cpu", role: match.roleB || "", goals: [] },
+    p1: { team: match.teamA, squad: squadA, bench: benchA, formation: "4-3-3", ready: match.roleA ? false : true, readyToResume: false, type: match.roleA ? "human" : "cpu", role: match.roleA || "", goals: [], subsLeft: 4, tacsLeft: 2 },
+    p2: { team: match.teamB, squad: squadB, bench: benchB, formation: "4-3-3", ready: match.roleB ? false : true, readyToResume: false, type: match.roleB ? "human" : "cpu", role: match.roleB || "", goals: [], subsLeft: 4, tacsLeft: 2 },
     scoreA: 0,
     scoreB: 0,
     injuryTime: 0
