@@ -1841,9 +1841,12 @@ function updateTournamentUI(data) {
     
   } else if (data.status === "bracket" || data.status === "match_playing" || data.status === "finished") {
     document.getElementById("arena-tournament-lobby").style.display = "none";
-    document.getElementById("arena-tournament-bracket-screen").style.display = "block";
     
-    if (data.status === "bracket") {
+    if (data.status === "match_playing") {
+      document.getElementById("arena-tournament-bracket-screen").style.display = "none";
+      document.getElementById("arena-active").style.display = "block";
+    } else {
+      document.getElementById("arena-tournament-bracket-screen").style.display = "block";
       document.getElementById("arena-active").style.display = "none";
       document.getElementById("arena-pitch-container").style.display = "none";
       document.getElementById("arena-pause-panel").style.display = "none";
