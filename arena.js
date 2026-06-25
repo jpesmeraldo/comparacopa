@@ -1845,6 +1845,11 @@ function updateTournamentUI(data) {
     if (data.status === "match_playing") {
       document.getElementById("arena-tournament-bracket-screen").style.display = "none";
       document.getElementById("arena-active").style.display = "block";
+      
+      const lobbyCard = document.getElementById("arena-lobby-card");
+      if (lobbyCard) lobbyCard.style.display = "none";
+      const configPanel = document.getElementById("arena-tactical-config-panel");
+      if (configPanel) configPanel.style.display = "none";
     } else {
       document.getElementById("arena-tournament-bracket-screen").style.display = "block";
       document.getElementById("arena-active").style.display = "none";
