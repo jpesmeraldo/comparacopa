@@ -1679,7 +1679,8 @@ function renderBrackets() {
   // Renderizar Rodada de 32 (Fidelidade do Mata-Mata)
   const matches = window.comparacopaData.brackets.roundOf32;
   matches.forEach(m => {
-    const isDefined = m.teamA && m.teamB;
+    const isRealTeam = (t) => t && !t.startsWith("1º") && !t.startsWith("2º") && !t.startsWith("3º");
+    const isDefined = isRealTeam(m.teamA) && isRealTeam(m.teamB);
     const detailsA = m.teamA ? getTeamNameAndFlag(m.teamA) : { name: "A confirmar", flag: "🏳️" };
     const detailsB = m.teamB ? getTeamNameAndFlag(m.teamB) : { name: "A confirmar", flag: "🏳️" };
 
@@ -1746,11 +1747,11 @@ function renderBrackets() {
     card.className = "bracket-match placeholder";
     card.innerHTML = `
       <div class="bracket-team-row">
-        <span>Vencedor S1</span>
+        <span>Vencedor S${idx*2 + 1}</span>
         <span>-</span>
       </div>
       <div class="bracket-team-row">
-        <span>Vencedor S2</span>
+        <span>Vencedor S${idx*2 + 2}</span>
         <span>-</span>
       </div>
       <div class="bracket-match-date">${m.date}</div>

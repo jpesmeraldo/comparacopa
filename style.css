@@ -618,7 +618,8 @@ select.neo-select:focus {
 .bracket-column {
   display: flex;
   flex-direction: column;
-  height: 680px;
+  height: auto;
+  min-height: 1250px;
   width: 190px;
 }
 
