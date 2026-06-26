@@ -2715,6 +2715,18 @@ function runAnimation(simData) {
     const clockEl = document.getElementById("arena-stadium-clock");
     if (clockEl && ev.time) clockEl.textContent = ev.time;
     
+    if (ev.expelled) {
+      const isTeamA = ev.expelled.team === "A";
+      const targetSquad = isTeamA ? activeState.p1.squad : activeState.p2.squad;
+      if (targetSquad) {
+        const p = targetSquad.find(player => player.no === ev.expelled.no);
+        if (p) {
+          p.expelled = true;
+          arenaRenderPitch(activeState);
+        }
+      }
+    }
+    
     let prevScoreA = parseInt(document.getElementById("sim-score-a")?.textContent) || 0;
     let prevScoreB = parseInt(document.getElementById("sim-score-b")?.textContent) || 0;
 
@@ -2996,7 +3008,9 @@ function generateArenaPhase(startMin, endMin, stateData) {
     const redChanceA = Math.random();
     const redChanceB = Math.random();
     if (redChanceA < 0.0035) {
-      const foulPlayer = getDFMFPlayer(squadA);
+      const listA = squadA.filter(p => p.pos === "DF" || p.pos === "MF");
+      const foulPlayerObj = listA.length > 0 ? listA[Math.floor(Math.random() * listA.length)] : squadA[Math.floor(Math.random() * squadA.length)];
+      const foulPlayer = `${foulPlayerObj.name} (${foulPlayerObj.pos})`;
       const redPhrases = [
         `CARTÃO VERMELHO DIRETO! ${foulPlayer} (${teamAName}) faz uma falta violenta de último homem e é expulso pelo árbitro!`,
         `EXPULSÃO NA COPA! ${foulPlayer} (${teamAName}) perde a cabeça, comete falta duríssima de carrinho e recebe o cartão vermelho direto!`,
@@ -3004,9 +3018,16 @@ function generateArenaPhase(startMin, endMin, stateData) {
         `Vermelho nela! A seleção do ${teamAName} fica com um jogador a menos após a expulsão direta de ${foulPlayer} por jogo violento.`
       ];
       const text = redPhrases[Math.floor(Math.random() * redPhrases.length)];
-      events.push({ time: min + "'", text, anim: "reset" });
+      events.push({ 
+        time: min + "'", 
+        text, 
+        anim: "reset", 
+        expelled: { team: "A", name: foulPlayerObj.name, no: foulPlayerObj.no } 
+      });
     } else if (redChanceB < 0.0035) {
-      const foulPlayer = getDFMFPlayer(squadB);
+      const listB = squadB.filter(p => p.pos === "DF" || p.pos === "MF");
+      const foulPlayerObj = listB.length > 0 ? listB[Math.floor(Math.random() * listB.length)] : squadB[Math.floor(Math.random() * squadB.length)];
+      const foulPlayer = `${foulPlayerObj.name} (${foulPlayerObj.pos})`;
       const redPhrases = [
         `CARTÃO VERMELHO DIRETO! ${foulPlayer} (${teamBName}) faz uma falta violenta de último homem e é expulso pelo árbitro!`,
         `EXPULSÃO NA COPA! ${foulPlayer} (${teamBName}) perde a cabeça, comete falta duríssima de carrinho e recebe o cartão vermelho direto!`,
@@ -3014,7 +3035,12 @@ function generateArenaPhase(startMin, endMin, stateData) {
         `Vermelho nela! A seleção do ${teamBName} fica com um jogador a menos após a expulsão direta de ${foulPlayer} por jogo violento.`
       ];
       const text = redPhrases[Math.floor(Math.random() * redPhrases.length)];
-      events.push({ time: min + "'", text, anim: "reset" });
+      events.push({ 
+        time: min + "'", 
+        text, 
+        anim: "reset", 
+        expelled: { team: "B", name: foulPlayerObj.name, no: foulPlayerObj.no } 
+      });
     }
 
     const randomVal = Math.random() * 100;
@@ -3297,6 +3323,7 @@ function arenaRenderPitch(data) {
   
   // Render Player 1 Pieces (Left)
   data.p1.squad.forEach((player, index) => {
+    if (player.expelled) return;
     const node = document.createElement("div");
     node.className = "arena-piece p1-piece";
     const slotY = coordsP1 && coordsP1[index] ? coordsP1[index].y : player.y;
@@ -3316,6 +3343,7 @@ function arenaRenderPitch(data) {
   
   // Render Player 2 Pieces (Right) - Mirrored
   data.p2.squad.forEach((player, index) => {
+    if (player.expelled) return;
     const node = document.createElement("div");
     node.className = "arena-piece p2-piece";
     const slotY = coordsP2 && coordsP2[index] ? coordsP2[index].y : player.y;
