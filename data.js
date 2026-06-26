@@ -172,7 +172,7 @@ window.comparacopaData = {
       { id: "m7", teamA: "USA", teamB: "BIH", scoreA: null, scoreB: null, date: "01 Jul 2026" },
       { id: "m8", teamA: "1º G", teamB: "3º AEHIJ", scoreA: null, scoreB: null, date: "01 Jul 2026" },
       { id: "m9", teamA: "BRA", teamB: "JPN", scoreA: null, scoreB: null, date: "29 Jun 2026" },
-      { id: "m10", teamA: "CIV", teamB: "2º I", scoreA: null, scoreB: null, date: "30 Jun 2026" },
+      { id: "m10", teamA: "CIV", teamB: "NOR", scoreA: null, scoreB: null, date: "30 Jun 2026" },
       { id: "m11", teamA: "MEX", teamB: "3º CEFHI", scoreA: null, scoreB: null, date: "30 Jun 2026" },
       { id: "m12", teamA: "1º L", teamB: "3º EHIJK", scoreA: null, scoreB: null, date: "01 Jul 2026" },
       { id: "m13", teamA: "ARG", teamB: "2º H", scoreA: null, scoreB: null, date: "03 Jul 2026" },
