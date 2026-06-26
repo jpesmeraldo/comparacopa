@@ -2992,6 +2992,31 @@ function generateArenaPhase(startMin, endMin, stateData) {
     min += Math.floor(Math.random() * 3) + 1;
     if (min >= endMin) min = endMin;
     
+    // Possibilidade muito pequena de cartão vermelho direto (aprox. 0.35% por time por verificação, preferindo DF/MF)
+    const redChanceA = Math.random();
+    const redChanceB = Math.random();
+    if (redChanceA < 0.0035) {
+      const foulPlayer = getDFMFPlayer(squadA);
+      const redPhrases = [
+        `CARTÃO VERMELHO DIRETO! ${foulPlayer} (${teamAName}) faz uma falta violenta de último homem e é expulso pelo árbitro!`,
+        `EXPULSÃO NA COPA! ${foulPlayer} (${teamAName}) perde a cabeça, comete falta duríssima de carrinho e recebe o cartão vermelho direto!`,
+        `Para o chuveiro mais cedo! O juiz não hesita e mostra o cartão vermelho direto para ${foulPlayer} (${teamAName}) após parar o contra-ataque de forma desleal!`,
+        `Vermelho nela! A seleção do ${teamAName} fica com um jogador a menos após a expulsão direta de ${foulPlayer} por jogo violento.`
+      ];
+      const text = redPhrases[Math.floor(Math.random() * redPhrases.length)];
+      events.push({ time: min + "'", text, anim: "reset" });
+    } else if (redChanceB < 0.0035) {
+      const foulPlayer = getDFMFPlayer(squadB);
+      const redPhrases = [
+        `CARTÃO VERMELHO DIRETO! ${foulPlayer} (${teamBName}) faz uma falta violenta de último homem e é expulso pelo árbitro!`,
+        `EXPULSÃO NA COPA! ${foulPlayer} (${teamBName}) perde a cabeça, comete falta duríssima de carrinho e recebe o cartão vermelho direto!`,
+        `Para o chuveiro mais cedo! O juiz não hesita e mostra o cartão vermelho direto para ${foulPlayer} (${teamBName}) após parar o contra-ataque de forma desleal!`,
+        `Vermelho nela! A seleção do ${teamBName} fica com um jogador a menos após a expulsão direta de ${foulPlayer} por jogo violento.`
+      ];
+      const text = redPhrases[Math.floor(Math.random() * redPhrases.length)];
+      events.push({ time: min + "'", text, anim: "reset" });
+    }
+
     const randomVal = Math.random() * 100;
     
     if (randomVal < chanceGoalA) {
