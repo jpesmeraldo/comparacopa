@@ -1683,6 +1683,14 @@ function renderMainBrackets() {
   r4Col.innerHTML = "";
   rFinalCol.innerHTML = "";
 
+  const getDisplayTeam = (teamId, defaultName) => {
+    if (teamId) {
+      const details = getTeamNameAndFlag(teamId);
+      return `${details.flag} ${details.name}`;
+    }
+    return defaultName;
+  };
+
   // Renderizar Rodada de 32 (Fidelidade do Mata-Mata)
   const matches = window.comparacopaData.brackets.roundOf32;
   matches.forEach(m => {
@@ -1700,11 +1708,11 @@ function renderMainBrackets() {
     matchCard.innerHTML = `
       <div class="bracket-team-row">
         <span>${detailsA.flag} ${m.teamA || "A confirmar"}</span>
-        <span class="score-placeholder" style="font-family: 'Space Mono', monospace;">-</span>
+        <span class="score-placeholder" style="font-family: 'Space Mono', monospace;">${m.scoreA !== null ? m.scoreA : "-"}</span>
       </div>
       <div class="bracket-team-row">
         <span>${detailsB.flag} ${m.teamB || "A confirmar"}</span>
-        <span class="score-placeholder" style="font-family: 'Space Mono', monospace;">-</span>
+        <span class="score-placeholder" style="font-family: 'Space Mono', monospace;">${m.scoreB !== null ? m.scoreB : "-"}</span>
       </div>
       <div class="bracket-match-date">${m.date}</div>
     `;
@@ -1715,15 +1723,22 @@ function renderMainBrackets() {
   const octavesData = window.comparacopaData.brackets.octaves;
   octavesData.forEach((m, idx) => {
     const card = document.createElement("div");
-    card.className = "bracket-match placeholder";
+    card.className = m.teamA && m.teamB ? "bracket-match active" : "bracket-match placeholder";
+    if (m.teamA && m.teamB) {
+      card.onclick = () => loadBracketMatchToSim(m.teamA, m.teamB);
+    }
+    const labelA = getDisplayTeam(m.teamA, `Vencedor M${idx*2 + 1}`);
+    const labelB = getDisplayTeam(m.teamB, `Vencedor M${idx*2 + 2}`);
+    const scoreValA = m.scoreA !== null ? m.scoreA : "-";
+    const scoreValB = m.scoreB !== null ? m.scoreB : "-";
     card.innerHTML = `
       <div class="bracket-team-row">
-        <span>Vencedor M${idx*2 + 1}</span>
-        <span>-</span>
+        <span>${labelA}</span>
+        <span class="score-placeholder" style="font-family: 'Space Mono', monospace;">${scoreValA}</span>
       </div>
       <div class="bracket-team-row">
-        <span>Vencedor M${idx*2 + 2}</span>
-        <span>-</span>
+        <span>${labelB}</span>
+        <span class="score-placeholder" style="font-family: 'Space Mono', monospace;">${scoreValB}</span>
       </div>
       <div class="bracket-match-date">${m.date}</div>
     `;
@@ -1733,15 +1748,22 @@ function renderMainBrackets() {
   const quartersData = window.comparacopaData.brackets.quarters;
   quartersData.forEach((m, idx) => {
     const card = document.createElement("div");
-    card.className = "bracket-match placeholder";
+    card.className = m.teamA && m.teamB ? "bracket-match active" : "bracket-match placeholder";
+    if (m.teamA && m.teamB) {
+      card.onclick = () => loadBracketMatchToSim(m.teamA, m.teamB);
+    }
+    const labelA = getDisplayTeam(m.teamA, `Vencedor Q${idx*2 + 1}`);
+    const labelB = getDisplayTeam(m.teamB, `Vencedor Q${idx*2 + 2}`);
+    const scoreValA = m.scoreA !== null ? m.scoreA : "-";
+    const scoreValB = m.scoreB !== null ? m.scoreB : "-";
     card.innerHTML = `
       <div class="bracket-team-row">
-        <span>Vencedor Q${idx*2 + 1}</span>
-        <span>-</span>
+        <span>${labelA}</span>
+        <span class="score-placeholder" style="font-family: 'Space Mono', monospace;">${scoreValA}</span>
       </div>
       <div class="bracket-team-row">
-        <span>Vencedor Q${idx*2 + 2}</span>
-        <span>-</span>
+        <span>${labelB}</span>
+        <span class="score-placeholder" style="font-family: 'Space Mono', monospace;">${scoreValB}</span>
       </div>
       <div class="bracket-match-date">${m.date}</div>
     `;
@@ -1751,15 +1773,22 @@ function renderMainBrackets() {
   const semisData = window.comparacopaData.brackets.semis;
   semisData.forEach((m, idx) => {
     const card = document.createElement("div");
-    card.className = "bracket-match placeholder";
+    card.className = m.teamA && m.teamB ? "bracket-match active" : "bracket-match placeholder";
+    if (m.teamA && m.teamB) {
+      card.onclick = () => loadBracketMatchToSim(m.teamA, m.teamB);
+    }
+    const labelA = getDisplayTeam(m.teamA, `Vencedor S${idx*2 + 1}`);
+    const labelB = getDisplayTeam(m.teamB, `Vencedor S${idx*2 + 2}`);
+    const scoreValA = m.scoreA !== null ? m.scoreA : "-";
+    const scoreValB = m.scoreB !== null ? m.scoreB : "-";
     card.innerHTML = `
       <div class="bracket-team-row">
-        <span>Vencedor S${idx*2 + 1}</span>
-        <span>-</span>
+        <span>${labelA}</span>
+        <span class="score-placeholder" style="font-family: 'Space Mono', monospace;">${scoreValA}</span>
       </div>
       <div class="bracket-team-row">
-        <span>Vencedor S${idx*2 + 2}</span>
-        <span>-</span>
+        <span>${labelB}</span>
+        <span class="score-placeholder" style="font-family: 'Space Mono', monospace;">${scoreValB}</span>
       </div>
       <div class="bracket-match-date">${m.date}</div>
     `;
@@ -1768,15 +1797,22 @@ function renderMainBrackets() {
 
   const finalData = window.comparacopaData.brackets.final;
   const finalCard = document.createElement("div");
-  finalCard.className = "bracket-match placeholder final";
+  finalCard.className = finalData.teamA && finalData.teamB ? "bracket-match placeholder final active" : "bracket-match placeholder final";
+  if (finalData.teamA && finalData.teamB) {
+    finalCard.onclick = () => loadBracketMatchToSim(finalData.teamA, finalData.teamB);
+  }
+  const labelFinalA = getDisplayTeam(finalData.teamA, "Vencedor Semifinal 1");
+  const labelFinalB = getDisplayTeam(finalData.teamB, "Vencedor Semifinal 2");
+  const scoreFinalA = finalData.scoreA !== null ? finalData.scoreA : "-";
+  const scoreFinalB = finalData.scoreB !== null ? finalData.scoreB : "-";
   finalCard.innerHTML = `
     <div class="bracket-team-row">
-      <span>Vencedor Semifinal 1</span>
-      <span>-</span>
+      <span>${labelFinalA}</span>
+      <span class="score-placeholder" style="font-family: 'Space Mono', monospace;">${scoreFinalA}</span>
     </div>
     <div class="bracket-team-row">
-      <span>Vencedor Semifinal 2</span>
-      <span>-</span>
+      <span>${labelFinalB}</span>
+      <span class="score-placeholder" style="font-family: 'Space Mono', monospace;">${scoreFinalB}</span>
     </div>
     <div class="bracket-match-date">${finalData.date}</div>
   `;
