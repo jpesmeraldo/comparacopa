@@ -164,7 +164,7 @@ window.comparacopaData = {
   brackets: {
     roundOf32: [
       { id: "m1", teamA: "GER", teamB: "3º ABCDF", scoreA: null, scoreB: null, date: "29 Jun 2026" },
-      { id: "m2", teamA: "FRA", teamB: "NOR", scoreA: 4, scoreB: 1, date: "30 Jun 2026" },
+      { id: "m2", teamA: "FRA", teamB: "NOR", scoreA: null, scoreB: null, date: "30 Jun 2026" },
       { id: "m3", teamA: "RSA", teamB: "CAN", scoreA: null, scoreB: null, date: "28 Jun 2026" },
       { id: "m4", teamA: "NED", teamB: "MAR", scoreA: null, scoreB: null, date: "29 Jun 2026" },
       { id: "m5", teamA: "2º K", teamB: "2º L", scoreA: null, scoreB: null, date: "02 Jul 2026" },
@@ -181,7 +181,7 @@ window.comparacopaData = {
       { id: "m16", teamA: "1º K", teamB: "3º DEIJL", scoreA: null, scoreB: null, date: "03 Jul 2026" }
     ],
     octaves: [
-      { id: "m17", teamA: null, teamB: "FRA", prevMatchA: "m1", prevMatchB: "m2", scoreA: null, scoreB: null, date: "04 Jul 2026" },
+      { id: "m17", teamA: null, teamB: null, prevMatchA: "m1", prevMatchB: "m2", scoreA: null, scoreB: null, date: "04 Jul 2026" },
       { id: "m18", teamA: null, teamB: null, prevMatchA: "m3", prevMatchB: "m4", scoreA: null, scoreB: null, date: "04 Jul 2026" },
       { id: "m19", teamA: null, teamB: null, prevMatchA: "m5", prevMatchB: "m6", scoreA: null, scoreB: null, date: "05 Jul 2026" },
       { id: "m20", teamA: null, teamB: null, prevMatchA: "m7", prevMatchB: "m8", scoreA: null, scoreB: null, date: "05 Jul 2026" },
