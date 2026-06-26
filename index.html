@@ -994,7 +994,13 @@
 
         <h3 style="margin-top: 20px; font-weight: 800; font-size: 1.1rem; color: var(--retro-blue);">3. Rolando os Dados (RNG) e Expulsões</h3>
         <p>A cada lance, o algoritmo roda um dado virtual de 0 a 100. Se cair no número de gols (base de 4%), a rede balança! Também simulamos escanteios, impedimentos e faltas.</p>
-        <p><strong>Cartões Vermelhos:</strong> Há uma pequena possibilidade (cerca de 0.35% por time a cada lance) de ocorrer uma expulsão direta (focada em DFs/MFs). Se isso acontecer, <strong>o jogador é removido fisicamente do campo de simulação</strong> e sua equipe joga o restante do jogo com um a menos!</p>
+        <p><strong>Cartões Vermelhos e Vantagem:</strong> Há uma pequena possibilidade (cerca de 0.35% por time a cada lance) de ocorrer uma expulsão direta (focada em DFs/MFs). Se isso acontecer:
+        <ul style="margin-left: 20px; margin-top: 5px;">
+          <li><strong>O jogador expulso sai fisicamente de campo</strong> no tabuleiro tático.</li>
+          <li>A equipe penalizada sofre uma **punição de -25% nas suas chances de marcar** por cartão vermelho recebido.</li>
+          <li>O time adversário ganha uma **vantagem de +25% nas suas chances de fazer gol** por jogador expulso do oponente!</li>
+        </ul>
+        </p>
 
         <h3 style="margin-top: 20px; font-weight: 800; font-size: 1.1rem; color: var(--retro-blue);">4. Pênaltis</h3>
         <p>Empatou? Fomos pros pênaltis! A chance base de fazer um gol é 70%. Mas se o seu ataque for brilhante e a defesa rival for fraca, essa chance pode subir até 85%. Pura emoção (e sorte)!</p>
