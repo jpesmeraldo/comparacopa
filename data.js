@@ -200,7 +200,8 @@ window.comparacopaData = {
       { id: "m29", teamA: null, teamB: null, prevMatchA: "m25", prevMatchB: "m26", scoreA: null, scoreB: null, date: "14 Jul 2026" },
       { id: "m30", teamA: null, teamB: null, prevMatchA: "m27", prevMatchB: "m28", scoreA: null, scoreB: null, date: "15 Jul 2026" }
     ],
-    final: { id: "m31", teamA: null, teamB: null, prevMatchA: "m29", prevMatchB: "m30", scoreA: null, scoreB: null, date: "19 Jul 2026" }
+    final: { id: "m31", teamA: null, teamB: null, prevMatchA: "m29", prevMatchB: "m30", scoreA: null, scoreB: null, date: "19 Jul 2026" },
+    thirdPlace: { id: "m32", teamA: null, teamB: null, prevMatchA: "m29", prevMatchB: "m30", scoreA: null, scoreB: null, date: "18 Jul 2026" }
   },
 
   // Estatísticas de performance dos últimos 100 jogos para G8

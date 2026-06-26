@@ -1796,6 +1796,25 @@ function renderMainBrackets() {
   });
 
   const finalData = window.comparacopaData.brackets.final;
+  
+  // 1. Container para a Final
+  const finalContainer = document.createElement("div");
+  finalContainer.style.width = "100%";
+  finalContainer.style.display = "flex";
+  finalContainer.style.flexDirection = "column";
+  finalContainer.style.gap = "8px";
+
+  const finalTitle = document.createElement("h4");
+  finalTitle.style.fontFamily = "'Space Mono', monospace";
+  finalTitle.style.fontSize = "0.75rem";
+  finalTitle.style.textAlign = "center";
+  finalTitle.style.color = "var(--dark-accent)";
+  finalTitle.style.textTransform = "uppercase";
+  finalTitle.style.fontWeight = "800";
+  finalTitle.style.margin = "0";
+  finalTitle.innerText = "Grande Final";
+  finalContainer.appendChild(finalTitle);
+
   const finalCard = document.createElement("div");
   finalCard.className = finalData.teamA && finalData.teamB ? "bracket-match placeholder final active" : "bracket-match placeholder final";
   if (finalData.teamA && finalData.teamB) {
@@ -1816,7 +1835,57 @@ function renderMainBrackets() {
     </div>
     <div class="bracket-match-date">${finalData.date}</div>
   `;
-  rFinalCol.appendChild(finalCard);
+  finalContainer.appendChild(finalCard);
+  rFinalCol.appendChild(finalContainer);
+
+  // 2. Container para o 3º Lugar
+  const thirdPlaceData = window.comparacopaData.brackets.thirdPlace;
+  if (thirdPlaceData) {
+    const thirdContainer = document.createElement("div");
+    thirdContainer.style.width = "100%";
+    thirdContainer.style.display = "flex";
+    thirdContainer.style.flexDirection = "column";
+    thirdContainer.style.gap = "8px";
+    thirdContainer.style.marginTop = "25px";
+
+    const divider = document.createElement("div");
+    divider.style.borderTop = "2px dashed var(--dark-accent)";
+    thirdContainer.appendChild(divider);
+
+    const title3 = document.createElement("h4");
+    title3.style.fontFamily = "'Space Mono', monospace";
+    title3.style.fontSize = "0.75rem";
+    title3.style.textAlign = "center";
+    title3.style.color = "var(--dark-accent)";
+    title3.style.textTransform = "uppercase";
+    title3.style.fontWeight = "800";
+    title3.style.margin = "0";
+    title3.innerText = "Disputa de 3º Lugar";
+    thirdContainer.appendChild(title3);
+
+    const thirdCard = document.createElement("div");
+    thirdCard.className = thirdPlaceData.teamA && thirdPlaceData.teamB ? "bracket-match active" : "bracket-match placeholder";
+    if (thirdPlaceData.teamA && thirdPlaceData.teamB) {
+      thirdCard.onclick = () => loadBracketMatchToSim(thirdPlaceData.teamA, thirdPlaceData.teamB);
+    }
+    const labelThirdA = getDisplayTeam(thirdPlaceData.teamA, "Derrotado Semifinal 1");
+    const labelThirdB = getDisplayTeam(thirdPlaceData.teamB, "Derrotado Semifinal 2");
+    const scoreThirdA = thirdPlaceData.scoreA !== null ? thirdPlaceData.scoreA : "-";
+    const scoreThirdB = thirdPlaceData.scoreB !== null ? thirdPlaceData.scoreB : "-";
+    thirdCard.innerHTML = `
+      <div class="bracket-team-row">
+        <span>${labelThirdA}</span>
+        <span class="score-placeholder" style="font-family: 'Space Mono', monospace;">${scoreThirdA}</span>
+      </div>
+      <div class="bracket-team-row">
+        <span>${labelThirdB}</span>
+        <span class="score-placeholder" style="font-family: 'Space Mono', monospace;">${scoreThirdB}</span>
+      </div>
+      <div class="bracket-match-date">${thirdPlaceData.date}</div>
+    `;
+    thirdContainer.appendChild(thirdCard);
+    rFinalCol.appendChild(thirdContainer);
+  }
 }
 
 // Atualizar estatísticas e resultados reais em tempo real
