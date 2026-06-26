@@ -3000,6 +3000,9 @@ function generateArenaPhase(startMin, endMin, stateData) {
   if (min === 90) events.push({ time: "90'", text: "Bola rolando na prorrogação! Haja coração para estes 30 minutos de emoção!", anim: "start" });
   if (min === 105) events.push({ time: "105'", text: "Começa o segundo tempo da prorrogação! Último esforço das duas seleções!", anim: "start" });
 
+  let redCardsA = 0;
+  let redCardsB = 0;
+
   while(min < endMin) {
     min += Math.floor(Math.random() * 3) + 1;
     if (min >= endMin) min = endMin;
@@ -3008,6 +3011,7 @@ function generateArenaPhase(startMin, endMin, stateData) {
     const redChanceA = Math.random();
     const redChanceB = Math.random();
     if (redChanceA < 0.0035) {
+      redCardsA++;
       const listA = squadA.filter(p => p.pos === "DF" || p.pos === "MF");
       const foulPlayerObj = listA.length > 0 ? listA[Math.floor(Math.random() * listA.length)] : squadA[Math.floor(Math.random() * squadA.length)];
       const foulPlayer = `${foulPlayerObj.name} (${foulPlayerObj.pos})`;
@@ -3025,6 +3029,7 @@ function generateArenaPhase(startMin, endMin, stateData) {
         expelled: { team: "A", name: foulPlayerObj.name, no: foulPlayerObj.no } 
       });
     } else if (redChanceB < 0.0035) {
+      redCardsB++;
       const listB = squadB.filter(p => p.pos === "DF" || p.pos === "MF");
       const foulPlayerObj = listB.length > 0 ? listB[Math.floor(Math.random() * listB.length)] : squadB[Math.floor(Math.random() * squadB.length)];
       const foulPlayer = `${foulPlayerObj.name} (${foulPlayerObj.pos})`;
@@ -3043,9 +3048,21 @@ function generateArenaPhase(startMin, endMin, stateData) {
       });
     }
 
+    // Calcular chances dinâmicas baseadas em cartões vermelhos acumulados
+    let activeChanceGoalA = chanceGoalA;
+    let activeChanceGoalB = chanceGoalB;
+    if (redCardsA > 0) {
+      activeChanceGoalB *= (1.0 + 0.25 * redCardsA); // Oponente ganha +25% de chance de marcar
+      activeChanceGoalA *= Math.max(0.1, 1.0 - 0.25 * redCardsA); // Time expulso perde 25% de chance de marcar
+    }
+    if (redCardsB > 0) {
+      activeChanceGoalA *= (1.0 + 0.25 * redCardsB);
+      activeChanceGoalB *= Math.max(0.1, 1.0 - 0.25 * redCardsB);
+    }
+
     const randomVal = Math.random() * 100;
     
-    if (randomVal < chanceGoalA) {
+    if (randomVal < activeChanceGoalA) {
       scoreA++;
       const scorer = getFWPlayer(squadA);
       const goalPhrases = [
@@ -3057,7 +3074,7 @@ function generateArenaPhase(startMin, endMin, stateData) {
       ];
       const text = goalPhrases[Math.floor(Math.random() * goalPhrases.length)];
       events.push({ time: min + "'", text, anim: "shoot-p1", scoreA, scoreB, goal: { team: "A", scorer: scorer.split(" (")[0], time: min + "'" } });
-    } else if (randomVal < chanceGoalA + chanceGoalB) {
+    } else if (randomVal < activeChanceGoalA + activeChanceGoalB) {
       scoreB++;
       const scorer = getFWPlayer(squadB);
       const goalPhrases = [
