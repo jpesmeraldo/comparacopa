@@ -247,33 +247,33 @@ window.comparacopaData = {
       formation: "4-3-3",
       players: [
         { name: "Alisson", pos: "GK", no: 1, club: "Liverpool", ovr: 89, pac: 85, sho: 45, pas: 89, dri: 87, def: 90, phy: 84, x: 50, y: 12 },
-        { name: "Éderson", pos: "DF", no: 2, club: "Atalanta", ovr: 82, pac: 79, sho: 72, pas: 77, dri: 78, def: 81, phy: 82, x: 85, y: 35 },
+        { name: "Danilo", pos: "DF", no: 13, club: "Juventus", ovr: 81, pac: 76, sho: 65, pas: 78, dri: 76, def: 82, phy: 80, x: 85, y: 35 },
         { name: "Gabriel Magalhães", pos: "DF", no: 3, club: "Arsenal", ovr: 85, pac: 74, sho: 50, pas: 70, dri: 68, def: 86, phy: 84, x: 35, y: 28 },
         { name: "Marquinhos", pos: "DF", no: 4, club: "PSG", ovr: 87, pac: 79, sho: 53, pas: 75, dri: 74, def: 89, phy: 80, x: 65, y: 28 },
-        { name: "Alex Sandro", pos: "DF", no: 6, club: "Flamengo", ovr: 79, pac: 73, sho: 60, pas: 75, dri: 77, def: 78, phy: 75, x: 15, y: 35 },
+        { name: "Douglas Santos", pos: "DF", no: 16, club: "Zenit", ovr: 80, pac: 75, sho: 60, pas: 74, dri: 76, def: 79, phy: 76, x: 15, y: 35 },
         { name: "Casemiro", pos: "MF", no: 5, club: "Manchester United", ovr: 83, pac: 60, sho: 73, pas: 76, dri: 72, def: 83, phy: 84, x: 50, y: 50 },
         { name: "Bruno Guimarães", pos: "MF", no: 8, club: "Newcastle", ovr: 86, pac: 76, sho: 73, pas: 85, dri: 84, def: 81, phy: 83, x: 30, y: 55 },
-        { name: "Neymar", pos: "FW", no: 10, club: "Al-Hilal", ovr: 88, pac: 86, sho: 83, pas: 85, dri: 92, def: 36, phy: 60, x: 70, y: 55 },
-        { name: "Raphinha", pos: "FW", no: 11, club: "Barcelona", ovr: 85, pac: 89, sho: 80, pas: 81, dri: 85, def: 52, phy: 73, x: 80, y: 80 },
+        { name: "Lucas Paquetá", pos: "MF", no: 20, club: "West Ham", ovr: 84, pac: 75, sho: 79, pas: 84, dri: 85, def: 72, phy: 79, x: 70, y: 55 },
+        { name: "Rayan", pos: "FW", no: 26, club: "Vasco", ovr: 75, pac: 80, sho: 73, pas: 68, dri: 76, def: 28, phy: 70, x: 80, y: 80 },
         { name: "Vini Jr.", pos: "FW", no: 7, club: "Real Madrid", ovr: 91, pac: 96, sho: 84, pas: 81, dri: 92, def: 29, phy: 68, x: 20, y: 80 },
         { name: "Matheus Cunha", pos: "FW", no: 9, club: "Wolves", ovr: 82, pac: 80, sho: 80, pas: 74, dri: 81, def: 35, phy: 79, x: 50, y: 85 }
       ],
       bench: [
+        { name: "Éderson", pos: "DF", no: 2, club: "Atalanta", ovr: 82, pac: 79, sho: 72, pas: 77, dri: 78, def: 81, phy: 82 },
+        { name: "Alex Sandro", pos: "DF", no: 6, club: "Flamengo", ovr: 79, pac: 73, sho: 60, pas: 75, dri: 77, def: 78, phy: 75 },
+        { name: "Neymar", pos: "FW", no: 10, club: "Al-Hilal", ovr: 88, pac: 86, sho: 83, pas: 85, dri: 92, def: 36, phy: 60 },
+        { name: "Raphinha", pos: "FW", no: 11, club: "Barcelona", ovr: 85, pac: 89, sho: 80, pas: 81, dri: 85, def: 52, phy: 73 },
         { name: "Weverton", pos: "GK", no: 12, club: "Palmeiras", ovr: 82, pac: 80, sho: 40, pas: 75, dri: 78, def: 82, phy: 80 },
-        { name: "Danilo", pos: "DF", no: 13, club: "Juventus", ovr: 81, pac: 76, sho: 65, pas: 78, dri: 76, def: 82, phy: 80 },
         { name: "Bremer", pos: "DF", no: 14, club: "Juventus", ovr: 84, pac: 78, sho: 48, pas: 60, dri: 65, def: 85, phy: 84 },
         { name: "Léo Pereira", pos: "DF", no: 15, club: "Flamengo", ovr: 79, pac: 70, sho: 54, pas: 65, dri: 68, def: 78, phy: 80 },
-        { name: "Douglas Santos", pos: "DF", no: 16, club: "Zenit", ovr: 80, pac: 75, sho: 60, pas: 74, dri: 76, def: 79, phy: 76 },
         { name: "Fabinho", pos: "MF", no: 17, club: "Al-Ittihad", ovr: 81, pac: 62, sho: 69, pas: 76, dri: 74, def: 81, phy: 80 },
         { name: "Danilo Santos", pos: "MF", no: 18, club: "Botafogo", ovr: 78, pac: 70, sho: 65, pas: 73, dri: 72, def: 76, phy: 78 },
         { name: "Endrick", pos: "FW", no: 19, club: "Real Madrid", ovr: 82, pac: 88, sho: 81, pas: 70, dri: 82, def: 35, phy: 80 },
-        { name: "Lucas Paquetá", pos: "MF", no: 20, club: "West Ham", ovr: 84, pac: 75, sho: 79, pas: 84, dri: 85, def: 72, phy: 79 },
         { name: "Luiz Henrique", pos: "FW", no: 21, club: "Botafogo", ovr: 81, pac: 86, sho: 76, pas: 73, dri: 83, def: 38, phy: 75 },
         { name: "Gabriel Martinelli", pos: "FW", no: 22, club: "Arsenal", ovr: 84, pac: 89, sho: 78, pas: 77, dri: 86, def: 42, phy: 72 },
         { name: "Ederson", pos: "GK", no: 23, club: "Manchester City", ovr: 86, pac: 84, sho: 46, pas: 84, dri: 85, def: 86, phy: 82 },
         { name: "Ibañez", pos: "DF", no: 24, club: "Al-Ahli", ovr: 81, pac: 78, sho: 48, pas: 62, dri: 65, def: 82, phy: 80 },
-        { name: "Igor Thiago", pos: "FW", no: 25, club: "Brentford", ovr: 79, pac: 78, sho: 77, pas: 65, dri: 72, def: 34, phy: 81 },
-        { name: "Rayan", pos: "FW", no: 26, club: "Vasco", ovr: 75, pac: 80, sho: 73, pas: 68, dri: 76, def: 28, phy: 70 }
+        { name: "Igor Thiago", pos: "FW", no: 25, club: "Brentford", ovr: 79, pac: 78, sho: 77, pas: 65, dri: 72, def: 34, phy: 81 }
       ]
     },
     ARG: {
