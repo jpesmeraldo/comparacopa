@@ -1691,9 +1691,34 @@ function renderMainBrackets() {
     return defaultName;
   };
 
+  const wrapWithLabel = (matchCard, labelText) => {
+    const wrapper = document.createElement("div");
+    wrapper.style.display = "flex";
+    wrapper.style.alignItems = "center";
+    wrapper.style.gap = "6px";
+    wrapper.style.width = "100%";
+
+    const label = document.createElement("span");
+    label.style.fontFamily = "'Space Mono', monospace";
+    label.style.fontSize = "0.72rem";
+    label.style.fontWeight = "800";
+    label.style.color = "var(--dark-accent)";
+    label.style.background = "var(--retro-yellow)";
+    label.style.border = "2px solid var(--dark-accent)";
+    label.style.padding = "2px 4px";
+    label.style.boxShadow = "2px 2px 0 var(--dark-accent)";
+    label.style.minWidth = "32px";
+    label.style.textAlign = "center";
+    label.innerText = labelText;
+
+    wrapper.appendChild(label);
+    wrapper.appendChild(matchCard);
+    return wrapper;
+  };
+
   // Renderizar Rodada de 32 (Fidelidade do Mata-Mata)
   const matches = window.comparacopaData.brackets.roundOf32;
-  matches.forEach(m => {
+  matches.forEach((m, idx) => {
     const isRealTeam = (t) => typeof t === "string" && !/^[1-3]/.test(t);
     const isDefined = isRealTeam(m.teamA) && isRealTeam(m.teamB);
     const detailsA = m.teamA ? getTeamNameAndFlag(m.teamA) : { name: "A confirmar", flag: "🏳️" };
@@ -1716,7 +1741,7 @@ function renderMainBrackets() {
       </div>
       <div class="bracket-match-date">${m.date}</div>
     `;
-    r32Col.appendChild(matchCard);
+    r32Col.appendChild(wrapWithLabel(matchCard, `M${idx + 1}`));
   });
 
   // Preencher colunas vazias subsequentes (Oitavas, Quartas, Semis e Final) para efeito visual
@@ -1742,7 +1767,7 @@ function renderMainBrackets() {
       </div>
       <div class="bracket-match-date">${m.date}</div>
     `;
-    r16Col.appendChild(card);
+    r16Col.appendChild(wrapWithLabel(card, `Q${idx + 1}`));
   });
 
   const quartersData = window.comparacopaData.brackets.quarters;
@@ -1767,7 +1792,7 @@ function renderMainBrackets() {
       </div>
       <div class="bracket-match-date">${m.date}</div>
     `;
-    r8Col.appendChild(card);
+    r8Col.appendChild(wrapWithLabel(card, `S${idx + 1}`));
   });
 
   const semisData = window.comparacopaData.brackets.semis;
@@ -1792,7 +1817,7 @@ function renderMainBrackets() {
       </div>
       <div class="bracket-match-date">${m.date}</div>
     `;
-    r4Col.appendChild(card);
+    r4Col.appendChild(wrapWithLabel(card, `SF${idx + 1}`));
   });
 
   const finalData = window.comparacopaData.brackets.final;
@@ -1835,7 +1860,7 @@ function renderMainBrackets() {
     </div>
     <div class="bracket-match-date">${finalData.date}</div>
   `;
-  finalContainer.appendChild(finalCard);
+  finalContainer.appendChild(wrapWithLabel(finalCard, "F"));
   rFinalCol.appendChild(finalContainer);
 
   // 2. Container para o 3º Lugar
@@ -1883,7 +1908,7 @@ function renderMainBrackets() {
       </div>
       <div class="bracket-match-date">${thirdPlaceData.date}</div>
     `;
-    thirdContainer.appendChild(thirdCard);
+    thirdContainer.appendChild(wrapWithLabel(thirdCard, "3º"));
     rFinalCol.appendChild(thirdContainer);
   }
 }
