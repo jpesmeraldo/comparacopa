@@ -974,7 +974,7 @@
     <div class="neo-card" style="max-width: 650px; width: 95%; background: var(--off-white); border: 3px solid var(--dark-accent); box-shadow: 8px 8px 0 var(--dark-accent); padding: 30px; text-align: left; position: relative; margin: auto; max-height: 85vh; overflow-y: auto;" onclick="event.stopPropagation()">
       <button class="neo-btn" style="position: absolute; top: 15px; right: 15px; padding: 4px 10px; font-size: 0.8rem; box-shadow: 2px 2px 0 var(--dark-accent);" onclick="closeLogicModal()">X</button>
       
-      <div style="font-family: 'Space Mono', monospace; font-size: 0.85rem; font-weight: 800; text-transform: uppercase; color: var(--retro-blue); margin-bottom: 5px;">Mecânicas Secretas</div>
+      <div style="font-family: 'Space Mono', monospace; font-size: 0.85rem; font-weight: 800; text-transform: uppercase; color: var(--retro-blue); margin-bottom: 5px;">Mecânicas (Quase) Secretas</div>
       <h2 style="font-family: 'Outfit', sans-serif; font-weight: 900; font-size: 1.8rem; text-transform: uppercase; margin-bottom: 20px; border-bottom: 3px solid var(--dark-accent); padding-bottom: 10px;">A Lógica do Comparacopa</h2>
 
       <div style="font-size: 0.95rem; line-height: 1.6; color: var(--dark-accent);">
@@ -992,9 +992,9 @@
         </ul>
         A posse de bola final de um jogo é baseada inteiramente na comparação bruta das Forças de Ataque dos dois times.</p>
 
-        <h3 style="margin-top: 20px; font-weight: 800; font-size: 1.1rem; color: var(--retro-blue);">3. Rolando os Dados (RNG)</h3>
-        <p>Durante a narração, o relógio avança em saltos. A cada lance, o "Deus do Futebol" (o nosso algoritmo) roda um dado virtual de 0 a 100.</p>
-        <p>A chance base de sair um gol é de 4%. Porém, se o seu poder de Ataque for muito maior que a Defesa inimiga, a sua probabilidade de gol dispara a cada lance! Se o dado não cair no número do Gol, ele pode cair num chute pra fora, escanteio ou falta.</p>
+        <h3 style="margin-top: 20px; font-weight: 800; font-size: 1.1rem; color: var(--retro-blue);">3. Rolando os Dados (RNG) e Expulsões</h3>
+        <p>A cada lance, o algoritmo roda um dado virtual de 0 a 100. Se cair no número de gols (base de 4%), a rede balança! Também simulamos escanteios, impedimentos e faltas.</p>
+        <p><strong>Cartões Vermelhos:</strong> Há uma pequena possibilidade (cerca de 0.35% por time a cada lance) de ocorrer uma expulsão direta (focada em DFs/MFs). Se isso acontecer, <strong>o jogador é removido fisicamente do campo de simulação</strong> e sua equipe joga o restante do jogo com um a menos!</p>
 
         <h3 style="margin-top: 20px; font-weight: 800; font-size: 1.1rem; color: var(--retro-blue);">4. Pênaltis</h3>
         <p>Empatou? Fomos pros pênaltis! A chance base de fazer um gol é 70%. Mas se o seu ataque for brilhante e a defesa rival for fraca, essa chance pode subir até 85%. Pura emoção (e sorte)!</p>
