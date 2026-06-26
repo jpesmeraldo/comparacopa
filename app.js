@@ -24,7 +24,7 @@ document.addEventListener("DOMContentLoaded", () => {
   initSelectors();
   initGroupTabs();
   loadComparison();
-  renderBrackets();
+  renderMainBrackets();
   
   // Inicializar ícones do Lucide
   if (window.lucide) {
@@ -680,9 +680,16 @@ function getPlayerNamesByNationality(teamId) {
 
 // Obter nome e bandeira de um país pelo ID
 function getTeamNameAndFlag(id) {
-  for (const grp in window.comparacopaData.groups) {
-    const team = window.comparacopaData.groups[grp].find(t => t.id === id);
-    if (team) return { name: team.name, flag: team.flag };
+  if (!id) return { name: "A confirmar", flag: "🏳️" };
+  const idStr = String(id);
+  if (window.comparacopaData && window.comparacopaData.groups) {
+    for (const grp in window.comparacopaData.groups) {
+      const group = window.comparacopaData.groups[grp];
+      if (Array.isArray(group)) {
+        const team = group.find(t => t && t.id === idStr);
+        if (team) return { name: team.name, flag: team.flag };
+      }
+    }
   }
   // Fallbacks para códigos conhecidos fora da lista base se houver
   const fallbacks = {
@@ -695,7 +702,7 @@ function getTeamNameAndFlag(id) {
     POR: { name: "Portugal", flag: "🇵🇹" },
     URU: { name: "Uruguai", flag: "🇺🇾" }
   };
-  return fallbacks[id] || { name: id, flag: "🏳️" };
+  return fallbacks[idStr] || { name: idStr, flag: "🏳️" };
 }
 
 // Carregar toda a comparação ao selecionar times
@@ -1663,7 +1670,7 @@ function loadBracketMatchToSim(teamA, teamB) {
 }
 
 // Renderizar Brackets (Chaveamento)
-function renderBrackets() {
+function renderMainBrackets() {
   const r32Col = document.getElementById("bracket-r32-col");
   const r16Col = document.getElementById("bracket-r16-col");
   const r8Col = document.getElementById("bracket-r8-col");
@@ -1679,7 +1686,7 @@ function renderBrackets() {
   // Renderizar Rodada de 32 (Fidelidade do Mata-Mata)
   const matches = window.comparacopaData.brackets.roundOf32;
   matches.forEach(m => {
-    const isRealTeam = (t) => t && !t.startsWith("1º") && !t.startsWith("2º") && !t.startsWith("3º");
+    const isRealTeam = (t) => typeof t === "string" && !/^[1-3]/.test(t);
     const isDefined = isRealTeam(m.teamA) && isRealTeam(m.teamB);
     const detailsA = m.teamA ? getTeamNameAndFlag(m.teamA) : { name: "A confirmar", flag: "🏳️" };
     const detailsB = m.teamB ? getTeamNameAndFlag(m.teamB) : { name: "A confirmar", flag: "🏳️" };
@@ -1931,7 +1938,7 @@ function updateRealTimeResults(isSilent = false) {
 
       // Re-renderizar as abas e componentes da interface
       renderGroupTable();
-      renderBrackets();
+      renderMainBrackets();
       
       // Pass the API-Football data alongside the matches
       renderTournamentHighlights(data.matches, topAssistsData, topYellowsData, topRedsData);
@@ -1962,7 +1969,7 @@ function updateRealTimeResults(isSilent = false) {
       script.src = "data.js?t=" + Date.now();
       script.onload = () => {
         renderGroupTable();
-        renderBrackets();
+        renderMainBrackets();
         initSelectors();
         loadComparison();
         renderTournamentHighlights([]);
