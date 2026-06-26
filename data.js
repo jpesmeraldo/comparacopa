@@ -164,7 +164,7 @@ window.comparacopaData = {
   brackets: {
     roundOf32: [
       { id: "m1", teamA: "GER", teamB: "3º ABCDF", scoreA: null, scoreB: null, date: "29 Jun 2026" },
-      { id: "m2", teamA: "FRA", teamB: "NOR", scoreA: null, scoreB: null, date: "30 Jun 2026" },
+      { id: "m2", teamA: "1º I", teamB: "3º CDFGH", scoreA: null, scoreB: null, date: "30 Jun 2026" },
       { id: "m3", teamA: "RSA", teamB: "CAN", scoreA: null, scoreB: null, date: "28 Jun 2026" },
       { id: "m4", teamA: "NED", teamB: "MAR", scoreA: null, scoreB: null, date: "29 Jun 2026" },
       { id: "m5", teamA: "2º K", teamB: "2º L", scoreA: null, scoreB: null, date: "02 Jul 2026" },
