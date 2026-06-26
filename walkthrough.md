@@ -40,3 +40,10 @@ Concluímos com sucesso a implementação e redesenho do **Modo Arena (Multiplay
    - Defina sua escalação no Painel Tático, clique em **CONFIRMAR PRONTO** e depois em **JOGAR AGORA**.
 3. **Deep Link**:
    - Clique em **COPIAR LINK** no lobby e abra em outra aba para verificar se o redirecionamento ocorre perfeitamente.
+
+---
+
+## Ajustes Recentes
+
+- **Nomenclatura das Fases Finais**: Alterado o rótulo do chaveamento de "32 Avos" para "16 Avos" no arquivo [index.html](file:///Users/joaopauloesmeraldo/Dropbox/ANTIGRAVITY%20COMPARACOPA/index.html#L876) para alinhar-se à terminologia matematicamente correta (segunda fase com 32 equipes / 16 confrontos).
+
