@@ -2966,11 +2966,27 @@ function generateArenaPhase(startMin, endMin, stateData) {
     const p = def[Math.floor(Math.random() * def.length)];
     return `${p.name} (${p.pos || p.origPos || 'DF'})`;
   };
+  const getFWPlayer = (squad) => {
+    const fws = squad.filter(p => p.pos === "FW");
+    if (fws.length > 0) {
+      const p = fws[Math.floor(Math.random() * fws.length)];
+      return `${p.name} (FW)`;
+    }
+    return getOffensivePlayer(squad);
+  };
+  const getDFMFPlayer = (squad) => {
+    const list = squad.filter(p => p.pos === "DF" || p.pos === "MF");
+    if (list.length > 0) {
+      const p = list[Math.floor(Math.random() * list.length)];
+      return `${p.name} (${p.pos})`;
+    }
+    return getDefensivePlayer(squad);
+  };
 
-  if (min === 0) events.push({ time: "00'", text: "Apita o árbitro! Começa o jogo na Arena!", anim: "start" });
-  if (min === 45) events.push({ time: "45'", text: "Começa o segundo tempo! A bola volta a rolar!", anim: "start" });
-  if (min === 90) events.push({ time: "90'", text: "Bola rolando na prorrogação! Haja coração!", anim: "start" });
-  if (min === 105) events.push({ time: "105'", text: "Últimos 15 minutos de prorrogação!", anim: "start" });
+  if (min === 0) events.push({ time: "00'", text: "Apita o árbitro! Começa o jogo na Arena da Copa do Mundo!", anim: "start" });
+  if (min === 45) events.push({ time: "45'", text: "Começa o segundo tempo! A bola volta a rolar para os 45 minutos decisivos!", anim: "start" });
+  if (min === 90) events.push({ time: "90'", text: "Bola rolando na prorrogação! Haja coração para estes 30 minutos de emoção!", anim: "start" });
+  if (min === 105) events.push({ time: "105'", text: "Começa o segundo tempo da prorrogação! Último esforço das duas seleções!", anim: "start" });
 
   while(min < endMin) {
     min += Math.floor(Math.random() * 3) + 1;
@@ -2980,37 +2996,108 @@ function generateArenaPhase(startMin, endMin, stateData) {
     
     if (randomVal < chanceGoalA) {
       scoreA++;
-      const scorer = getOffensivePlayer(squadA);
-      events.push({ time: min + "'", text: `GOOOOOOOOL do ${teamAName}! ${scorer} estufa as redes! (${scoreA}-${scoreB})`, anim: "shoot-p1", scoreA, scoreB, goal: { team: "A", scorer: scorer.split(" (")[0], time: min + "'" } });
+      const scorer = getFWPlayer(squadA);
+      const goalPhrases = [
+        `GOOOOOOOOL da seleção do ${teamAName}! ${scorer} recebe na área, chuta de primeira e estufa as redes da Copa! (${scoreA}-${scoreB})`,
+        `GOOOOOOOOL do ${teamAName}! Que categoria de ${scorer}, colocando a bola no ângulo sem chances para o goleiro! (${scoreA}-${scoreB})`,
+        `GOOOOOOOOL do ${teamAName}! É dele! Desvio fatal de ${scorer} na pequena área para incendiar a torcida no estádio! (${scoreA}-${scoreB})`,
+        `GOOOOOOOOL do ${teamAName}! ${scorer} arranca em velocidade na Copa, deixa a zaga para trás e finaliza com precisão cirúrgica! (${scoreA}-${scoreB})`,
+        `GOOOOOOOOL do ${teamAName}! ${scorer} aproveita o rebote do travessão e empurra pro fundo das redes! A torcida vai ao delírio! (${scoreA}-${scoreB})`
+      ];
+      const text = goalPhrases[Math.floor(Math.random() * goalPhrases.length)];
+      events.push({ time: min + "'", text, anim: "shoot-p1", scoreA, scoreB, goal: { team: "A", scorer: scorer.split(" (")[0], time: min + "'" } });
     } else if (randomVal < chanceGoalA + chanceGoalB) {
       scoreB++;
-      const scorer = getOffensivePlayer(squadB);
-      events.push({ time: min + "'", text: `GOOOOOOOOL do ${teamBName}! ${scorer} marca um golaço! (${scoreA}-${scoreB})`, anim: "shoot-p2", scoreA, scoreB, goal: { team: "B", scorer: scorer.split(" (")[0], time: min + "'" } });
-    } else if (randomVal < 35) {
+      const scorer = getFWPlayer(squadB);
+      const goalPhrases = [
+        `GOOOOOOOOL da seleção do ${teamBName}! ${scorer} recebe na área, chuta de primeira e estufa as redes da Copa! (${scoreA}-${scoreB})`,
+        `GOOOOOOOOL do ${teamBName}! Que categoria de ${scorer}, colocando a bola no ângulo sem chances para o goleiro! (${scoreA}-${scoreB})`,
+        `GOOOOOOOOL do ${teamBName}! É dele! Desvio fatal de ${scorer} na pequena área para incendiar a torcida no estádio! (${scoreA}-${scoreB})`,
+        `GOOOOOOOOL do ${teamBName}! ${scorer} arranca em velocidade na Copa, deixa a zaga para trás e finaliza com precisão cirúrgica! (${scoreA}-${scoreB})`,
+        `GOOOOOOOOL do ${teamBName}! ${scorer} aproveita o rebote do travessão e empurra pro fundo das redes! A torcida vai ao delírio! (${scoreA}-${scoreB})`
+      ];
+      const text = goalPhrases[Math.floor(Math.random() * goalPhrases.length)];
+      events.push({ time: min + "'", text, anim: "shoot-p2", scoreA, scoreB, goal: { team: "B", scorer: scorer.split(" (")[0], time: min + "'" } });
+    } else if (randomVal < 30) {
+      // Chutes a gol (Shooters are FWs)
       const isTeamA = Math.random() > 0.5;
       const oppGk = isTeamA ? squadB[0].name : squadA[0].name;
-      const shooter = isTeamA ? getOffensivePlayer(squadA) : getOffensivePlayer(squadB);
+      const shooter = isTeamA ? getFWPlayer(squadA) : getFWPlayer(squadB);
       const team = isTeamA ? teamAName : teamBName;
-      events.push({ time: min + "'", text: `Quase gol do ${team}! ${shooter} chuta forte mas ${oppGk} faz defesa espetacular!`, anim: isTeamA ? "shoot-p1" : "shoot-p2" });
-    } else if (randomVal < 50) {
+      const shotPhrases = [
+        `Quase gol do ${team}! ${shooter} finaliza forte de fora da área e a bola raspa o poste esquerdo do gol!`,
+        `Incrível! ${shooter} tenta o cabeceio no contrapé, mas ${oppGk} voa no ângulo e opera um verdadeiro milagre da Copa!`,
+        `Pressão do ${team}! ${shooter} bate colocado buscando a bochecha da rede, mas ${oppGk} espalma espetacularmente!`,
+        `Uhhhhh! ${shooter} limpa a marcação, solta a bomba de três dedos, mas a bola explode no travessão! Que susto!`,
+        `Falta perigosa! ${shooter} cobra por cima da barreira e a bola passa tirando tinta da trave adversária!`
+      ];
+      const text = shotPhrases[Math.floor(Math.random() * shotPhrases.length)];
+      events.push({ time: min + "'", text, anim: isTeamA ? "shoot-p1" : "shoot-p2" });
+    } else if (randomVal < 42) {
+      // Escanteios (Crossed or receiver is FW)
       const isTeamA = Math.random() > 0.5;
       const team = isTeamA ? teamAName : teamBName;
-      events.push({ time: min + "'", text: `Escanteio para o ${team}. A zaga adversária afasta o perigo.`, anim: "mid" });
-    } else if (randomVal < 70) {
+      const fwPlayer = isTeamA ? getFWPlayer(squadA) : getFWPlayer(squadB);
+      const cornerPhrases = [
+        `Escanteio cobrado por ${fwPlayer} do ${team}! A bola viaja com veneno na grande área, mas a zaga corta de cabeça.`,
+        `Mais um tiro de canto para o ${team}! ${fwPlayer} bate muito fechado tentando o gol olímpico, mas o goleiro afasta com um soco!`,
+        `Escanteio para o ${team}. ${fwPlayer} levanta na marca do pênalti, e o defensor afasta o perigo de primeira.`,
+        `Bola levantada na área em cobrança de escanteio de ${fwPlayer} (${team})! A defesa se vira para mandar para longe.`
+      ];
+      const text = cornerPhrases[Math.floor(Math.random() * cornerPhrases.length)];
+      events.push({ time: min + "'", text, anim: "mid" });
+    } else if (randomVal < 50) {
+      // Impedimentos (FWs get caught offside)
+      const isTeamA = Math.random() > 0.5;
+      const team = isTeamA ? teamAName : teamBName;
+      const fwPlayer = isTeamA ? getFWPlayer(squadA) : getFWPlayer(squadB);
+      const offsidePhrases = [
+        `Impedimento! O auxiliar levanta a bandeira na hora. ${fwPlayer} do ${team} estava meio corpo à frente.`,
+        `Ataque interrompido! ${fwPlayer} do ${team} recebe em posição irregular na entrada da grande área.`,
+        `Opa! Impedimento marcado de ${fwPlayer} (${team}). A linha defensiva adversária subiu com precisão na Copa.`,
+        `Lançamento esticado, mas o assistente acusa posição de impedimento de ${fwPlayer} do ${team}.`
+      ];
+      const text = offsidePhrases[Math.floor(Math.random() * offsidePhrases.length)];
+      events.push({ time: min + "'", text, anim: "mid" });
+    } else if (randomVal < 75) {
+      // Faltas (Committed by DF or MF)
       const isTeamA = Math.random() > 0.5;
       const actingTeam = isTeamA ? teamAName : teamBName;
       const foulSquad = isTeamA ? squadA : squadB;
-      const foulPlayer = getDefensivePlayer(foulSquad);
+      const foulPlayer = getDFMFPlayer(foulSquad);
       const cardChance = Math.random();
-      if (cardChance < 0.20) {
-        events.push({ time: min + "'", text: `Falta dura de ${foulPlayer} (${actingTeam})! O árbitro mostra o cartão amarelo.`, anim: "reset" });
+      if (cardChance < 0.22) {
+        const yellowPhrases = [
+          `Falta dura! ${foulPlayer} (${actingTeam}) chega de carrinho por trás, recebe o cartão amarelo e está pendurado!`,
+          `Cartão amarelo mostrado! ${foulPlayer} (${actingTeam}) mata o contra-ataque promissor e o juiz o adverte formalmente.`,
+          `Juiz rigoroso! ${foulPlayer} (${actingTeam}) recebe cartão amarelo após cometer falta pesada no meio de campo.`,
+          `Falta grave de ${foulPlayer} (${actingTeam})! O árbitro não tolera e apresenta o cartão amarelo para o jogador.`
+        ];
+        const text = yellowPhrases[Math.floor(Math.random() * yellowPhrases.length)];
+        events.push({ time: min + "'", text, anim: "reset" });
       } else {
-        events.push({ time: min + "'", text: `Falta tática cometida por ${foulPlayer} (${actingTeam}) para matar o ataque.`, anim: "mid" });
+        const foulPhrases = [
+          `O árbitro marca falta! ${foulPlayer} (${actingTeam}) chega atrasado na disputa física e derruba o adversário.`,
+          `Falta tática no círculo central de ${foulPlayer} (${actingTeam}) para travar a velocidade do oponente.`,
+          `Entrada forte de ${foulPlayer} (${actingTeam}) na intermediária. Falta perigosa a favor do adversário.`,
+          `Falta marcada! ${foulPlayer} (${actingTeam}) empurra o atacante adversário pelas costas no rebote do passe.`
+        ];
+        const text = foulPhrases[Math.floor(Math.random() * foulPhrases.length)];
+        events.push({ time: min + "'", text, anim: "mid" });
       }
     } else {
+      // Posse de bola
       const isTeamA = Math.random() > (posA / 100);
       const team = isTeamA ? teamAName : teamBName;
-      events.push({ time: min + "'", text: `${team} valoriza a posse de bola e troca passes com calma no meio campo.`, anim: "mid" });
+      const possessionPhrases = [
+        `Seleção do ${team} gira o jogo com paciência, trocando passes no meio-campo para abrir a retranca adversária.`,
+        `O ${team} domina a intermediária, cadenciando o ritmo e gastando o tempo com inteligência de Copa.`,
+        `A torcida do ${team} canta alto nas arquibancadas enquanto a equipe mantém a posse de bola no gramado.`,
+        `Troca de passes envolvente do ${team}. Os meio-campistas ditam o andamento da partida.`,
+        `Grande jogada coletiva do ${team}, dominando os espaços e mantendo o adversário na defensiva.`
+      ];
+      const text = possessionPhrases[Math.floor(Math.random() * possessionPhrases.length)];
+      events.push({ time: min + "'", text, anim: "mid" });
     }
   }
   
