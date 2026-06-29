@@ -86,6 +86,8 @@
       <div class="header-subtitle">[ COMPARADOR E SIMULADOR DE RESULTADOS ]</div>
     </header>
 
+    <main>
+
     <!-- Menu de Abas de Seções -->
     <div class="nav-section-btns">
       <button class="neo-btn btn-green active" id="btn-sec-compare" onclick="switchSection('compare')">Comparador & Simulador</button>
@@ -313,10 +315,10 @@
             <p style="font-size: 0.85rem; margin-bottom: 12px;">Selecione um jogador de cada time para ver o comparativo direto de atributos:</p>
             
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px;">
-              <select id="select-player-a" class="neo-select" onchange="comparePlayers()">
+              <select id="select-player-a" class="neo-select" onchange="comparePlayers()" aria-label="Selecione o Jogador do Time A">
                 <!-- JS -->
               </select>
-              <select id="select-player-b" class="neo-select" onchange="comparePlayers()">
+              <select id="select-player-b" class="neo-select" onchange="comparePlayers()" aria-label="Selecione o Jogador do Time B">
                 <!-- JS -->
               </select>
             </div>
@@ -386,12 +388,12 @@
           </div>
           
           <div style="margin-bottom: 15px; text-align: left;">
-            <label class="neo-label">Nome do Jogador:</label>
+            <label class="neo-label" for="local-player-name">Nome do Jogador:</label>
             <input type="text" id="local-player-name" class="neo-select" style="background:#fff;" value="Jogador A">
           </div>
 
           <div style="margin-bottom: 15px; text-align: left;">
-            <label class="neo-label">Selecione seu Time:</label>
+            <label class="neo-label" for="local-player-team">Selecione seu Time:</label>
             <select id="local-player-team" class="neo-select" onchange="arenaLocalTeamChanged()"></select>
           </div>
 
@@ -438,7 +440,7 @@
           </div>
 
           <div style="margin-bottom: 15px; text-align: left;">
-            <label class="neo-label">Vagas para Jogadores (incluindo você):</label>
+            <label class="neo-label" for="tournament-human-slots">Vagas para Jogadores (incluindo você):</label>
             <select id="tournament-human-slots" class="neo-select" style="background:#fff;">
               <option value="1">1 Jogador (Só você)</option>
               <option value="2">2 Jogadores (Você + 1)</option>
@@ -452,7 +454,7 @@
           </div>
 
           <div style="margin-bottom: 15px; text-align: left;">
-            <label class="neo-label">Senha da Sala (Opcional):</label>
+            <label class="neo-label" for="tournament-pass">Senha da Sala (Opcional):</label>
             <input type="text" id="tournament-pass" class="neo-select" style="background:#fff;" placeholder="sem senha = sala aberta">
           </div>
 
@@ -466,12 +468,12 @@
           <h3 id="local-setup-title" style="text-align: center; font-family: 'Bebas Neue', cursive; font-size: 2.5rem; margin-bottom: 20px; color: var(--dark-accent); text-transform: uppercase; width: 100%;">ESCALAÇÃO JOGADOR 1</h3>
           
           <div style="margin-bottom: 15px; width: 100%; text-align: left;">
-            <label class="neo-label">Nome do Jogador:</label>
+            <label class="neo-label" for="arena-local-player-name">Nome do Jogador:</label>
             <input type="text" id="arena-local-player-name" class="neo-select" style="background:#fff;" value="Jogador A">
           </div>
 
           <div style="margin-bottom: 15px; width: 100%; text-align: left;">
-            <label class="neo-label">Selecione seu Time:</label>
+            <label class="neo-label" for="arena-local-team-select">Selecione seu Time:</label>
             <select id="arena-local-team-select" class="neo-select" onchange="arenaLocalTeamChanged()"></select>
           </div>
 
@@ -608,18 +610,18 @@
           <h3 style="font-family: 'Bebas Neue', cursive; font-size: 1.8rem; border-bottom: 2px solid var(--dark-accent); padding-bottom: 8px; margin-top: 0; margin-bottom: 20px; width: 100%;">PAINEL TÁTICO DA SUA SELEÇÃO</h3>
           
           <div style="margin-bottom: 15px; width: 100%; text-align: left;">
-            <label class="neo-label">Seu Nome:</label>
+            <label class="neo-label" for="arena-player-name-input">Seu Nome:</label>
             <input type="text" id="arena-player-name-input" class="neo-select" style="background:#fff;" placeholder="Seu Nome" oninput="arenaUpdateMyName(this.value)">
           </div>
 
           <div style="margin-bottom: 15px; width: 100%; text-align: left;">
-            <label class="neo-label">Selecione seu Time:</label>
+            <label class="neo-label" for="arena-team1">Selecione seu Time:</label>
             <select id="arena-team1" class="neo-select" onchange="arenaUpdateTeamSelect(1)"></select>
           </div>
 
           <!-- CPU Opponent Selection (Only shown when playing vs CPU) -->
           <div id="arena-cpu-selection-wrapper" style="display: none; margin-bottom: 15px; width: 100%; text-align: left; border: 2px dashed var(--dark-accent); padding: 12px; background: #fafafa;">
-            <label class="neo-label" style="color: var(--retro-red); font-weight: 800;">SELEÇÃO DO ADVERSÁRIO (CPU):</label>
+            <label class="neo-label" for="arena-cpu-team-select" style="color: var(--retro-red); font-weight: 800;">SELEÇÃO DO ADVERSÁRIO (CPU):</label>
             <div style="display: flex; gap: 10px; margin-top: 5px;">
               <select id="arena-cpu-team-select" class="neo-select" style="flex: 2;" onchange="arenaUpdateCpuTeamSelect(this.value)">
                 <!-- populated dynamically -->
@@ -779,10 +781,10 @@
         <span class="close" style="position: absolute; top: 10px; right: 10px; cursor: pointer; font-size: 1.5rem; font-weight: bold;" onclick="document.getElementById('arena-modal-sub').style.display='none'">&times;</span>
         <h2 style="margin-bottom: 20px; font-family: 'Bebas Neue', cursive; color: var(--dark-accent);">Substituição</h2>
         
-        <label class="neo-label">Quem SAI?</label>
+        <label class="neo-label" for="arena-sub-out">Quem SAI?</label>
         <select id="arena-sub-out" class="neo-select" style="margin-bottom: 15px;"></select>
         
-        <label class="neo-label">Quem ENTRA?</label>
+        <label class="neo-label" for="arena-sub-in">Quem ENTRA?</label>
         <select id="arena-sub-in" class="neo-select" style="margin-bottom: 20px;"></select>
         
         <button class="neo-btn btn-green" onclick="arenaConfirmSub()" style="width: 100%;">Confirmar Troca</button>
@@ -795,7 +797,7 @@
         <span class="close" style="position: absolute; top: 10px; right: 10px; cursor: pointer; font-size: 1.5rem; font-weight: bold;" onclick="document.getElementById('arena-modal-tac').style.display='none'">&times;</span>
         <h2 style="margin-bottom: 20px; font-family: 'Bebas Neue', cursive; color: var(--dark-accent);">Mudança Tática</h2>
         
-        <label class="neo-label">Nova Formação</label>
+        <label class="neo-label" for="arena-tac-select">Nova Formação</label>
         <select id="arena-tac-select" class="neo-select" style="margin-bottom: 20px;">
           <option value="4-3-3">4-3-3 Ofensivo</option>
           <option value="4-4-2">4-4-2 Equilibrado</option>
@@ -995,6 +997,8 @@
            (adsbygoogle = window.adsbygoogle || []).push({});
       </script>
     </div>
+
+    </main>
 
     <!-- RODAPÉ: AVISO LEGAL DISCRETO E LEGÍVEL -->
     <footer style="margin-top: 40px; padding: 15px; background: var(--off-white); border: var(--border-size) solid var(--dark-accent); box-shadow: var(--neo-shadow); text-align: center; font-family: 'Space Mono', monospace; font-size: 0.75rem; color: var(--dark-accent); line-height: 1.45;">
