@@ -2571,7 +2571,7 @@ function renderTournamentHighlights(matches, topAssistsData = [], topYellowsData
   // Rankings reais atualizados conforme dados mais recentes
   const artilheiros = [
     { flag: "🇦🇷", name: "Lionel Messi", goals: 6 },
-    { flag: "🇳🇴", name: "Erling Haaland", goals: 4 },
+    { flag: "🇳🇴", name: "Erling Haaland", goals: 5 },
     { flag: "🇫🇷", name: "Kylian Mbappé", goals: 4 },
     { flag: "🇫🇷", name: "Ousmane Dembélé", goals: 4 },
     { flag: "🇧🇷", name: "Vinicius Júnior", goals: 4 }
