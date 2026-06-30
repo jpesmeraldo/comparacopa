@@ -1610,21 +1610,21 @@ window.comparacopaData = {
         { name: "Julio Enciso", pos: "FW", no: 19, club: "Brighton", ovr: 78, pac: 84, sho: 76, pas: 74, dri: 82, def: 45, phy: 66, x: 20, y: 80 }
       ],
       bench: [
-        { name: "Orlando Gill", pos: "GK", club: "San Lorenzo", ovr: 68, pac: 68, sho: 25, pas: 60, dri: 65, def: 70, phy: 70 },
-        { name: "Gastón Olveira", pos: "GK", club: "Olimpia", ovr: 72, pac: 70, sho: 30, pas: 62, dri: 68, def: 74, phy: 72 },
-        { name: "Gustavo Velázquez", pos: "DF", club: "Newell's", ovr: 72, pac: 74, sho: 50, pas: 65, dri: 66, def: 72, phy: 76 },
-        { name: "José Canale", pos: "DF", club: "Lanús", ovr: 70, pac: 70, sho: 40, pas: 62, dri: 64, def: 70, phy: 74 },
-        { name: "Gustavo Gómez", pos: "DF", club: "Palmeiras", ovr: 80, pac: 68, sho: 55, pas: 65, dri: 62, def: 82, phy: 84 },
-        { name: "Alexandro Maidana", pos: "DF", club: "Olimpia", ovr: 66, pac: 72, sho: 45, pas: 60, dri: 62, def: 66, phy: 68 },
-        { name: "Maurício", pos: "MF", club: "Palmeiras", ovr: 74, pac: 78, sho: 70, pas: 74, dri: 76, def: 55, phy: 65 },
-        { name: "Damián Bobadilla", pos: "MF", club: "São Paulo", ovr: 72, pac: 74, sho: 68, pas: 72, dri: 74, def: 66, phy: 72 },
-        { name: "Braian Ojeda", pos: "MF", club: "RSL", ovr: 72, pac: 76, sho: 65, pas: 72, dri: 74, def: 68, phy: 70 },
-        { name: "Matías Galarza", pos: "MF", club: "Talleres", ovr: 70, pac: 74, sho: 66, pas: 68, dri: 72, def: 64, phy: 68 },
-        { name: "Gustavo Caballero", pos: "MF", club: "Libertad", ovr: 68, pac: 76, sho: 64, pas: 66, dri: 70, def: 50, phy: 65 },
-        { name: "Alejandro R. Gamarra", pos: "FW", club: "Al Ain", ovr: 76, pac: 78, sho: 74, pas: 78, dri: 78, def: 50, phy: 68 },
-        { name: "Álex Arce", pos: "FW", club: "LDU", ovr: 74, pac: 76, sho: 78, pas: 65, dri: 72, def: 40, phy: 78 },
-        { name: "Gabriel Ávalos", pos: "FW", club: "Independiente", ovr: 74, pac: 72, sho: 76, pas: 66, dri: 72, def: 45, phy: 82 },
-        { name: "Isidro Pitta", pos: "FW", club: "Cuiabá", ovr: 72, pac: 76, sho: 74, pas: 64, dri: 70, def: 40, phy: 78 }
+        { name: "Orlando Gill", pos: "GK", club: "San Lorenzo", no: 12, ovr: 68, pac: 68, sho: 25, pas: 60, dri: 65, def: 70, phy: 70 },
+        { name: "Gastón Olveira", pos: "GK", club: "Olimpia", no: 22, ovr: 72, pac: 70, sho: 30, pas: 62, dri: 68, def: 74, phy: 72 },
+        { name: "Gustavo Velázquez", pos: "DF", club: "Newell's", no: 2, ovr: 72, pac: 74, sho: 50, pas: 65, dri: 66, def: 72, phy: 76 },
+        { name: "José Canale", pos: "DF", club: "Lanús", no: 13, ovr: 70, pac: 70, sho: 40, pas: 62, dri: 64, def: 70, phy: 74 },
+        { name: "Gustavo Gómez", pos: "DF", club: "Palmeiras", no: 15, ovr: 80, pac: 68, sho: 55, pas: 65, dri: 62, def: 82, phy: 84 },
+        { name: "Alexandro Maidana", pos: "DF", club: "Olimpia", no: 26, ovr: 66, pac: 72, sho: 45, pas: 60, dri: 62, def: 66, phy: 68 },
+        { name: "Maurício", pos: "MF", club: "Palmeiras", no: 11, ovr: 74, pac: 78, sho: 70, pas: 74, dri: 76, def: 55, phy: 65 },
+        { name: "Damián Bobadilla", pos: "MF", club: "São Paulo", no: 16, ovr: 72, pac: 74, sho: 68, pas: 72, dri: 74, def: 66, phy: 72 },
+        { name: "Braian Ojeda", pos: "MF", club: "RSL", no: 20, ovr: 72, pac: 76, sho: 65, pas: 72, dri: 74, def: 68, phy: 70 },
+        { name: "Matías Galarza", pos: "MF", club: "Talleres", no: 23, ovr: 70, pac: 74, sho: 66, pas: 68, dri: 72, def: 64, phy: 68 },
+        { name: "Gustavo Caballero", pos: "MF", club: "Libertad", no: 24, ovr: 68, pac: 76, sho: 64, pas: 66, dri: 70, def: 50, phy: 65 },
+        { name: "Alejandro R. Gamarra", pos: "FW", club: "Al Ain", no: 17, ovr: 76, pac: 78, sho: 74, pas: 78, dri: 78, def: 50, phy: 68 },
+        { name: "Álex Arce", pos: "FW", club: "LDU", no: 18, ovr: 74, pac: 76, sho: 78, pas: 65, dri: 72, def: 40, phy: 78 },
+        { name: "Gabriel Ávalos", pos: "FW", club: "Independiente", no: 21, ovr: 74, pac: 72, sho: 76, pas: 66, dri: 72, def: 45, phy: 82 },
+        { name: "Isidro Pitta", pos: "FW", club: "Cuiabá", no: 25, ovr: 72, pac: 76, sho: 74, pas: 64, dri: 70, def: 40, phy: 78 }
       ]
     },
     CZE: {
