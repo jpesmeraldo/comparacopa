@@ -316,17 +316,17 @@ window.comparacopaData = {
         { name: "Jules Koundé", pos: "DF", no: 5, club: "Barcelona", ovr: 85, pac: 81, sho: 52, pas: 74, dri: 79, def: 85, phy: 79, x: 85, y: 35 },
         { name: "William Saliba", pos: "DF", no: 17, club: "Arsenal", ovr: 88, pac: 82, sho: 40, pas: 72, dri: 73, def: 90, phy: 84, x: 65, y: 28 },
         { name: "D. Upamecano", pos: "DF", no: 4, club: "Bayern Munique", ovr: 83, pac: 81, sho: 51, pas: 69, dri: 68, def: 82, phy: 85, x: 35, y: 28 },
-        { name: "Theo Hernández", pos: "DF", no: 19, club: "Milan", ovr: 86, pac: 93, sho: 71, pas: 78, dri: 82, def: 79, phy: 82, x: 15, y: 35 },
+        { name: "Theo Hernández", pos: "DF", no: 19, club: "Al-Hilal", ovr: 86, pac: 93, sho: 71, pas: 78, dri: 82, def: 79, phy: 82, x: 15, y: 35 },
         { name: "A. Tchouaméni", pos: "MF", no: 8, club: "Real Madrid", ovr: 85, pac: 72, sho: 72, pas: 80, dri: 79, def: 83, phy: 84, x: 40, y: 50 },
-        { name: "N'Golo Kanté", pos: "MF", no: 13, club: "Al-Ittihad", ovr: 84, pac: 73, sho: 66, pas: 78, dri: 80, def: 84, phy: 78, x: 60, y: 50 },
+        { name: "N'Golo Kanté", pos: "MF", no: 13, club: "Fenerbahçe", ovr: 84, pac: 73, sho: 66, pas: 78, dri: 80, def: 84, phy: 78, x: 60, y: 50 },
         { name: "O. Dembélé", pos: "FW", no: 7, club: "PSG", ovr: 86, pac: 93, sho: 77, pas: 81, dri: 90, def: 36, phy: 58, x: 80, y: 70 },
-        { name: "Adrien Rabiot", pos: "MF", no: 14, club: "Marseille", ovr: 84, pac: 76, sho: 77, pas: 81, dri: 80, def: 80, phy: 82, x: 50, y: 68 },
+        { name: "Adrien Rabiot", pos: "MF", no: 14, club: "Milan", ovr: 84, pac: 76, sho: 77, pas: 81, dri: 80, def: 80, phy: 82, x: 50, y: 68 },
         { name: "Bradley Barcola", pos: "FW", no: 12, club: "PSG", ovr: 83, pac: 88, sho: 76, pas: 75, dri: 85, def: 35, phy: 68, x: 20, y: 70 },
         { name: "Kylian Mbappé", pos: "FW", no: 10, club: "Real Madrid", ovr: 92, pac: 97, sho: 90, pas: 80, dri: 92, def: 36, phy: 78, x: 50, y: 86 }
       ],
       bench: [
-        { name: "Brice Samba", pos: "GK", club: "Lens", ovr: 81, pac: 78, sho: 40, pas: 75, dri: 78, def: 82, phy: 80 },
-        { name: "Robin Risser", pos: "GK", club: "Strasbourg", ovr: 75, pac: 73, sho: 38, pas: 68, dri: 72, def: 76, phy: 74 },
+        { name: "Brice Samba", pos: "GK", club: "Rennes", ovr: 81, pac: 78, sho: 40, pas: 75, dri: 78, def: 82, phy: 80 },
+        { name: "Robin Risser", pos: "GK", club: "Lens", ovr: 75, pac: 73, sho: 38, pas: 68, dri: 72, def: 76, phy: 74 },
         { name: "Malo Gusto", pos: "DF", club: "Chelsea", ovr: 81, pac: 85, sho: 58, pas: 76, dri: 80, def: 78, phy: 75 },
         { name: "Lucas Digne", pos: "DF", club: "Aston Villa", ovr: 80, pac: 75, sho: 62, pas: 77, dri: 76, def: 77, phy: 74 },
         { name: "Ibrahima Konaté", pos: "DF", club: "Liverpool", ovr: 83, pac: 78, sho: 39, pas: 62, dri: 65, def: 84, phy: 85 },
@@ -338,7 +338,7 @@ window.comparacopaData = {
         { name: "Michael Olise", pos: "FW", club: "Bayern Munique", ovr: 85, pac: 84, sho: 81, pas: 84, dri: 87, def: 50, phy: 70 },
         { name: "Désiré Doué", pos: "FW", club: "PSG", ovr: 80, pac: 82, sho: 75, pas: 77, dri: 84, def: 45, phy: 72 },
         { name: "J.-P. Mateta", pos: "FW", club: "Crystal Palace", ovr: 81, pac: 76, sho: 81, pas: 65, dri: 74, def: 38, phy: 82 },
-        { name: "Rayan Cherki", pos: "FW", club: "Lyon", ovr: 80, pac: 74, sho: 76, pas: 81, dri: 86, def: 32, phy: 65 },
+        { name: "Rayan Cherki", pos: "FW", club: "Manchester City", ovr: 80, pac: 74, sho: 76, pas: 81, dri: 86, def: 32, phy: 65 },
         { name: "M. Akliouche", pos: "FW", club: "Monaco", ovr: 80, pac: 78, sho: 75, pas: 79, dri: 83, def: 45, phy: 68 }
       ]
     },
