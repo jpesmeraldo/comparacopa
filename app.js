@@ -33,6 +33,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Atualizar resultados em tempo real silenciosamente ao inicializar
   updateRealTimeResults(true);
+  updateBracketsData(true);
 
   // Check for sala code in query params for deep linking
   const urlParams = new URLSearchParams(window.location.search);
@@ -2110,6 +2111,45 @@ function updateRealTimeResults(isSilent = false) {
       };
       document.body.appendChild(script);
     });
+}
+
+// Atualizar chaveamento e resultados do mata-mata a partir do data.js dinamicamente
+function updateBracketsData(isSilent = false) {
+  const btn = document.getElementById("btn-update-brackets");
+  const originalText = btn ? btn.innerHTML : "";
+  
+  if (btn && !isSilent) {
+    btn.innerHTML = `<span style="font-family: 'Space Mono', monospace; font-size: 0.75rem;">Atualizando...</span>`;
+    btn.disabled = true;
+  }
+
+  // Remove o script dinâmico anterior se houver
+  const oldScript = document.getElementById("data-script-dyn-brackets");
+  if (oldScript) oldScript.remove();
+
+  const script = document.createElement("script");
+  script.id = "data-script-dyn-brackets";
+  script.src = "data.js?t=" + Date.now();
+  script.onload = () => {
+    renderMainBrackets();
+    if (btn && !isSilent) {
+      btn.innerHTML = `<span style="font-family: 'Space Mono', monospace; font-size: 0.75rem; color: var(--dark-accent);">Atualizado!</span>`;
+      setTimeout(() => {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+      }, 2000);
+    }
+  };
+  script.onerror = () => {
+    if (btn && !isSilent) {
+      btn.innerHTML = `<span style="font-family: 'Space Mono', monospace; font-size: 0.75rem; color: red;">Erro!</span>`;
+      setTimeout(() => {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+      }, 2000);
+    }
+  };
+  document.body.appendChild(script);
 }
 
 // Funções de Compartilhamento Social para Viralização
