@@ -174,7 +174,7 @@ window.comparacopaData = {
       { id: "m9", teamA: "BRA", teamB: "JPN", scoreA: "2", scoreB: "1", date: "29 Jun 2026" },
       { id: "m10", teamA: "CIV", teamB: "NOR", scoreA: "1", scoreB: "2", date: "30 Jun 2026" },
       { id: "m11", teamA: "MEX", teamB: "ECU", scoreA: "2", scoreB: "0", date: "30 Jun 2026" },
-      { id: "m12", teamA: "ENG", teamB: "COD", scoreA: null, scoreB: null, date: "01 Jul 2026" },
+      { id: "m12", teamA: "ENG", teamB: "COD", scoreA: "2", scoreB: "1", date: "01 Jul 2026" },
       { id: "m13", teamA: "ARG", teamB: "CPV", scoreA: null, scoreB: null, date: "03 Jul 2026" },
       { id: "m14", teamA: "AUS", teamB: "EGY", scoreA: null, scoreB: null, date: "03 Jul 2026" },
       { id: "m15", teamA: "SUI", teamB: "ALG", scoreA: null, scoreB: null, date: "03 Jul 2026" },
@@ -186,7 +186,7 @@ window.comparacopaData = {
       { id: "m19", teamA: null, teamB: null, prevMatchA: "m5", prevMatchB: "m6", scoreA: null, scoreB: null, date: "05 Jul 2026" },
       { id: "m20", teamA: null, teamB: null, prevMatchA: "m7", prevMatchB: "m8", scoreA: null, scoreB: null, date: "05 Jul 2026" },
       { id: "m21", teamA: "BRA", teamB: "NOR", prevMatchA: "m9", prevMatchB: "m10", scoreA: null, scoreB: null, date: "06 Jul 2026" },
-      { id: "m22", teamA: "MEX", teamB: null, prevMatchA: "m11", prevMatchB: "m12", scoreA: null, scoreB: null, date: "06 Jul 2026" },
+      { id: "m22", teamA: "MEX", teamB: "ENG", prevMatchA: "m11", prevMatchB: "m12", scoreA: null, scoreB: null, date: "06 Jul 2026" },
       { id: "m23", teamA: null, teamB: null, prevMatchA: "m13", prevMatchB: "m14", scoreA: null, scoreB: null, date: "07 Jul 2026" },
       { id: "m24", teamA: null, teamB: null, prevMatchA: "m15", prevMatchB: "m16", scoreA: null, scoreB: null, date: "07 Jul 2026" }
     ],
