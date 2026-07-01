@@ -164,7 +164,7 @@ window.comparacopaData = {
   brackets: {
     roundOf32: [
       { id: "m1", teamA: "GER", teamB: "PAR", scoreA: "1 (3)", scoreB: "1 (4)", date: "29 Jun 2026" },
-      { id: "m2", teamA: "FRA", teamB: "SWE", scoreA: null, scoreB: null, date: "30 Jun 2026" },
+      { id: "m2", teamA: "FRA", teamB: "SWE", scoreA: "3", scoreB: "0", date: "30 Jun 2026" },
       { id: "m3", teamA: "RSA", teamB: "CAN", scoreA: "0", scoreB: "1", date: "28 Jun 2026" },
       { id: "m4", teamA: "NED", teamB: "MAR", scoreA: "1 (2)", scoreB: "1 (3)", date: "29 Jun 2026" },
       { id: "m5", teamA: "ESP", teamB: "AUT", scoreA: null, scoreB: null, date: "02 Jul 2026" },
@@ -173,7 +173,7 @@ window.comparacopaData = {
       { id: "m8", teamA: "BEL", teamB: "SEN", scoreA: null, scoreB: null, date: "01 Jul 2026" },
       { id: "m9", teamA: "BRA", teamB: "JPN", scoreA: "2", scoreB: "1", date: "29 Jun 2026" },
       { id: "m10", teamA: "CIV", teamB: "NOR", scoreA: "1", scoreB: "2", date: "30 Jun 2026" },
-      { id: "m11", teamA: "MEX", teamB: "ECU", scoreA: null, scoreB: null, date: "30 Jun 2026" },
+      { id: "m11", teamA: "MEX", teamB: "ECU", scoreA: "2", scoreB: "0", date: "30 Jun 2026" },
       { id: "m12", teamA: "ENG", teamB: "COD", scoreA: null, scoreB: null, date: "01 Jul 2026" },
       { id: "m13", teamA: "ARG", teamB: "CPV", scoreA: null, scoreB: null, date: "03 Jul 2026" },
       { id: "m14", teamA: "AUS", teamB: "EGY", scoreA: null, scoreB: null, date: "03 Jul 2026" },
@@ -181,12 +181,12 @@ window.comparacopaData = {
       { id: "m16", teamA: "COL", teamB: "GHA", scoreA: null, scoreB: null, date: "03 Jul 2026" }
     ],
     octaves: [
-      { id: "m17", teamA: "PAR", teamB: null, prevMatchA: "m1", prevMatchB: "m2", scoreA: null, scoreB: null, date: "04 Jul 2026" },
+      { id: "m17", teamA: "PAR", teamB: "FRA", prevMatchA: "m1", prevMatchB: "m2", scoreA: null, scoreB: null, date: "04 Jul 2026" },
       { id: "m18", teamA: "CAN", teamB: "MAR", prevMatchA: "m3", prevMatchB: "m4", scoreA: null, scoreB: null, date: "04 Jul 2026" },
       { id: "m19", teamA: null, teamB: null, prevMatchA: "m5", prevMatchB: "m6", scoreA: null, scoreB: null, date: "05 Jul 2026" },
       { id: "m20", teamA: null, teamB: null, prevMatchA: "m7", prevMatchB: "m8", scoreA: null, scoreB: null, date: "05 Jul 2026" },
       { id: "m21", teamA: "BRA", teamB: "NOR", prevMatchA: "m9", prevMatchB: "m10", scoreA: null, scoreB: null, date: "06 Jul 2026" },
-      { id: "m22", teamA: null, teamB: null, prevMatchA: "m11", prevMatchB: "m12", scoreA: null, scoreB: null, date: "06 Jul 2026" },
+      { id: "m22", teamA: "MEX", teamB: null, prevMatchA: "m11", prevMatchB: "m12", scoreA: null, scoreB: null, date: "06 Jul 2026" },
       { id: "m23", teamA: null, teamB: null, prevMatchA: "m13", prevMatchB: "m14", scoreA: null, scoreB: null, date: "07 Jul 2026" },
       { id: "m24", teamA: null, teamB: null, prevMatchA: "m15", prevMatchB: "m16", scoreA: null, scoreB: null, date: "07 Jul 2026" }
     ],
