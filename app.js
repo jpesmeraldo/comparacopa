@@ -2573,8 +2573,8 @@ function renderTournamentHighlights(matches, topAssistsData = [], topYellowsData
     { flag: "🇫🇷", name: "Kylian Mbappé", goals: 6 },
     { flag: "🇦🇷", name: "Lionel Messi", goals: 6 },
     { flag: "🇳🇴", name: "Erling Haaland", goals: 5 },
-    { flag: "🇫🇷", name: "Ousmane Dembélé", goals: 4 },
-    { flag: "🇧🇷", name: "Vinicius Júnior", goals: 4 }
+    { flag: "🏴󠁧󠁢󠁥󠁮󠁧󠁿", name: "Harry Kane", goals: 5 },
+    { flag: "🇸🇳", name: "Ismaïla Sarr", goals: 4 }
   ];
   
   const assistencias = [
@@ -2597,8 +2597,8 @@ function renderTournamentHighlights(matches, topAssistsData = [], topYellowsData
     { flag: "🇺🇾", name: "Agustín Canobbio", red: 1 },
     { flag: "🇶🇦", name: "Assim Madibo", red: 1 },
     { flag: "🇲🇽", name: "César Montes", red: 1 },
-    { flag: "🇶🇦", name: "Homam Ahmed", red: 1 },
-    { flag: "🇵🇾", name: "Miguel Almirón", red: 1 }
+    { flag: "🇺🇸", name: "Folarin Balogun", red: 1 },
+    { flag: "🇶🇦", name: "Homam Ahmed", red: 1 }
   ];
 
   const buildBox = (title, icon, arr, valFn, empty) => {
