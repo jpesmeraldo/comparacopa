@@ -35,6 +35,9 @@ document.addEventListener("DOMContentLoaded", () => {
   updateRealTimeResults(true);
   updateBracketsData(true);
 
+  // Inicializar anúncios AdSense visíveis
+  initializeVisibleAds();
+
   // Check for sala code in query params for deep linking
   const urlParams = new URLSearchParams(window.location.search);
   const sala = urlParams.get('sala');
@@ -71,6 +74,25 @@ function switchSection(sectionId) {
   } else {
     activeBtn.classList.add('btn-blue');
   }
+  
+  // Inicializar anúncios visíveis na nova aba ativa
+  initializeVisibleAds();
+}
+
+// Inicializar dinamicamente blocos do AdSense quando estiverem visíveis para evitar erro No slot size
+function initializeVisibleAds() {
+  setTimeout(() => {
+    document.querySelectorAll('ins.adsbygoogle:not([data-ad-initialized])').forEach(ins => {
+      if (ins.offsetWidth > 0 || ins.offsetHeight > 0) {
+        ins.setAttribute('data-ad-initialized', 'true');
+        try {
+          (window.adsbygoogle = window.adsbygoogle || []).push({});
+        } catch (e) {
+          console.error("Erro AdSense push:", e);
+        }
+      }
+    });
+  }, 100);
 }
 
 // Inicializar seletores de seleções de todos os grupos
