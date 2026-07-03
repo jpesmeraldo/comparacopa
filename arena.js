@@ -2918,6 +2918,29 @@ function generateArenaPhase(startMin, endMin, stateData) {
   const teamAName = getTeamName(teamA);
   const teamBName = getTeamName(teamB);
 
+  if (typeof ensureSquadAndStats === "function") {
+    ensureSquadAndStats(teamA);
+    ensureSquadAndStats(teamB);
+  }
+
+  const statsA = window.comparacopaData.teamStats[teamA];
+  const statsB = window.comparacopaData.teamStats[teamB];
+
+  // Calcular Força Histórica (HAP e HDP)
+  const calculateHistoricalPower = (stats) => {
+    const winsRatio = (stats.wins || 30) / 100;
+    const gsRatio = (stats.goalsScored || 120) / 100;
+    const gcRatio = (stats.goalsConceded || 160) / 100;
+
+    const hap = Math.min(99, Math.max(50, (gsRatio * 35) + (winsRatio * 35)));
+    const hdp = Math.min(99, Math.max(50, (100 - gcRatio * 20) + (winsRatio * 20)));
+
+    return { hap, hdp };
+  };
+
+  const histPowerA = calculateHistoricalPower(statsA);
+  const histPowerB = calculateHistoricalPower(statsB);
+
   const coordsA = typeof formationsCoordinates !== "undefined" ? formationsCoordinates[formationA] : null;
   const coordsB = typeof formationsCoordinates !== "undefined" ? formationsCoordinates[formationB] : null;
 
@@ -2926,10 +2949,20 @@ function generateArenaPhase(startMin, endMin, stateData) {
   const formFactorsA = getArenaFormationFactors(formationA);
   const formFactorsB = getArenaFormationFactors(formationB);
 
-  let attackPowerA = (secA.att * 0.7 + secA.mid * 0.3) * formFactorsA.att;
-  let attackPowerB = (secB.att * 0.7 + secB.mid * 0.3) * formFactorsB.att;
-  let defensePowerA = secA.def * formFactorsA.def;
-  let defensePowerB = secB.def * formFactorsB.def;
+  // Força de ataque ativa combinando ataque e suporte do meio de campo
+  const activeAttackPowerA = (secA.att * 0.7 + secA.mid * 0.3) * formFactorsA.att;
+  const activeAttackPowerB = (secB.att * 0.7 + secB.mid * 0.3) * formFactorsB.att;
+
+  // Força defensiva ativa baseada na zaga/goleiro e suporte tático
+  const activeDefensePowerA = secA.def * formFactorsA.def;
+  const activeDefensePowerB = secB.def * formFactorsB.def;
+
+  // Mesclar forças: 60% Ativo / 40% Histórico
+  let attackPowerA = (activeAttackPowerA * 0.6) + (histPowerA.hap * 0.4);
+  let attackPowerB = (activeAttackPowerB * 0.6) + (histPowerB.hap * 0.4);
+
+  let defensePowerA = (activeDefensePowerA * 0.6) + (histPowerA.hdp * 0.4);
+  let defensePowerB = (activeDefensePowerB * 0.6) + (histPowerB.hdp * 0.4);
 
   // Apply style modifiers: Defensivo (+10% defense, -5% attack), Ofensivo (+10% attack, -5% defense)
   const styleA = stateData.p1.style || "bal";
@@ -2967,31 +3000,49 @@ function generateArenaPhase(startMin, endMin, stateData) {
   }
 
   const getOffensivePlayer = (squad) => {
-    const off = squad.filter(p => p.pos !== "GK");
-    if (off.length === 0) return "Jogador (FW)";
-    const p = off[Math.floor(Math.random() * off.length)];
+    const fws = squad.filter(p => p.pos === "FW");
+    const mfs = squad.filter(p => p.pos === "MF");
+    const dfs = squad.filter(p => p.pos === "DF");
+
+    const roll = Math.random();
+    let selectedGroup = [];
+
+    if (roll < 0.70) {
+      selectedGroup = fws.length ? fws : (mfs.length ? mfs : dfs);
+    } else if (roll < 0.95) {
+      selectedGroup = mfs.length ? mfs : (fws.length ? fws : dfs);
+    } else {
+      selectedGroup = dfs.length ? dfs : (mfs.length ? mfs : fws);
+    }
+
+    if (selectedGroup.length === 0) return "Jogador (FW)";
+    const p = selectedGroup[Math.floor(Math.random() * selectedGroup.length)];
     return `${p.name} (${p.pos || p.origPos || 'FW'})`;
   };
   const getDefensivePlayer = (squad) => {
-    const def = squad.filter(p => p.pos === "DF" || p.pos === "MF");
-    if (def.length === 0) return "Defensor (DF)";
-    const p = def[Math.floor(Math.random() * def.length)];
+    const dfs = squad.filter(p => p.pos === "DF");
+    const mfs = squad.filter(p => p.pos === "MF");
+    const fws = squad.filter(p => p.pos === "FW");
+
+    const roll = Math.random();
+    let selectedGroup = [];
+
+    if (roll < 0.65) {
+      selectedGroup = dfs.length ? dfs : (mfs.length ? mfs : fws);
+    } else if (roll < 0.90) {
+      selectedGroup = mfs.length ? mfs : (dfs.length ? dfs : fws);
+    } else {
+      selectedGroup = fws.length ? fws : (dfs.length ? dfs : mfs);
+    }
+
+    if (selectedGroup.length === 0) return "Defensor (DF)";
+    const p = selectedGroup[Math.floor(Math.random() * selectedGroup.length)];
     return `${p.name} (${p.pos || p.origPos || 'DF'})`;
   };
   const getFWPlayer = (squad) => {
-    const fws = squad.filter(p => p.pos === "FW");
-    if (fws.length > 0) {
-      const p = fws[Math.floor(Math.random() * fws.length)];
-      return `${p.name} (FW)`;
-    }
     return getOffensivePlayer(squad);
   };
   const getDFMFPlayer = (squad) => {
-    const list = squad.filter(p => p.pos === "DF" || p.pos === "MF");
-    if (list.length > 0) {
-      const p = list[Math.floor(Math.random() * list.length)];
-      return `${p.name} (${p.pos})`;
-    }
     return getDefensivePlayer(squad);
   };
 
@@ -3008,9 +3059,12 @@ function generateArenaPhase(startMin, endMin, stateData) {
     if (min >= endMin) min = endMin;
     
     // Possibilidade muito pequena de cartão vermelho direto (aprox. 0.35% por time por verificação, preferindo DF/MF)
+    const rFactorA = (statsA.redCards || 9) / 9;
+    const rFactorB = (statsB.redCards || 9) / 9;
+
     const redChanceA = Math.random();
     const redChanceB = Math.random();
-    if (redChanceA < 0.0035) {
+    if (redChanceA < 0.0035 * rFactorA) {
       redCardsA++;
       const listA = squadA.filter(p => p.pos === "DF" || p.pos === "MF");
       const foulPlayerObj = listA.length > 0 ? listA[Math.floor(Math.random() * listA.length)] : squadA[Math.floor(Math.random() * squadA.length)];
@@ -3028,7 +3082,7 @@ function generateArenaPhase(startMin, endMin, stateData) {
         anim: "reset", 
         expelled: { team: "A", name: foulPlayerObj.name, no: foulPlayerObj.no } 
       });
-    } else if (redChanceB < 0.0035) {
+    } else if (redChanceB < 0.0035 * rFactorB) {
       redCardsB++;
       const listB = squadB.filter(p => p.pos === "DF" || p.pos === "MF");
       const foulPlayerObj = listB.length > 0 ? listB[Math.floor(Math.random() * listB.length)] : squadB[Math.floor(Math.random() * squadB.length)];
@@ -3133,8 +3187,9 @@ function generateArenaPhase(startMin, endMin, stateData) {
       const actingTeam = isTeamA ? teamAName : teamBName;
       const foulSquad = isTeamA ? squadA : squadB;
       const foulPlayer = getDFMFPlayer(foulSquad);
+      const yFactor = (isTeamA ? statsA.yellowCards : statsB.yellowCards) || 180;
       const cardChance = Math.random();
-      if (cardChance < 0.22) {
+      if (cardChance < 0.22 * (yFactor / 180)) {
         const yellowPhrases = [
           `Falta dura! ${foulPlayer} (${actingTeam}) chega de carrinho por trás, recebe o cartão amarelo e está pendurado!`,
           `Cartão amarelo mostrado! ${foulPlayer} (${actingTeam}) mata o contra-ataque promissor e o juiz o adverte formalmente.`,

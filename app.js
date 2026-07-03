@@ -170,16 +170,24 @@ function ensureSquadAndStats(teamId) {
   if (!window.comparacopaData.teamStats[teamId]) {
     const tier = getTeamTier(teamId);
     let wins = 30, draws = 25, losses = 45, goals = 120, conceded = 160, sheets = 20, form = ["D", "E", "V", "D", "D"];
+    let yellowCards = 200, redCards = 11;
     
     if (tier === "A") {
       wins = 60; draws = 20; losses = 20; goals = 185; conceded = 90; sheets = 42; form = ["V", "V", "E", "V", "E"];
+      yellowCards = 150; redCards = 7;
     } else if (tier === "B") {
       wins = 45; draws = 25; losses = 30; goals = 150; conceded = 125; sheets = 30; form = ["V", "D", "E", "V", "D"];
+      yellowCards = 175; redCards = 9;
     }
     
     window.comparacopaData.teamStats[teamId] = {
-      wins, draws, losses, goalsScored: goals, goalsConceded: conceded, cleanSheets: sheets, form
+      wins, draws, losses, goalsScored: goals, goalsConceded: conceded, cleanSheets: sheets, yellowCards, redCards, form
     };
+  } else {
+    // Garantir que as propriedades de cartões existam se já estiver em teamStats sem elas
+    const stats = window.comparacopaData.teamStats[teamId];
+    if (stats.yellowCards === undefined) stats.yellowCards = 180;
+    if (stats.redCards === undefined) stats.redCards = 9;
   }
 
   // Se já existe no data.js (como G8 ou Senegal), garantir origPos nos jogadores
@@ -1232,6 +1240,28 @@ function startMatchSimulation() {
   let scoreB = 0;
   let minute = 0;
 
+  // Garantir squads e stats carregados
+  ensureSquadAndStats(activeTeamA);
+  ensureSquadAndStats(activeTeamB);
+
+  const statsA = window.comparacopaData.teamStats[activeTeamA];
+  const statsB = window.comparacopaData.teamStats[activeTeamB];
+
+  // Calcular Força Histórica (HAP e HDP)
+  const calculateHistoricalPower = (stats) => {
+    const winsRatio = (stats.wins || 30) / 100;
+    const gsRatio = (stats.goalsScored || 120) / 100;
+    const gcRatio = (stats.goalsConceded || 160) / 100;
+
+    const hap = Math.min(99, Math.max(50, (gsRatio * 35) + (winsRatio * 35)));
+    const hdp = Math.min(99, Math.max(50, (100 - gcRatio * 20) + (winsRatio * 20)));
+
+    return { hap, hdp };
+  };
+
+  const histPowerA = calculateHistoricalPower(statsA);
+  const histPowerB = calculateHistoricalPower(statsB);
+
   const squadA = window.comparacopaData.squads[activeTeamA].players;
   const squadB = window.comparacopaData.squads[activeTeamB].players;
   
@@ -1288,13 +1318,20 @@ function startMatchSimulation() {
   const formFactorsA = getFormationFactors(formationA);
   const formFactorsB = getFormationFactors(formationB);
 
-  // Força de ataque calculada combinando ataque e suporte do meio de campo
-  const attackPowerA = (secA.att * 0.7 + secA.mid * 0.3) * formFactorsA.att;
-  const attackPowerB = (secB.att * 0.7 + secB.mid * 0.3) * formFactorsB.att;
+  // Força de ataque ativa combinando ataque e suporte do meio de campo
+  const activeAttackPowerA = (secA.att * 0.7 + secA.mid * 0.3) * formFactorsA.att;
+  const activeAttackPowerB = (secB.att * 0.7 + secB.mid * 0.3) * formFactorsB.att;
 
-  // Força defensiva baseada na zaga/goleiro e suporte tático
-  const defensePowerA = secA.def * formFactorsA.def;
-  const defensePowerB = secB.def * formFactorsB.def;
+  // Força defensiva ativa baseada na zaga/goleiro e suporte tático
+  const activeDefensePowerA = secA.def * formFactorsA.def;
+  const activeDefensePowerB = secB.def * formFactorsB.def;
+
+  // Mesclar forças: 60% Ativo / 40% Histórico
+  const attackPowerA = (activeAttackPowerA * 0.6) + (histPowerA.hap * 0.4);
+  const attackPowerB = (activeAttackPowerB * 0.6) + (histPowerB.hap * 0.4);
+
+  const defensePowerA = (activeDefensePowerA * 0.6) + (histPowerA.hdp * 0.4);
+  const defensePowerB = (activeDefensePowerB * 0.6) + (histPowerB.hdp * 0.4);
 
   let stats = {
     A: { shots: 0, corners: 0, fouls: 0, yellow: 0, red: 0, possession: 50, goals: [] },
@@ -1433,16 +1470,44 @@ function startMatchSimulation() {
 
     let logLine = "";
 
-    // Goleadores realistas (meio-campistas ou atacantes, sem GK)
+    // Goleadores realistas (pesos: FW 70%, MF 25%, DF 5%)
     const getOffensivePlayer = (squad) => {
-      const off = squad.filter(p => p.pos !== "GK");
-      return off.length > 0 ? off[Math.floor(Math.random() * off.length)].name : "Jogador";
+      const fws = squad.filter(p => p.pos === "FW");
+      const mfs = squad.filter(p => p.pos === "MF");
+      const dfs = squad.filter(p => p.pos === "DF");
+
+      const roll = Math.random();
+      let selectedGroup = [];
+
+      if (roll < 0.70) {
+        selectedGroup = fws.length ? fws : (mfs.length ? mfs : dfs);
+      } else if (roll < 0.95) {
+        selectedGroup = mfs.length ? mfs : (fws.length ? fws : dfs);
+      } else {
+        selectedGroup = dfs.length ? dfs : (mfs.length ? mfs : fws);
+      }
+
+      return selectedGroup.length > 0 ? selectedGroup[Math.floor(Math.random() * selectedGroup.length)].name : "Jogador";
     };
 
-    // Defensor realista
+    // Defensor/Faltoso realista (pesos: DF 65%, MF 25%, FW 10%)
     const getDefensivePlayer = (squad) => {
-      const def = squad.filter(p => p.pos === "DF" || p.pos === "MF");
-      return def.length > 0 ? def[Math.floor(Math.random() * def.length)].name : "Defensor";
+      const dfs = squad.filter(p => p.pos === "DF");
+      const mfs = squad.filter(p => p.pos === "MF");
+      const fws = squad.filter(p => p.pos === "FW");
+
+      const roll = Math.random();
+      let selectedGroup = [];
+
+      if (roll < 0.65) {
+        selectedGroup = dfs.length ? dfs : (mfs.length ? mfs : fws);
+      } else if (roll < 0.90) {
+        selectedGroup = mfs.length ? mfs : (dfs.length ? dfs : fws);
+      } else {
+        selectedGroup = fws.length ? fws : (dfs.length ? dfs : mfs);
+      }
+
+      return selectedGroup.length > 0 ? selectedGroup[Math.floor(Math.random() * selectedGroup.length)].name : "Jogador";
     };
 
     if (randomVal < chanceGoalA) {
@@ -1499,14 +1564,25 @@ function startMatchSimulation() {
       // FALTA E/OU CARTÃO
       const isTeamA = Math.random() > 0.5;
       const actingTeam = isTeamA ? activeTeamA : activeTeamB;
+      const statsTeam = isTeamA ? statsA : statsB;
       const foulSquad = isTeamA ? squadA : squadB;
       const foulPlayer = getDefensivePlayer(foulSquad);
       
       if (isTeamA) stats.A.fouls++; else stats.B.fouls++;
 
-      const cardChance = Math.random();
-      if (cardChance < 0.20) {
-        // CARTÃO AMARELO ou VERMELHO
+      const yFactor = (statsTeam.yellowCards || 180) / 180;
+      const rFactor = (statsTeam.redCards || 9) / 9;
+
+      const directRedChance = 0.015 * rFactor;
+      const yellowChance = 0.18 * yFactor;
+
+      const cardRoll = Math.random();
+      if (cardRoll < directRedChance) {
+        // Direct red card
+        if (isTeamA) stats.A.red++; else stats.B.red++;
+        logLine = `&gt; [${minute}'] Falta desastrosa de ${foulPlayer} (${actingTeam})! O árbitro não hesita e mostra o <span style="color: #e74c3c; font-weight: 800;">CARTÃO VERMELHO DIRETO</span>!`;
+      } else if (cardRoll < directRedChance + yellowChance) {
+        // Yellow card
         if (isTeamA) stats.A.yellow++; else stats.B.yellow++;
         
         let cardText = `<span style="color: #ffdf00; font-weight: 700;">cartão amarelo</span>`;

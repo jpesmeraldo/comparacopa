@@ -206,14 +206,14 @@ window.comparacopaData = {
 
   // Estatísticas de performance dos últimos 100 jogos para G8
   teamStats: {
-    BRA: { wins: 68, draws: 18, losses: 14, goalsScored: 215, goalsConceded: 78, cleanSheets: 48, form: ["V", "V", "E", "V", "V"] },
-    ARG: { wins: 72, draws: 16, losses: 12, goalsScored: 202, goalsConceded: 65, cleanSheets: 55, form: ["V", "V", "V", "D", "V"] },
-    FRA: { wins: 64, draws: 20, losses: 16, goalsScored: 198, goalsConceded: 84, cleanSheets: 42, form: ["V", "E", "V", "V", "E"] },
-    ESP: { wins: 62, draws: 22, losses: 16, goalsScored: 195, goalsConceded: 81, cleanSheets: 45, form: ["V", "V", "E", "V", "V"] },
-    ENG: { wins: 60, draws: 24, losses: 16, goalsScored: 190, goalsConceded: 79, cleanSheets: 46, form: ["E", "V", "V", "E", "V"] },
-    GER: { wins: 54, draws: 26, losses: 20, goalsScored: 188, goalsConceded: 98, cleanSheets: 35, form: ["V", "E", "V", "D", "V"] },
-    POR: { wins: 61, draws: 19, losses: 20, goalsScored: 204, goalsConceded: 86, cleanSheets: 41, form: ["V", "V", "D", "V", "V"] },
-    URU: { wins: 52, draws: 24, losses: 24, goalsScored: 154, goalsConceded: 95, cleanSheets: 38, form: ["V", "E", "V", "V", "D"] },
+    BRA: { wins: 68, draws: 18, losses: 14, goalsScored: 215, goalsConceded: 78, cleanSheets: 48, yellowCards: 165, redCards: 8, form: ["V", "V", "E", "V", "V"] },
+    ARG: { wins: 72, draws: 16, losses: 12, goalsScored: 202, goalsConceded: 65, cleanSheets: 55, yellowCards: 185, redCards: 11, form: ["V", "V", "V", "D", "V"] },
+    FRA: { wins: 64, draws: 20, losses: 16, goalsScored: 198, goalsConceded: 84, cleanSheets: 42, yellowCards: 140, redCards: 6, form: ["V", "E", "V", "V", "E"] },
+    ESP: { wins: 62, draws: 22, losses: 16, goalsScored: 195, goalsConceded: 81, cleanSheets: 45, yellowCards: 155, redCards: 7, form: ["V", "V", "E", "V", "V"] },
+    ENG: { wins: 60, draws: 24, losses: 16, goalsScored: 190, goalsConceded: 79, cleanSheets: 46, yellowCards: 130, redCards: 5, form: ["E", "V", "V", "E", "V"] },
+    GER: { wins: 54, draws: 26, losses: 20, goalsScored: 188, goalsConceded: 98, cleanSheets: 35, yellowCards: 160, redCards: 9, form: ["V", "E", "V", "D", "V"] },
+    POR: { wins: 61, draws: 19, losses: 20, goalsScored: 204, goalsConceded: 86, cleanSheets: 41, yellowCards: 175, redCards: 10, form: ["V", "V", "D", "V", "V"] },
+    URU: { wins: 52, draws: 24, losses: 24, goalsScored: 154, goalsConceded: 95, cleanSheets: 38, yellowCards: 210, redCards: 14, form: ["V", "E", "V", "V", "D"] },
     QAT: { wins: 45, draws: 20, losses: 35, goalsScored: 130, goalsConceded: 110, cleanSheets: 25, form: ["V", "V", "V", "E", "V"] },
     TUR: { wins: 50, draws: 25, losses: 25, goalsScored: 145, goalsConceded: 105, cleanSheets: 30, form: ["D", "E", "V", "D", "V"] },
     SUI: { wins: 52, draws: 22, losses: 26, goalsScored: 150, goalsConceded: 100, cleanSheets: 32, form: ["E", "V", "E", "V", "E"] },
