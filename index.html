@@ -999,7 +999,35 @@
            data-full-width-responsive="true"></ins>
     </div>
 
+    <!-- SEÇÃO SEO / TEXTO DE APOIO: ESSENCIAL PARA ADSense CRAWLERS -->
+    <div class="neo-card" style="margin-top: 35px; padding: 25px; background: var(--off-white); border-color: var(--dark-accent); font-family: 'Inter', sans-serif;">
+      <h2 style="font-family: 'Bebas Neue', cursive; font-size: 2.2rem; color: var(--dark-accent); margin-bottom: 15px; border-bottom: 2px dashed var(--dark-accent); padding-bottom: 5px;">Como Funciona o Comparacopa</h2>
+      <p style="font-size: 0.9rem; line-height: 1.6; color: #333; margin-bottom: 12px;">
+        O <strong>Comparacopa</strong> é um simulador de partidas e comparador tático desenvolvido especificamente para a Copa do Mundo de 2026. Nossa ferramenta permite que entusiastas e torcedores analisem a escalação tática oficial de 48 seleções, comparem os atributos técnicos médios de cada equipe e visualizem estatísticas completas em tempo real.
+      </p>
+      <p style="font-size: 0.9rem; line-height: 1.6; color: #333; margin-bottom: 12px;">
+        Nossa lógica de simulação baseia-se em um algoritmo matemático robusto que processa dados históricos de confrontos, a força tática de ataque e defesa de cada seleção, a formação escolhida (como 4-3-3, 5-4-1 ou 4-4-2) e a qualidade individual dos jogadores convocados. Ao clicar em "Simular Partida", o sistema calcula probabilidades reais e executa um motor de jogo simulando as principais jogadas e gols da partida de forma imparcial.
+      </p>
+      <p style="font-size: 0.9rem; line-height: 1.6; color: #333; margin-bottom: 0;">
+        Além do simulador, você pode acompanhar a tabela oficial de classificação de todos os 12 grupos da Copa do Mundo, ver a lista atualizada de artilheiros e assistências da competição, e desafiar seus amigos online através do nosso <strong>Modo Arena Multiplayer</strong> em tempo real.
+      </p>
+    </div>
+
     </main>
+
+    <!-- BANNER DE CONSENTIMENTO DE COOKIES (LGPD/GDPR) -->
+    <div id="cookie-consent-banner" class="neo-card" style="position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 600px; z-index: 10000; background: var(--off-white); border: 3px solid var(--dark-accent); box-shadow: var(--neo-shadow); display: none; padding: 20px; flex-direction: column; gap: 15px;">
+      <div style="font-family: 'Bebas Neue', cursive; font-size: 1.5rem; color: var(--dark-accent); display: flex; align-items: center; gap: 8px;">
+        <i data-lucide="cookie" style="color: var(--retro-yellow); stroke: var(--dark-accent); stroke-width: 2px;"></i> Cookies e Privacidade
+      </div>
+      <p style="font-size: 0.85rem; color: var(--dark-accent); line-height: 1.45; margin: 0; font-family: 'Inter', sans-serif;">
+        Usamos cookies para melhorar sua experiência, analisar estatísticas e exibir anúncios personalizados através do Google AdSense. Ao continuar navegando, você concorda com nossa <a href="privacidade.html" style="color: var(--retro-blue); text-decoration: underline; font-weight: 700;">Política de Privacidade</a>.
+      </p>
+      <div style="display: flex; gap: 10px; justify-content: flex-end;">
+        <button class="neo-btn" style="padding: 6px 12px; font-size: 0.8rem;" onclick="rejectCookies()">Recusar</button>
+        <button class="neo-btn btn-green" style="padding: 6px 15px; font-size: 0.8rem; font-weight: bold; box-shadow: 2px 2px 0 var(--dark-accent);" onclick="acceptCookies()">Aceitar</button>
+      </div>
+    </div>
 
     <!-- RODAPÉ: AVISO LEGAL DISCRETO E LEGÍVEL -->
     <footer style="margin-top: 40px; padding: 15px; background: var(--off-white); border: var(--border-size) solid var(--dark-accent); box-shadow: var(--neo-shadow); text-align: center; font-family: 'Space Mono', monospace; font-size: 0.75rem; color: var(--dark-accent); line-height: 1.45;">

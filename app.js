@@ -38,6 +38,9 @@ document.addEventListener("DOMContentLoaded", () => {
   // Inicializar anúncios AdSense visíveis
   initializeVisibleAds();
 
+  // Verificar e exibir banner de consentimento de cookies
+  checkCookieConsent();
+
   // Check for sala code in query params for deep linking
   const urlParams = new URLSearchParams(window.location.search);
   const sala = urlParams.get('sala');
@@ -93,6 +96,27 @@ function initializeVisibleAds() {
       }
     });
   }, 100);
+}
+
+// Funções de Consentimento de Cookies (Requisito AdSense / LGPD)
+function checkCookieConsent() {
+  const consent = localStorage.getItem('cookie-consent');
+  const banner = document.getElementById('cookie-consent-banner');
+  if (!consent && banner) {
+    banner.style.display = 'flex';
+  }
+}
+
+function acceptCookies() {
+  localStorage.setItem('cookie-consent', 'accepted');
+  const banner = document.getElementById('cookie-consent-banner');
+  if (banner) banner.style.display = 'none';
+}
+
+function rejectCookies() {
+  localStorage.setItem('cookie-consent', 'rejected');
+  const banner = document.getElementById('cookie-consent-banner');
+  if (banner) banner.style.display = 'none';
 }
 
 // Inicializar seletores de seleções de todos os grupos
