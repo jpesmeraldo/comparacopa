@@ -49,11 +49,18 @@ document.addEventListener("DOMContentLoaded", () => {
     const input = document.getElementById("arena-room-input");
     if (input) {
       input.value = sala.toUpperCase();
-      setTimeout(() => {
-        if (typeof arenaJoinRoomByCode === "function") {
+      // Polling para aguardar a inicialização do Firebase DB (que roda assincronamente como módulo)
+      const firebaseCheckInterval = setInterval(() => {
+        if (window.firebaseDB && window.firebaseAPI && typeof arenaJoinRoomByCode === "function") {
+          clearInterval(firebaseCheckInterval);
           arenaJoinRoomByCode();
         }
-      }, 500);
+      }, 100);
+      
+      // Limpar o intervalo por segurança após 10 segundos caso ocorra falha de conexão
+      setTimeout(() => {
+        clearInterval(firebaseCheckInterval);
+      }, 10000);
     }
   }
 });
