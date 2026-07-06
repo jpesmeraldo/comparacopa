@@ -2699,27 +2699,27 @@ function renderTournamentHighlights(matches, topAssistsData = [], topYellowsData
 
   // Rankings reais atualizados conforme dados mais recentes
   const artilheiros = [
-    { flag: "🇫🇷", name: "Kylian Mbappé", goals: 6 },
-    { flag: "🇦🇷", name: "Lionel Messi", goals: 6 },
-    { flag: "🇳🇴", name: "Erling Haaland", goals: 5 },
-    { flag: "🏴󠁧󠁢󠁥󠁮󠁧󠁿", name: "Harry Kane", goals: 5 },
+    { flag: "🇳🇴", name: "Erling Haaland", goals: 7 },
+    { flag: "🇫🇷", name: "Kylian Mbappé", goals: 7 },
+    { flag: "🇦🇷", name: "Lionel Messi", goals: 7 },
+    { flag: "🏴󠁧󠁢󠁥󠁮󠁧󠁿", name: "Harry Kane", goals: 6 },
     { flag: "🇸🇳", name: "Ismaïla Sarr", goals: 4 }
   ];
   
   const assistencias = [
     { flag: "🇫🇷", name: "Michael Olise", assists: 5 },
+    { flag: "🇲🇦", name: "Brahim Díaz", assists: 4 },
     { flag: "🇧🇷", name: "Bruno Guimarães", assists: 4 },
     { flag: "🇸🇪", name: "Alexander Isak", assists: 3 },
-    { flag: "🇩🇪", name: "Florian Wirtz", assists: 3 },
-    { flag: "🇳🇴", name: "Martin Odegaard", assists: 3 }
+    { flag: "🇳🇴", name: "Andreas Schjelderup", assists: 3 }
   ];
 
   const cartoesAmarelos = [
-    { flag: "🇺🇿", name: "Abdukodir Khusanov", yellow: 2 },
     { flag: "🇶🇦", name: "Ahmed Fathi", yellow: 2 },
-    { flag: "🇪🇨", name: "Alan Franco", yellow: 2 },
     { flag: "🇮🇶", name: "Amir Al-Ammari", yellow: 2 },
-    { flag: "🇧🇷", name: "Carlos Henrique Casemiro", yellow: 2 }
+    { flag: "🇬🇭", name: "Caleb Yirenkyi", yellow: 2 },
+    { flag: "🇧🇷", name: "Casemiro", yellow: 2 },
+    { flag: "🇨🇦", name: "Cyle Larin", yellow: 2 }
   ];
 
   const cartoesVermelhos = [
