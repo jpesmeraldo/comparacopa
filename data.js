@@ -183,7 +183,7 @@ window.comparacopaData = {
     octaves: [
       { id: "m17", teamA: "PAR", teamB: "FRA", prevMatchA: "m1", prevMatchB: "m2", scoreA: "0", scoreB: "1", date: "04 Jul 2026" },
       { id: "m18", teamA: "CAN", teamB: "MAR", prevMatchA: "m3", prevMatchB: "m4", scoreA: "0", scoreB: "3", date: "04 Jul 2026" },
-      { id: "m19", teamA: "ESP", teamB: "POR", prevMatchA: "m5", prevMatchB: "m6", scoreA: null, scoreB: null, date: "05 Jul 2026" },
+      { id: "m19", teamA: "ESP", teamB: "POR", prevMatchA: "m5", prevMatchB: "m6", scoreA: "1", scoreB: "0", date: "05 Jul 2026" },
       { id: "m20", teamA: "USA", teamB: "BEL", prevMatchA: "m7", prevMatchB: "m8", scoreA: null, scoreB: null, date: "05 Jul 2026" },
       { id: "m21", teamA: "BRA", teamB: "NOR", prevMatchA: "m9", prevMatchB: "m10", scoreA: "1", scoreB: "2", date: "06 Jul 2026" },
       { id: "m22", teamA: "MEX", teamB: "ENG", prevMatchA: "m11", prevMatchB: "m12", scoreA: "2", scoreB: "3", date: "06 Jul 2026" },
@@ -192,7 +192,7 @@ window.comparacopaData = {
     ],
     quarters: [
       { id: "m25", teamA: "FRA", teamB: "MAR", prevMatchA: "m17", prevMatchB: "m18", scoreA: null, scoreB: null, date: "10 Jul 2026" },
-      { id: "m26", teamA: null, teamB: null, prevMatchA: "m19", prevMatchB: "m20", scoreA: null, scoreB: null, date: "10 Jul 2026" },
+      { id: "m26", teamA: "ESP", teamB: null, prevMatchA: "m19", prevMatchB: "m20", scoreA: null, scoreB: null, date: "10 Jul 2026" },
       { id: "m27", teamA: "NOR", teamB: "ENG", prevMatchA: "m21", prevMatchB: "m22", scoreA: null, scoreB: null, date: "11 Jul 2026" },
       { id: "m28", teamA: null, teamB: null, prevMatchA: "m23", prevMatchB: "m24", scoreA: null, scoreB: null, date: "11 Jul 2026" }
     ],
