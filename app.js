@@ -2699,9 +2699,9 @@ function renderTournamentHighlights(matches, topAssistsData = [], topYellowsData
 
   // Rankings reais atualizados conforme dados mais recentes
   const artilheiros = [
+    { flag: "🇦🇷", name: "Lionel Messi", goals: 8 },
     { flag: "🇳🇴", name: "Erling Haaland", goals: 7 },
     { flag: "🇫🇷", name: "Kylian Mbappé", goals: 7 },
-    { flag: "🇦🇷", name: "Lionel Messi", goals: 7 },
     { flag: "🏴󠁧󠁢󠁥󠁮󠁧󠁿", name: "Harry Kane", goals: 6 },
     { flag: "🇸🇳", name: "Ismaïla Sarr", goals: 4 }
   ];
@@ -2716,10 +2716,10 @@ function renderTournamentHighlights(matches, topAssistsData = [], topYellowsData
 
   const cartoesAmarelos = [
     { flag: "🇶🇦", name: "Ahmed Fathi", yellow: 2 },
-    { flag: "🇮🇶", name: "Amir Al-Ammari", yellow: 2 },
-    { flag: "🇬🇭", name: "Caleb Yirenkyi", yellow: 2 },
+    { flag: "🇵🇹", name: "Bernardo Silva", yellow: 2 },
     { flag: "🇧🇷", name: "Casemiro", yellow: 2 },
-    { flag: "🇨🇦", name: "Cyle Larin", yellow: 2 }
+    { flag: "🇨🇦", name: "Cyle Larin", yellow: 2 },
+    { flag: "🇧🇷", name: "Danilo Luiz da Silva", yellow: 2 }
   ];
 
   const cartoesVermelhos = [
