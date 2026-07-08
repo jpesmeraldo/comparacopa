@@ -184,17 +184,17 @@ window.comparacopaData = {
       { id: "m17", teamA: "PAR", teamB: "FRA", prevMatchA: "m1", prevMatchB: "m2", scoreA: "0", scoreB: "1", date: "04 Jul 2026" },
       { id: "m18", teamA: "CAN", teamB: "MAR", prevMatchA: "m3", prevMatchB: "m4", scoreA: "0", scoreB: "3", date: "04 Jul 2026" },
       { id: "m19", teamA: "ESP", teamB: "POR", prevMatchA: "m5", prevMatchB: "m6", scoreA: "1", scoreB: "0", date: "05 Jul 2026" },
-      { id: "m20", teamA: "USA", teamB: "BEL", prevMatchA: "m7", prevMatchB: "m8", scoreA: null, scoreB: null, date: "05 Jul 2026" },
+      { id: "m20", teamA: "USA", teamB: "BEL", prevMatchA: "m7", prevMatchB: "m8", scoreA: "1", scoreB: "4", date: "05 Jul 2026" },
       { id: "m21", teamA: "BRA", teamB: "NOR", prevMatchA: "m9", prevMatchB: "m10", scoreA: "1", scoreB: "2", date: "06 Jul 2026" },
       { id: "m22", teamA: "MEX", teamB: "ENG", prevMatchA: "m11", prevMatchB: "m12", scoreA: "2", scoreB: "3", date: "06 Jul 2026" },
-      { id: "m23", teamA: "ARG", teamB: "EGY", prevMatchA: "m13", prevMatchB: "m14", scoreA: null, scoreB: null, date: "07 Jul 2026" },
-      { id: "m24", teamA: "SUI", teamB: "COL", prevMatchA: "m15", prevMatchB: "m16", scoreA: null, scoreB: null, date: "07 Jul 2026" }
+      { id: "m23", teamA: "ARG", teamB: "EGY", prevMatchA: "m13", prevMatchB: "m14", scoreA: "3", scoreB: "2", date: "07 Jul 2026" },
+      { id: "m24", teamA: "SUI", teamB: "COL", prevMatchA: "m15", prevMatchB: "m16", scoreA: "0 (4)", scoreB: "0 (3)", date: "07 Jul 2026" }
     ],
     quarters: [
       { id: "m25", teamA: "FRA", teamB: "MAR", prevMatchA: "m17", prevMatchB: "m18", scoreA: null, scoreB: null, date: "10 Jul 2026" },
-      { id: "m26", teamA: "ESP", teamB: null, prevMatchA: "m19", prevMatchB: "m20", scoreA: null, scoreB: null, date: "10 Jul 2026" },
+      { id: "m26", teamA: "ESP", teamB: "BEL", prevMatchA: "m19", prevMatchB: "m20", scoreA: null, scoreB: null, date: "10 Jul 2026" },
       { id: "m27", teamA: "NOR", teamB: "ENG", prevMatchA: "m21", prevMatchB: "m22", scoreA: null, scoreB: null, date: "11 Jul 2026" },
-      { id: "m28", teamA: null, teamB: null, prevMatchA: "m23", prevMatchB: "m24", scoreA: null, scoreB: null, date: "11 Jul 2026" }
+      { id: "m28", teamA: "ARG", teamB: "SUI", prevMatchA: "m23", prevMatchB: "m24", scoreA: null, scoreB: null, date: "11 Jul 2026" }
     ],
     semis: [
       { id: "m29", teamA: null, teamB: null, prevMatchA: "m25", prevMatchB: "m26", scoreA: null, scoreB: null, date: "14 Jul 2026" },
