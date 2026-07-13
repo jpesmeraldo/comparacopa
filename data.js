@@ -191,14 +191,14 @@ window.comparacopaData = {
       { id: "m24", teamA: "SUI", teamB: "COL", prevMatchA: "m15", prevMatchB: "m16", scoreA: "0 (4)", scoreB: "0 (3)", date: "07 Jul 2026" }
     ],
     quarters: [
-      { id: "m25", teamA: "FRA", teamB: "MAR", prevMatchA: "m17", prevMatchB: "m18", scoreA: null, scoreB: null, date: "10 Jul 2026" },
-      { id: "m26", teamA: "ESP", teamB: "BEL", prevMatchA: "m19", prevMatchB: "m20", scoreA: null, scoreB: null, date: "10 Jul 2026" },
-      { id: "m27", teamA: "NOR", teamB: "ENG", prevMatchA: "m21", prevMatchB: "m22", scoreA: null, scoreB: null, date: "11 Jul 2026" },
-      { id: "m28", teamA: "ARG", teamB: "SUI", prevMatchA: "m23", prevMatchB: "m24", scoreA: null, scoreB: null, date: "11 Jul 2026" }
+      { id: "m25", teamA: "FRA", teamB: "MAR", prevMatchA: "m17", prevMatchB: "m18", scoreA: "2", scoreB: "0", date: "10 Jul 2026" },
+      { id: "m26", teamA: "ESP", teamB: "BEL", prevMatchA: "m19", prevMatchB: "m20", scoreA: "2", scoreB: "1", date: "10 Jul 2026" },
+      { id: "m27", teamA: "NOR", teamB: "ENG", prevMatchA: "m21", prevMatchB: "m22", scoreA: "1", scoreB: "2", date: "11 Jul 2026" },
+      { id: "m28", teamA: "ARG", teamB: "SUI", prevMatchA: "m23", prevMatchB: "m24", scoreA: "3", scoreB: "1", date: "11 Jul 2026" }
     ],
     semis: [
-      { id: "m29", teamA: null, teamB: null, prevMatchA: "m25", prevMatchB: "m26", scoreA: null, scoreB: null, date: "14 Jul 2026" },
-      { id: "m30", teamA: null, teamB: null, prevMatchA: "m27", prevMatchB: "m28", scoreA: null, scoreB: null, date: "15 Jul 2026" }
+      { id: "m29", teamA: "FRA", teamB: "ESP", prevMatchA: "m25", prevMatchB: "m26", scoreA: null, scoreB: null, date: "14 Jul 2026" },
+      { id: "m30", teamA: "ENG", teamB: "ARG", prevMatchA: "m27", prevMatchB: "m28", scoreA: null, scoreB: null, date: "15 Jul 2026" }
     ],
     final: { id: "m31", teamA: null, teamB: null, prevMatchA: "m29", prevMatchB: "m30", scoreA: null, scoreB: null, date: "19 Jul 2026" },
     thirdPlace: { id: "m32", teamA: null, teamB: null, prevMatchA: "m29", prevMatchB: "m30", scoreA: null, scoreB: null, date: "18 Jul 2026" }
