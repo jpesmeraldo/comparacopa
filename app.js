@@ -2699,23 +2699,23 @@ function renderTournamentHighlights(matches, topAssistsData = [], topYellowsData
 
   // Rankings reais atualizados conforme dados mais recentes
   const artilheiros = [
+    { flag: "🇫🇷", name: "Kylian Mbappé", goals: 8 },
     { flag: "🇦🇷", name: "Lionel Messi", goals: 8 },
     { flag: "🇳🇴", name: "Erling Haaland", goals: 7 },
-    { flag: "🇫🇷", name: "Kylian Mbappé", goals: 7 },
     { flag: "🏴󠁧󠁢󠁥󠁮󠁧󠁿", name: "Harry Kane", goals: 6 },
-    { flag: "🇸🇳", name: "Ismaïla Sarr", goals: 4 }
+    { flag: "🏴󠁧󠁢󠁥󠁮󠁧󠁿", name: "Jude Bellingham", goals: 6 }
   ];
   
   const assistencias = [
     { flag: "🇫🇷", name: "Michael Olise", assists: 5 },
     { flag: "🇲🇦", name: "Brahim Díaz", assists: 4 },
     { flag: "🇧🇷", name: "Bruno Guimarães", assists: 4 },
-    { flag: "🇸🇪", name: "Alexander Isak", assists: 3 },
-    { flag: "🇳🇴", name: "Andreas Schjelderup", assists: 3 }
+    { flag: "🇳🇴", name: "Martin Odegaard", assists: 4 },
+    { flag: "🇸🇪", name: "Alexander Isak", assists: 3 }
   ];
 
   const cartoesAmarelos = [
-    { flag: "🇶🇦", name: "Ahmed Fathi", yellow: 2 },
+    { flag: "🇲🇦", name: "Issa Diop", yellow: 3 },
     { flag: "🇵🇹", name: "Bernardo Silva", yellow: 2 },
     { flag: "🇧🇷", name: "Casemiro", yellow: 2 },
     { flag: "🇨🇦", name: "Cyle Larin", yellow: 2 },
@@ -2725,9 +2725,9 @@ function renderTournamentHighlights(matches, topAssistsData = [], topYellowsData
   const cartoesVermelhos = [
     { flag: "🇺🇾", name: "Agustín Canobbio", red: 1 },
     { flag: "🇶🇦", name: "Assim Madibo", red: 1 },
+    { flag: "🇨🇭", name: "Breel Embolo", red: 1 },
     { flag: "🇲🇽", name: "César Montes", red: 1 },
-    { flag: "🇺🇸", name: "Folarin Balogun", red: 1 },
-    { flag: "🇶🇦", name: "Homam Ahmed", red: 1 }
+    { flag: "🇺🇸", name: "Folarin Balogun", red: 1 }
   ];
 
   const buildBox = (title, icon, arr, valFn, empty) => {
