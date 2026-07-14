@@ -310,18 +310,18 @@ window.comparacopaData = {
       ]
     },
     FRA: {
-      formation: "4-2-3-1",
+      formation: "4-5-1",
       players: [
         { name: "Mike Maignan", pos: "GK", no: 16, club: "Milan", ovr: 87, pac: 84, sho: 50, pas: 83, dri: 85, def: 88, phy: 83, x: 50, y: 12 },
+        { name: "William Saliba", pos: "DF", no: 17, club: "Arsenal", ovr: 88, pac: 82, sho: 40, pas: 72, dri: 73, def: 90, phy: 84, x: 75, y: 28 },
+        { name: "Lucas Digne", pos: "DF", no: 3, club: "Aston Villa", ovr: 80, pac: 75, sho: 62, pas: 77, dri: 76, def: 77, phy: 74, x: 25, y: 28 },
         { name: "Jules Koundé", pos: "DF", no: 5, club: "Barcelona", ovr: 85, pac: 81, sho: 52, pas: 74, dri: 79, def: 85, phy: 79, x: 85, y: 35 },
-        { name: "William Saliba", pos: "DF", no: 17, club: "Arsenal", ovr: 88, pac: 82, sho: 40, pas: 72, dri: 73, def: 90, phy: 84, x: 65, y: 28 },
-        { name: "D. Upamecano", pos: "DF", no: 4, club: "Bayern Munique", ovr: 83, pac: 81, sho: 51, pas: 69, dri: 68, def: 82, phy: 85, x: 35, y: 28 },
-        { name: "Theo Hernández", pos: "DF", no: 19, club: "Al-Hilal", ovr: 86, pac: 93, sho: 71, pas: 78, dri: 82, def: 79, phy: 82, x: 15, y: 35 },
-        { name: "A. Tchouaméni", pos: "MF", no: 8, club: "Real Madrid", ovr: 85, pac: 72, sho: 72, pas: 80, dri: 79, def: 83, phy: 84, x: 40, y: 50 },
-        { name: "N'Golo Kanté", pos: "MF", no: 13, club: "Fenerbahçe", ovr: 84, pac: 73, sho: 66, pas: 78, dri: 80, def: 84, phy: 78, x: 60, y: 50 },
-        { name: "O. Dembélé", pos: "FW", no: 7, club: "PSG", ovr: 86, pac: 93, sho: 77, pas: 81, dri: 90, def: 36, phy: 58, x: 80, y: 70 },
-        { name: "Adrien Rabiot", pos: "MF", no: 14, club: "Milan", ovr: 84, pac: 76, sho: 77, pas: 81, dri: 80, def: 80, phy: 82, x: 50, y: 68 },
-        { name: "Bradley Barcola", pos: "FW", no: 12, club: "PSG", ovr: 83, pac: 88, sho: 76, pas: 75, dri: 85, def: 35, phy: 68, x: 20, y: 70 },
+        { name: "D. Upamecano", pos: "DF", no: 4, club: "Bayern Munique", ovr: 83, pac: 81, sho: 51, pas: 69, dri: 68, def: 82, phy: 85, x: 15, y: 35 },
+        { name: "Adrien Rabiot", pos: "MF", no: 14, club: "Milan", ovr: 84, pac: 76, sho: 77, pas: 81, dri: 80, def: 80, phy: 82, x: 20, y: 56 },
+        { name: "A. Tchouaméni", pos: "MF", no: 8, club: "Real Madrid", ovr: 85, pac: 72, sho: 72, pas: 80, dri: 79, def: 83, phy: 84, x: 50, y: 50 },
+        { name: "Bradley Barcola", pos: "MF", no: 12, club: "PSG", ovr: 83, pac: 88, sho: 76, pas: 75, dri: 85, def: 35, phy: 68, x: 35, y: 65 },
+        { name: "Michael Olise", pos: "MF", no: 11, club: "Bayern Munique", ovr: 85, pac: 84, sho: 81, pas: 84, dri: 87, def: 50, phy: 70, x: 65, y: 65 },
+        { name: "O. Dembélé", pos: "MF", no: 7, club: "PSG", ovr: 86, pac: 93, sho: 77, pas: 81, dri: 90, def: 36, phy: 58, x: 80, y: 56 },
         { name: "Kylian Mbappé", pos: "FW", no: 10, club: "Real Madrid", ovr: 92, pac: 97, sho: 90, pas: 80, dri: 92, def: 36, phy: 78, x: 50, y: 86 }
       ],
       bench: [
@@ -346,16 +346,16 @@ window.comparacopaData = {
       formation: "4-3-3",
       players: [
         { name: "Unai Simón", pos: "GK", no: 23, club: "Athletic Bilbao", ovr: 86, pac: 81, sho: 44, pas: 79, dri: 81, def: 87, phy: 83, x: 50, y: 12 },
+        { name: "M. Cucurella", pos: "DF", no: 24, club: "Chelsea", ovr: 82, pac: 80, sho: 61, pas: 75, dri: 77, def: 80, phy: 78, x: 15, y: 35 },
         { name: "Pedro Porro", pos: "DF", no: 2, club: "Tottenham", ovr: 82, pac: 83, sho: 64, pas: 77, dri: 79, def: 78, phy: 75, x: 85, y: 35 },
         { name: "Pau Cubarsí", pos: "DF", no: 3, club: "Barcelona", ovr: 82, pac: 72, sho: 40, pas: 75, dri: 72, def: 84, phy: 76, x: 65, y: 28 },
         { name: "A. Laporte", pos: "DF", no: 14, club: "Al-Nassr", ovr: 84, pac: 70, sho: 59, pas: 73, dri: 71, def: 85, phy: 79, x: 35, y: 28 },
-        { name: "M. Cucurella", pos: "DF", no: 24, club: "Chelsea", ovr: 82, pac: 80, sho: 61, pas: 75, dri: 77, def: 80, phy: 78, x: 15, y: 35 },
         { name: "Rodri", pos: "MF", no: 16, club: "Manchester City", ovr: 91, pac: 66, sho: 80, pas: 86, dri: 84, def: 89, phy: 85, x: 50, y: 48 },
-        { name: "Pedri", pos: "MF", no: 8, club: "Barcelona", ovr: 86, pac: 78, sho: 76, pas: 88, dri: 87, def: 72, phy: 68, x: 30, y: 58 },
         { name: "Fabián Ruiz", pos: "MF", no: 10, club: "PSG", ovr: 83, pac: 68, sho: 78, pas: 82, dri: 81, def: 74, phy: 76, x: 70, y: 58 },
+        { name: "Dani Olmo", pos: "MF", no: 8, club: "Barcelona", ovr: 84, pac: 75, sho: 80, pas: 82, dri: 85, def: 50, phy: 68, x: 30, y: 58 },
         { name: "Lamine Yamal", pos: "FW", no: 19, club: "Barcelona", ovr: 87, pac: 90, sho: 81, pas: 83, dri: 90, def: 40, phy: 65, x: 80, y: 80 },
-        { name: "M. Oyarzabal", pos: "FW", no: 7, club: "Real Sociedad", ovr: 83, pac: 80, sho: 82, pas: 80, dri: 81, def: 45, phy: 74, x: 50, y: 85 },
-        { name: "Nico Williams", pos: "FW", no: 17, club: "Athletic Bilbao", ovr: 85, pac: 94, sho: 79, pas: 78, dri: 87, def: 36, phy: 70, x: 20, y: 80 }
+        { name: "Alex Baena", pos: "FW", no: 17, club: "Villarreal", ovr: 82, pac: 76, sho: 77, pas: 83, dri: 82, def: 65, phy: 68, x: 20, y: 80 },
+        { name: "M. Oyarzabal", pos: "FW", no: 7, club: "Real Sociedad", ovr: 83, pac: 80, sho: 82, pas: 80, dri: 81, def: 45, phy: 74, x: 50, y: 85 }
       ],
       bench: [
         { name: "David Raya", pos: "GK", club: "Arsenal", ovr: 83, pac: 82, sho: 42, pas: 80, dri: 81, def: 84, phy: 78 },
