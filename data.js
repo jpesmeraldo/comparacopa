@@ -934,39 +934,6 @@ window.comparacopaData = {
         { name: "Keisuke Goto", pos: "FW", club: "Sint-Truiden", ovr: 69, pac: 76, sho: 68, pas: 55, dri: 65, def: 30, phy: 66 }
       ]
     },
-    ESP: {
-      formation: "4-3-3",
-      players: [
-        { name: "David Raya", pos: "GK", no: 1, club: "Arsenal", ovr: 82, pac: 70, sho: 30, pas: 75, dri: 72, def: 84, phy: 78, x: 50, y: 12 },
-        { name: "Dani Carvajal", pos: "DF", no: 2, club: "Real Madrid", ovr: 84, pac: 80, sho: 55, pas: 78, dri: 78, def: 82, phy: 80, x: 85, y: 35 },
-        { name: "Robin Le Normand", pos: "DF", no: 3, club: "Real Sociedad", ovr: 82, pac: 70, sho: 40, pas: 70, dri: 65, def: 84, phy: 80, x: 65, y: 28 },
-        { name: "Nacho Fernández", pos: "DF", no: 4, club: "Real Madrid", ovr: 82, pac: 72, sho: 40, pas: 70, dri: 68, def: 82, phy: 78, x: 35, y: 28 },
-        { name: "Álex Grimaldo", pos: "DF", no: 12, club: "Leverkusen", ovr: 84, pac: 85, sho: 72, pas: 84, dri: 84, def: 78, phy: 74, x: 15, y: 35 },
-        { name: "Mikel Merino", pos: "MF", no: 6, club: "Real Sociedad", ovr: 84, pac: 72, sho: 78, pas: 82, dri: 82, def: 80, phy: 84, x: 50, y: 50 },
-        { name: "Fabián Ruiz", pos: "MF", no: 8, club: "PSG", ovr: 82, pac: 70, sho: 78, pas: 84, dri: 84, def: 74, phy: 75, x: 30, y: 55 },
-        { name: "Dani Olmo", pos: "MF", no: 10, club: "Leipzig", ovr: 83, pac: 80, sho: 80, pas: 84, dri: 86, def: 55, phy: 68, x: 70, y: 55 },
-        { name: "Lamine Yamal", pos: "FW", no: 19, club: "Barcelona", ovr: 80, pac: 86, sho: 75, pas: 78, dri: 86, def: 40, phy: 60, x: 80, y: 80 },
-        { name: "Álvaro Morata", pos: "FW", no: 7, club: "Atlético Madrid", ovr: 83, pac: 78, sho: 82, pas: 72, dri: 78, def: 45, phy: 80, x: 50, y: 85 },
-        { name: "Nico Williams", pos: "FW", no: 17, club: "Athletic Club", ovr: 81, pac: 92, sho: 76, pas: 75, dri: 85, def: 40, phy: 68, x: 20, y: 80 }
-      ],
-      bench: [
-        { name: "Álex Remiro", pos: "GK", club: "Real Sociedad", ovr: 82, pac: 68, sho: 30, pas: 70, dri: 68, def: 82, phy: 75 },
-        { name: "Unai Simón", pos: "GK", club: "Athletic Club", ovr: 84, pac: 72, sho: 35, pas: 72, dri: 72, def: 85, phy: 80 },
-        { name: "Daniel Vivian", pos: "DF", club: "Athletic Club", ovr: 80, pac: 72, sho: 45, pas: 65, dri: 60, def: 82, phy: 84 },
-        { name: "Aymeric Laporte", pos: "DF", club: "Al-Nassr", ovr: 84, pac: 65, sho: 50, pas: 76, dri: 70, def: 85, phy: 80 },
-        { name: "Jesús Navas", pos: "DF", club: "Sevilla", ovr: 80, pac: 78, sho: 65, pas: 80, dri: 82, def: 74, phy: 65 },
-        { name: "Marc Cucurella", pos: "DF", club: "Chelsea", ovr: 80, pac: 80, sho: 60, pas: 76, dri: 78, def: 78, phy: 75 },
-        { name: "Alex Baena", pos: "MF", club: "Villarreal", ovr: 80, pac: 78, sho: 76, pas: 82, dri: 82, def: 60, phy: 68 },
-        { name: "M. Zubimendi", pos: "MF", club: "Real Sociedad", ovr: 82, pac: 68, sho: 65, pas: 80, dri: 78, def: 80, phy: 78 },
-        { name: "Pedri", pos: "MF", club: "Barcelona", ovr: 86, pac: 78, sho: 76, pas: 88, dri: 88, def: 68, phy: 68 },
-        { name: "Fermín López", pos: "MF", club: "Barcelona", ovr: 76, pac: 78, sho: 74, pas: 75, dri: 78, def: 55, phy: 65 },
-        { name: "Aleix García", pos: "MF", club: "Girona", ovr: 82, pac: 70, sho: 75, pas: 86, dri: 82, def: 74, phy: 72 },
-        { name: "Joselu", pos: "FW", club: "Real Madrid", ovr: 82, pac: 65, sho: 84, pas: 70, dri: 76, def: 45, phy: 84 },
-        { name: "Ferran Torres", pos: "FW", club: "Barcelona", ovr: 82, pac: 82, sho: 80, pas: 78, dri: 82, def: 45, phy: 72 },
-        { name: "Mikel Oyarzabal", pos: "FW", club: "Real Sociedad", ovr: 83, pac: 78, sho: 82, pas: 80, dri: 84, def: 55, phy: 70 },
-        { name: "Ayoze Pérez", pos: "FW", club: "Betis", ovr: 78, pac: 78, sho: 78, pas: 75, dri: 82, def: 45, phy: 68 }
-      ]
-    },
     BEL: {
       formation: "4-3-3",
       players: [
