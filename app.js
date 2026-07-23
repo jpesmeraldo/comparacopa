@@ -1971,9 +1971,16 @@ function renderMainBrackets() {
   finalContainer.appendChild(finalTitle);
 
   const finalCard = document.createElement("div");
-  finalCard.className = finalData.teamA && finalData.teamB ? "bracket-match placeholder final active" : "bracket-match placeholder final";
-  if (finalData.teamA && finalData.teamB) {
+  const finalHasScore = finalData.scoreA !== null && finalData.scoreB !== null;
+  const finalHasTeams = finalData.teamA && finalData.teamB;
+  if (finalHasScore) {
+    finalCard.className = "bracket-match active";
     finalCard.onclick = () => loadBracketMatchToSim(finalData.teamA, finalData.teamB);
+  } else if (finalHasTeams) {
+    finalCard.className = "bracket-match placeholder final active";
+    finalCard.onclick = () => loadBracketMatchToSim(finalData.teamA, finalData.teamB);
+  } else {
+    finalCard.className = "bracket-match placeholder final";
   }
   const labelFinalA = getDisplayTeam(finalData.teamA, "Vencedor Semifinal 1");
   const labelFinalB = getDisplayTeam(finalData.teamB, "Vencedor Semifinal 2");
@@ -2019,9 +2026,16 @@ function renderMainBrackets() {
     thirdContainer.appendChild(title3);
 
     const thirdCard = document.createElement("div");
-    thirdCard.className = thirdPlaceData.teamA && thirdPlaceData.teamB ? "bracket-match active" : "bracket-match placeholder";
-    if (thirdPlaceData.teamA && thirdPlaceData.teamB) {
+    const thirdHasScore = thirdPlaceData.scoreA !== null && thirdPlaceData.scoreB !== null;
+    const thirdHasTeams = thirdPlaceData.teamA && thirdPlaceData.teamB;
+    if (thirdHasScore) {
+      thirdCard.className = "bracket-match active";
       thirdCard.onclick = () => loadBracketMatchToSim(thirdPlaceData.teamA, thirdPlaceData.teamB);
+    } else if (thirdHasTeams) {
+      thirdCard.className = "bracket-match active";
+      thirdCard.onclick = () => loadBracketMatchToSim(thirdPlaceData.teamA, thirdPlaceData.teamB);
+    } else {
+      thirdCard.className = "bracket-match placeholder";
     }
     const labelThirdA = getDisplayTeam(thirdPlaceData.teamA, "Derrotado Semifinal 1");
     const labelThirdB = getDisplayTeam(thirdPlaceData.teamB, "Derrotado Semifinal 2");
