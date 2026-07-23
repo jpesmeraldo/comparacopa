@@ -198,10 +198,10 @@ window.comparacopaData = {
     ],
     semis: [
       { id: "m29", teamA: "FRA", teamB: "ESP", prevMatchA: "m25", prevMatchB: "m26", scoreA: "0", scoreB: "2", date: "14 Jul 2026" },
-      { id: "m30", teamA: "ENG", teamB: "ARG", prevMatchA: "m27", prevMatchB: "m28", scoreA: null, scoreB: null, date: "15 Jul 2026" }
+      { id: "m30", teamA: "ENG", teamB: "ARG", prevMatchA: "m27", prevMatchB: "m28", scoreA: "0", scoreB: "1", date: "15 Jul 2026" }
     ],
-    final: { id: "m31", teamA: "ESP", teamB: null, prevMatchA: "m29", prevMatchB: "m30", scoreA: null, scoreB: null, date: "19 Jul 2026" },
-    thirdPlace: { id: "m32", teamA: "FRA", teamB: null, prevMatchA: "m29", prevMatchB: "m30", scoreA: null, scoreB: null, date: "18 Jul 2026" }
+    final: { id: "m31", teamA: "ESP", teamB: "ARG", prevMatchA: "m29", prevMatchB: "m30", scoreA: "1", scoreB: "0", date: "19 Jul 2026" },
+    thirdPlace: { id: "m32", teamA: "FRA", teamB: "ENG", prevMatchA: "m29", prevMatchB: "m30", scoreA: "4", scoreB: "6", date: "18 Jul 2026" }
   },
 
   // Estatísticas de performance dos últimos 100 jogos para G8
